@@ -6,8 +6,6 @@ namespace CraigPaul\Moneris;
 
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Traits\GettableTrait;
-use CraigPaul\Moneris\Traits\SettableTrait;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
 /**
@@ -22,7 +20,6 @@ use CraigPaul\Moneris\Validation\Errors\ErrorList;
  */
 class Response
 {
-    //    use GettableTrait, SettableTrait;
     /**
      * Determine if we have failed Address Verification Service verification.
      */

@@ -439,10 +439,12 @@ The `Response` and `Receipt` objects allow you to understand how everything went
 
 The information available to you on the `Response` object is as follows:
 
-#### Errors
+#### Transaction ErrorList
+
+After validation a transaction, you can get a list of validation errors:
 
 ```php
-$errors = $response->errors;
+$errors = $response->transaction()->getErrorList();
 ```
 
 Any errors that might occur during your transaction will be available from the returned `ErrorList`. You can then filter through them and deal with them as required.
@@ -457,52 +459,23 @@ $errors = new Errorlist(
 );
 ```
 
-#### Status
+#### Moneris Errors
+
+Errors that occur after submitting the `Request` will be set on the `Request` object.
 
 ```php
-$status = $response->status;
+$error = $response->getError();
 ```
 
-The status will return a status code matching the appropriate error returned. See below for an example of the possible statuses returned.
- 
-```php
-ERROR                    = -23;
-INVALID_TRANSACTION_DATA = 0;
-
-FAILED_ATTEMPT            = -1;
-CREATE_TRANSACTION_RECORD = -2;
-GLOBAL_ERROR_RECEIPT      = -3;
-
-SYSTEM_UNAVAILABLE    = -14;
-CARD_EXPIRED          = -15;
-INVALID_CARD          = -16;
-INSUFFICIENT_FUNDS    = -17;
-PREAUTH_FULL          = -18;
-DUPLICATE_TRANSACTION = -19;
-DECLINED              = -20;
-NOT_AUTHORIZED        = -21;
-INVALID_EXPIRY_DATE   = -22;
-
-CVD               = -4;
-CVD_NO_MATCH      = -5;
-CVD_NOT_PROCESSED = -6;
-CVD_MISSING       = -7;
-CVD_NOT_SUPPORTED = -8;
-
-AVS             = -9;
-AVS_POSTAL_CODE = -10;
-AVS_ADDRESS     = -11;
-AVS_NO_MATCH    = -12;
-AVS_TIMEOUT     = -13;
-```
+If there are no errors, this will return null. Otherwise, you will get an instance of `ResponseErrorEnum`, an integer backed enumeration.
 
 #### Success
 
 ```php
-$success = $response->successful
+$success = $response->isSuccessful();
 ```
 
-The successful property simply lets you know if your transaction has been processed successfully.
+The successful method simply lets you know if your transaction has been processed successfully.
 
 ### Receipt
 

@@ -1,6 +1,14 @@
 #Moneris API Changelog
 
-### 2.0.2 (2021-09014)
+### 2.1.0 (2022-09-15)
+### Added
+- Response error codes are now represented by an enum
+
+### Changed
+- Response no longer uses get/set traits
+- Tests updates
+
+### 2.0.2 (2021-09-14)
 #### Changed
 - `ErrorList` and `ErrorInterface` now implement `JsonSerializable`.
 
