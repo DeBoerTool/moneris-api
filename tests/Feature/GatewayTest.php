@@ -2,8 +2,6 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Gateway;
-use CraigPaul\Moneris\Response;
 use CraigPaul\Moneris\Tests\TestCase;
 use CraigPaul\Moneris\Vault;
 use Faker\Factory as Faker;
@@ -97,7 +95,6 @@ class GatewayTest extends TestCase
         $response = $this->gateway()->purchase($params);
         $receipt = $response->receipt();
 
-
         $this->assertTrue($response->isSuccessful());
         $this->assertTrue($receipt->read('complete'));
         $this->assertNotNull($receipt->read('transaction'));
@@ -113,7 +110,6 @@ class GatewayTest extends TestCase
             'credit_card' => $this->visa,
             'expdate' => '2012',
         ]);
-
 
         $this->assertTrue($response->isSuccessful());
     }
@@ -131,7 +127,6 @@ class GatewayTest extends TestCase
             'expdate' => '2012',
         ]);
 
-
         $this->assertTrue($response->isSuccessful());
     }
 
@@ -139,7 +134,6 @@ class GatewayTest extends TestCase
     public function preauthorizing_a_purchase(): void
     {
         $response = $this->gateway()->preauth($this->params);
-
 
         $this->assertTrue($response->isSuccessful());
     }

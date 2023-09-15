@@ -22,7 +22,7 @@ use CraigPaul\Moneris\Validation\Errors\ErrorList;
  */
 class Response
 {
-//    use GettableTrait, SettableTrait;
+    //    use GettableTrait, SettableTrait;
     /**
      * Determine if we have failed Address Verification Service verification.
      */

@@ -5,7 +5,6 @@ namespace CraigPaul\Moneris\Tests\Feature;
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\Response;
 use CraigPaul\Moneris\Tests\TestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
@@ -66,7 +65,7 @@ class ProcessorTest extends TestCase
     }
 
     /** @test */
-    public function submitting_successfully():void
+    public function submitting_successfully(): void
     {
         $response = $this->processor->process($this->transaction);
 

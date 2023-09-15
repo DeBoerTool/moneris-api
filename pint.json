@@ -19,8 +19,5 @@
     "phpdoc_align": {
       "align": "left"
     }
-  },
-  "notName": [
-    "_ide_helper*"
-  ]
+  }
 }

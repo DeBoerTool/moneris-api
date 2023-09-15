@@ -50,7 +50,6 @@ class ResponseTest extends TestCase
     {
         $response = new Response($this->transaction);
 
-
         $this->assertTrue($response->isSuccessful());
         $this->assertSame($this->transaction, $response->getTransaction());
     }
