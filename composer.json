@@ -16,7 +16,7 @@
     "require": {
         "php": "^8.1.0",
         "ext-simplexml": "*",
-        "guzzlehttp/guzzle": "^7.8",
+        "guzzlehttp/guzzle": "^6.5|^7.8",
         "laravel/pint": "^1.13"
     },
     "require-dev": {
@@ -32,7 +32,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "CraigPaul\\Moneris\\Tests\\": "tests"
+            "CraigPaul\\Moneris\\Tests\\": "tests/"
         },
         "files": [
             "tests/Support/helpers.php"

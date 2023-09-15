@@ -64,7 +64,7 @@ class ErrorList implements Countable, IteratorAggregate, JsonSerializable
         return count($this->errors);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->errors;
     }

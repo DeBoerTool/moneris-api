@@ -11,9 +11,6 @@ class Receipt implements JsonSerializable
 
     protected array $data;
 
-    /**
-     * Create a new Receipt instance.
-     */
     public function __construct($data)
     {
         $this->data = $this->prepare($data, [
@@ -38,21 +35,70 @@ class Receipt implements JsonSerializable
         ]);
     }
 
-    public function successful(): bool
+    public function hasAvsCode(): bool
     {
-        $complete = $this->read('complete');
-        $valid_code = $this->read('code') !== 'null';
-        $code = (int) $this->read('code');
+        return !is_null($this->getAvsCode()) && $this->getAvsCode() !== 'null';
+    }
 
-        return $complete && $valid_code && $code >= 0 && $code < 50;
+    public function hasCvdCode(): bool
+    {
+        return !is_null($this->getCvdCode()) && $this->getCvdCode() !== 'null';
+    }
+
+    public function getAvsCode(): string|null
+    {
+        return !is_null($this->read('avs_result'))
+            ? $this->read('avs_result')
+            : null;
+    }
+
+    public function getCvdCode(): string|null
+    {
+        return !is_null($this->read('cvd_result'))
+            ? $this->read('cvd_result')
+            : null;
+    }
+
+    public function getCode(): string
+    {
+        return $this->read('code');
+    }
+
+    public function isComplete(): bool
+    {
+        return $this->read('complete') === true;
+    }
+
+    public function hasValidCode(): bool
+    {
+        return $this->getCode() !== 'null';
     }
 
     /**
-     * Read an item from the receipt.
+     * TODO: Convert these magic numbers into something with actual contextual
+     *       meaning.
      */
-    public function read(string $value = ''): mixed
+    public function hasSuccessCode(): bool
     {
-        return $this->data[$value] ?? null;
+        $code = (int) $this->getCode();
+
+        return $code >= 0 && $code < 50;
+    }
+
+    public function isSuccessful(): bool
+    {
+        return $this->isComplete()
+            && $this->hasValidCode()
+            && $this->hasSuccessCode();
+    }
+
+    /**
+     * Given a key, read a value from the receipt data. Note that these values
+     * have casts defined in the constructor.
+     */
+    public function read(string $key = ''): mixed
+    {
+        return $this->data[$key] ?? null;
     }
 
     /**
@@ -72,16 +118,38 @@ class Receipt implements JsonSerializable
     private function setData(array $data): array
     {
         return [
-            'customer_id' => isset($data['cust_id']) ? (is_string($data['cust_id']) ? $data['cust_id'] : $data['cust_id']->__toString()) : null,
-            'phone' => isset($data['phone']) ? (is_string($data['phone']) ? $data['phone'] : $data['phone']->__toString()) : null,
-            'email' => isset($data['email']) ? (is_string($data['email']) ? $data['email'] : $data['email']->__toString()) : null,
-            'note' => isset($data['note']) ? (is_string($data['note']) ? $data['note'] : $data['note']->__toString()) : null,
-            'crypt' => isset($data['crypt_type']) ? intval($data['crypt_type']) : null,
-            'masked_pan' => isset($data['masked_pan']) ? $data['masked_pan'] : null,
-            'pan' => isset($data['pan']) ? $data['pan'] : null,
+            'customer_id' => isset($data['cust_id'])
+                ? (is_string($data['cust_id'])
+                    ? $data['cust_id']
+                    : $data['cust_id']->__toString())
+                : null,
+            'phone' => isset($data['phone'])
+                ? (is_string($data['phone'])
+                    ? $data['phone']
+                    : $data['phone']->__toString())
+                : null,
+            'email' => isset($data['email'])
+                ? (is_string($data['email'])
+                    ? $data['email']
+                    : $data['email']->__toString())
+                : null,
+            'note' => isset($data['note'])
+                ? (is_string($data['note'])
+                    ? $data['note']
+                    : $data['note']->__toString())
+                : null,
+            'crypt' => isset($data['crypt_type'])
+                ? intval($data['crypt_type'])
+                : null,
+            'masked_pan' => $data['masked_pan'] ?? null,
+            'pan' => $data['pan'] ?? null,
             'expiry_date' => [
-                'month' => isset($data['expdate']) ? substr($data['expdate'], -2, 2) : null,
-                'year' => isset($data['expdate']) ? substr($data['expdate'], 0, 2) : null,
+                'month' => isset($data['expdate'])
+                    ? substr($data['expdate'], -2, 2)
+                    : null,
+                'year' => isset($data['expdate'])
+                    ? substr($data['expdate'], 0, 2)
+                    : null,
             ],
         ];
     }

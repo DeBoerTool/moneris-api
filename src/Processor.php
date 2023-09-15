@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris;
 
+use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Values\Environment;
 use GuzzleHttp\Client;
 use SimpleXMLElement;
@@ -48,16 +49,14 @@ class Processor
     }
 
     /**
-     * Determine if the request is valid. If so, process the transaction via
-     * the Moneris API.
+     * Determine if the transaction is valid. If so, process it via the Moneris
+     * API.
      */
     public function process(Transaction $transaction): Response
     {
         if ($transaction->invalid()) {
             $response = new Response($transaction);
-            $response->status = Response::INVALID_TRANSACTION_DATA;
-            $response->successful = false;
-            $response->errors = $transaction->errors;
+            $response->setError(ResponseErrorEnum::InvalidTransactionData);
 
             return $response;
         }

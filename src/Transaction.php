@@ -87,7 +87,7 @@ class Transaction
     {
         $this->response = $result;
 
-        $response = Response::create($this);
+        $response = new Response($this);
         $response->validate();
 
         return $response;

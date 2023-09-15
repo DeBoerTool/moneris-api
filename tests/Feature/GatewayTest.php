@@ -73,7 +73,6 @@ class GatewayTest extends TestCase
     {
         $gateway = $this->gateway();
 
-        $this->assertInstanceOf(Gateway::class, $gateway);
         $this->assertSame($this->id, $gateway->id);
         $this->assertSame($this->token, $gateway->token);
         $this->assertSame($this->environment, $gateway->environment);
@@ -84,8 +83,7 @@ class GatewayTest extends TestCase
     {
         $response = $this->gateway()->purchase($this->params);
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -99,8 +97,8 @@ class GatewayTest extends TestCase
         $response = $this->gateway()->purchase($params);
         $receipt = $response->receipt();
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertTrue($response->successful);
+
+        $this->assertTrue($response->isSuccessful());
         $this->assertTrue($receipt->read('complete'));
         $this->assertNotNull($receipt->read('transaction'));
     }
@@ -116,8 +114,8 @@ class GatewayTest extends TestCase
             'expdate' => '2012',
         ]);
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertTrue($response->successful);
+
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -133,8 +131,8 @@ class GatewayTest extends TestCase
             'expdate' => '2012',
         ]);
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertTrue($response->successful);
+
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -142,8 +140,8 @@ class GatewayTest extends TestCase
     {
         $response = $this->gateway()->preauth($this->params);
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertTrue($response->successful);
+
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -157,7 +155,7 @@ class GatewayTest extends TestCase
         $response = $this->gateway()->preauth($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertTrue($receipt->read('complete'));
         $this->assertNotNull($receipt->read('transaction'));
     }
@@ -173,7 +171,7 @@ class GatewayTest extends TestCase
             'expdate' => '2012',
         ]);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -189,7 +187,7 @@ class GatewayTest extends TestCase
             'expdate' => '2012',
         ]);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -197,7 +195,7 @@ class GatewayTest extends TestCase
     {
         $response = $this->gateway()->verify($this->params);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -211,7 +209,7 @@ class GatewayTest extends TestCase
             'expdate' => '2012',
         ]);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -227,7 +225,7 @@ class GatewayTest extends TestCase
             'expdate' => '2012',
         ]);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
@@ -235,11 +233,10 @@ class GatewayTest extends TestCase
     {
         $purchaseResponse = $this->gateway()->purchase($this->params);
         $voidResponse = $this->gateway()->void(
-            $purchaseResponse->transaction
+            $purchaseResponse->transaction(),
         );
 
-        $this->assertTrue($voidResponse->successful);
-        $this->assertTrue($voidResponse->successful);
+        $this->assertTrue($voidResponse->isSuccessful());
     }
 
     /** @test */
@@ -247,11 +244,11 @@ class GatewayTest extends TestCase
     {
         $purchaseResponse = $this->gateway()->purchase($this->params);
         $refundResponse = $this->gateway()->refund(
-            $purchaseResponse->transaction
+            $purchaseResponse->transaction(),
         );
 
-        $this->assertTrue($purchaseResponse->successful);
-        $this->assertTrue($refundResponse->successful);
+        $this->assertTrue($purchaseResponse->isSuccessful());
+        $this->assertTrue($refundResponse->isSuccessful());
     }
 
     /** @test */
@@ -261,15 +258,15 @@ class GatewayTest extends TestCase
 
         $purchaseResponse = $this->gateway()->purchase($this->params);
         $refundResponse = $this->gateway()->refund(
-            $purchaseResponse->transaction,
+            transaction: $purchaseResponse->transaction(),
             amount: $amount,
         );
 
-        $this->assertTrue($purchaseResponse->successful);
-        $this->assertTrue($refundResponse->successful);
+        $this->assertTrue($purchaseResponse->isSuccessful());
+        $this->assertTrue($refundResponse->isSuccessful());
         $this->assertSame(
             $amount,
-            $refundResponse->receipt()->read('amount')
+            $refundResponse->receipt()->read('amount'),
         );
     }
 
@@ -278,11 +275,11 @@ class GatewayTest extends TestCase
     {
         $preauthResponse = $this->gateway()->preauth($this->params);
         $captureResponse = $this->gateway()->capture(
-            $preauthResponse->transaction
+            $preauthResponse->transaction()
         );
 
-        $this->assertTrue($preauthResponse->successful);
-        $this->assertTrue($captureResponse->successful);
+        $this->assertTrue($preauthResponse->isSuccessful());
+        $this->assertTrue($captureResponse->isSuccessful());
     }
 
     /** @test */
@@ -292,15 +289,15 @@ class GatewayTest extends TestCase
 
         $preauth = $this->gateway()->preauth($this->params);
         $capture = $this->gateway()->capture(
-            $preauth->transaction,
+            transaction: $preauth->transaction(),
             amount: $amount
         );
 
-        $this->assertTrue($preauth->successful);
-        $this->assertTrue($capture->successful);
+        $this->assertTrue($preauth->isSuccessful());
+        $this->assertTrue($capture->isSuccessful());
         $this->assertSame(
             $amount,
-            $capture->receipt()->read('amount')
+            $capture->receipt()->read('amount'),
         );
     }
 

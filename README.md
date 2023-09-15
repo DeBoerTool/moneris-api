@@ -494,8 +494,6 @@ AVS_POSTAL_CODE = -10;
 AVS_ADDRESS     = -11;
 AVS_NO_MATCH    = -12;
 AVS_TIMEOUT     = -13;
-
-POST_FRAUD = -22;
 ```
 
 #### Success

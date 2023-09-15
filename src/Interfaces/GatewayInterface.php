@@ -53,4 +53,22 @@ interface GatewayInterface
         string|Transaction $transaction,
         string|null $order = null
     ): Response;
+
+    /**
+     * @return list<string>
+     */
+    public function getValidAvsCodes(): array;
+
+    public function hasAvsEnabled(): bool;
+
+    public function isValidAvsCode(string $code): bool;
+
+    /**
+     * @return list<string>
+     */
+    public function getValidCvdCodes(): array;
+
+    public function hasCvdEnabled(): bool;
+
+    public function isValidCvdCode(string $code): bool;
 }

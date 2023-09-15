@@ -86,9 +86,9 @@ class VaultTest extends TestCase
         $vault = new Vault($this->id, $this->token, $this->environment);
 
         $this->assertEquals(Vault::class, get_class($vault));
-        $this->assertObjectHasAttribute('id', $vault);
-        $this->assertObjectHasAttribute('token', $vault);
-        $this->assertObjectHasAttribute('environment', $vault);
+        $this->assertObjectHasProperty('id', $vault);
+        $this->assertObjectHasProperty('token', $vault);
+        $this->assertObjectHasProperty('environment', $vault);
     }
 
     /** @test */
@@ -97,9 +97,9 @@ class VaultTest extends TestCase
         $vault = Vault::create($this->id, $this->token, $this->environment);
 
         $this->assertEquals(Vault::class, get_class($vault));
-        $this->assertObjectHasAttribute('id', $vault);
-        $this->assertObjectHasAttribute('token', $vault);
-        $this->assertObjectHasAttribute('environment', $vault);
+        $this->assertObjectHasProperty('id', $vault);
+        $this->assertObjectHasProperty('token', $vault);
+        $this->assertObjectHasProperty('environment', $vault);
     }
 
     /** @test */
@@ -108,7 +108,7 @@ class VaultTest extends TestCase
         $response = $this->vault->add($this->card);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertNotNull($receipt->read('key'));
     }
 
@@ -127,7 +127,7 @@ class VaultTest extends TestCase
         $response = $this->vault->add($card);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertNotNull($receipt->read('key'));
         $this->assertEquals($params['id'], $receipt->read('data')['customer_id']);
         $this->assertEquals($params['phone'], $receipt->read('data')['phone']);
@@ -136,22 +136,27 @@ class VaultTest extends TestCase
     }
 
     /** @test */
-    public function it_can_update_a_credit_card_in_the_moneris_vault_and_returns_a_data_key_for_storage()
+    public function updating_a_card_and_getting_the_provided_data_key(): void
     {
         $response = $this->vault->add($this->card);
         $key = $response->receipt()->read('key');
 
-        $this->assertEquals('2012', $response->transaction->params['expdate']);
+        $this->assertSame(
+            '2012',
+            $response->transaction()->params['expdate'],
+        );
 
         $this->card->expiry = '2112';
 
         $response = $this->vault->update($this->card, $key);
-        $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
-        $this->assertNotNull($receipt->read('key'));
-        $this->assertEquals($key, $receipt->read('key'));
-        $this->assertEquals('2112', $response->transaction->params['expdate']);
+        $this->assertTrue($response->isSuccessful());
+        $this->assertNotNull($response->receipt()->read('key'));
+        $this->assertSame($key, $response->receipt()->read('key'));
+        $this->assertSame(
+            '2112',
+            $response->transaction()->params['expdate'],
+        );
     }
 
     /** @test */
@@ -174,7 +179,7 @@ class VaultTest extends TestCase
         $response = $this->vault->update($this->card, $key);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertNotNull($receipt->read('key'));
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals('example2@email.com', $receipt->read('data')['email']);
@@ -189,7 +194,7 @@ class VaultTest extends TestCase
         $response = $this->vault->delete($key);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertNotNull($receipt->read('key'));
         $this->assertEquals($key, $receipt->read('key'));
     }
@@ -206,10 +211,10 @@ class VaultTest extends TestCase
             'expdate' => '2012',
         ]);
 
-        $response = $this->vault->tokenize($response->transaction);
+        $response = $this->vault->tokenize($response->transaction());
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertNotNull($receipt->read('key'));
     }
 
@@ -224,7 +229,7 @@ class VaultTest extends TestCase
         $beginning = substr($this->visa, 0, 4);
         $end = substr($this->visa, -4, 4);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertNotNull($receipt->read('key'));
         $this->assertEquals('12', $receipt->read('data')['expiry_date']['month']);
         $this->assertEquals('20', $receipt->read('data')['expiry_date']['year']);
@@ -255,7 +260,7 @@ class VaultTest extends TestCase
         $response = $processor->process($transaction);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertGreaterThan(0, count($receipt->read('data')));
 
         /** @var \CraigPaul\Moneris\Response $card */
@@ -281,7 +286,7 @@ class VaultTest extends TestCase
         $response = $this->vault->purchase($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -301,7 +306,7 @@ class VaultTest extends TestCase
         $response = $this->vault->purchase($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -322,7 +327,7 @@ class VaultTest extends TestCase
         $response = $vault->purchase($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -345,7 +350,7 @@ class VaultTest extends TestCase
         $response = $vault->purchase($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -363,7 +368,7 @@ class VaultTest extends TestCase
         $response = $this->vault->preauth($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -383,7 +388,7 @@ class VaultTest extends TestCase
         $response = $this->vault->preauth($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -404,7 +409,7 @@ class VaultTest extends TestCase
         $response = $vault->preauth($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -427,7 +432,7 @@ class VaultTest extends TestCase
         $response = $vault->preauth($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
         $this->assertEquals($key, $receipt->read('key'));
         $this->assertEquals(true, $receipt->read('complete'));
     }
@@ -443,11 +448,11 @@ class VaultTest extends TestCase
         ]);
 
         $response = $this->vault->preauth($params);
-        $response = $this->vault->capture($response->transaction);
+        $response = $this->vault->capture($response->transaction());
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
-        $this->assertEquals(true, $receipt->read('complete'));
+        $this->assertTrue($response->isSuccessful());
+        $this->assertTrue($receipt->read('complete'));
     }
 
     /** @test */
@@ -480,9 +485,9 @@ class VaultTest extends TestCase
         $response = $vault->purchase($params);
         $receipt = $response->receipt();
 
-        $this->assertTrue($response->successful);
-        $this->assertEquals($key, $receipt->read('key'));
-        $this->assertEquals(true, $receipt->read('complete'));
+        $this->assertTrue($response->isSuccessful());
+        $this->assertSame($key, $receipt->read('key'));
+        $this->assertTrue($receipt->read('complete'));
         $this->assertNotEmpty($receipt->read('issuer_id'));
     }
 }
