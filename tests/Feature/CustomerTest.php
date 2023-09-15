@@ -19,7 +19,7 @@ class CustomerTest extends TestCase
     ];
 
     /** @test */
-    public function instantiation (): void
+    public function instantiation(): void
     {
         $customer = new Customer();
 
@@ -28,7 +28,7 @@ class CustomerTest extends TestCase
     }
 
     /** @test */
-    public function static_constructor (): void
+    public function static_constructor(): void
     {
         $customer = Customer::create();
 
@@ -37,7 +37,7 @@ class CustomerTest extends TestCase
     }
 
     /** @test */
-    public function getting_customer_data (): void
+    public function getting_customer_data(): void
     {
         $params = [
             'id' => uniqid('customer-', true),
@@ -57,7 +57,7 @@ class CustomerTest extends TestCase
     }
 
     /** @test */
-    public function failing_to_get_customer_data (): void
+    public function failing_to_get_customer_data(): void
     {
         $customer = Customer::create();
 
@@ -69,7 +69,7 @@ class CustomerTest extends TestCase
     }
 
     /** @test */
-    public function setting_data (): void
+    public function setting_data(): void
     {
         $customer = Customer::create();
 

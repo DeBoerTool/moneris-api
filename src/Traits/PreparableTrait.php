@@ -6,11 +6,8 @@ trait PreparableTrait
 {
     /**
      * Prepare the receipt data.
-     * @param $data
-     * @param array $params
-     * @return array
      */
-    protected function prepare ($data, array $params): array
+    protected function prepare($data, array $params): array
     {
         $array = [];
 
@@ -22,7 +19,7 @@ trait PreparableTrait
                 $resolves = $data->xpath('//ResolveData');
 
                 foreach ($resolves as $index => $resolve) {
-                    $resolves[$index] = array_map('strval', (array)$resolve);
+                    $resolves[$index] = array_map('strval', (array) $resolve);
                 }
 
                 $array[$property] = $resolves;
@@ -40,13 +37,13 @@ trait PreparableTrait
                                 ? (is_string($array[$property])
                                     ? $array[$property]
                                     : $array[$property]->__toString()
-                                  )
+                                )
                                 : null;
                             $array[$property] = isset($array[$property]) && !is_null($array[$property])
                                 ? ($array[$property] === 'true'
                                     ? true
                                     : false
-                                  )
+                                )
                                 : false;
 
                             break;
@@ -59,7 +56,7 @@ trait PreparableTrait
 
                             break;
                         case 'array':
-                            $array[$property] = (array)$array[$property];
+                            $array[$property] = (array) $array[$property];
                     }
                 }
 

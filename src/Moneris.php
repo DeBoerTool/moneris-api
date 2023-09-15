@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpPureAttributeCanBeAddedInspection */
+<?php
+
+/** @noinspection PhpPureAttributeCanBeAddedInspection */
 
 namespace CraigPaul\Moneris;
 
@@ -9,6 +11,7 @@ use CraigPaul\Moneris\Values\Environment;
 
 /**
  * CraigPaul\Moneris\Moneris
+ *
  * @property-read string $id
  * @property-read string $token
  * @property-read Environment $environment
@@ -27,35 +30,34 @@ class Moneris implements MonerisInterface
         protected bool $avs = false,
         protected bool $cvd = false,
         protected bool $cof = false,
-    ) {}
+    ) {
+    }
 
     /**
      * Get a new Gateway instance.
      */
-    public static function create (
+    public static function create(
         string $id,
         string $token,
         Environment $environment,
         bool $avs = false,
         bool $cvd = false,
         bool $cof = false,
-    ): GatewayInterface
-    {
+    ): GatewayInterface {
         return self::gateway($id, $token, $environment, $avs, $cvd, $cof);
     }
 
     /**
      * Get a new Gateway instance.
      */
-    public static function gateway (
+    public static function gateway(
         string $id,
         string $token,
         Environment $environment,
         bool $avs = false,
         bool $cvd = false,
         bool $cof = false,
-    ): GatewayInterface
-    {
+    ): GatewayInterface {
         return (new static($id, $token, $environment, $avs, $cvd, $cof))
             ->connect();
     }
@@ -63,15 +65,14 @@ class Moneris implements MonerisInterface
     /**
      * Get a new Vault instance.
      */
-    public static function vault (
+    public static function vault(
         string $id,
         string $token,
         Environment $environment,
         bool $avs = false,
         bool $cvd = false,
         bool $cof = false,
-    ): GatewayInterface
-    {
+    ): GatewayInterface {
         return self::gateway($id, $token, $environment, $avs, $cvd, $cof)
             ->vault();
     }
@@ -79,7 +80,7 @@ class Moneris implements MonerisInterface
     /**
      * Get a new Gateway instance.
      */
-    public function connect (): GatewayInterface
+    public function connect(): GatewayInterface
     {
         return new Gateway(
             $this->id,

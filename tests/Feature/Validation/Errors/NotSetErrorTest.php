@@ -11,7 +11,7 @@ use CraigPaul\Moneris\Validation\Errors\NotSetError;
 class NotSetErrorTest extends TestCase
 {
     /** @test */
-    public function getting_code_and_message (): void
+    public function getting_code_and_message(): void
     {
         $error = new NotSetError('my-field');
 

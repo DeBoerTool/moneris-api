@@ -34,16 +34,17 @@ class Customer
     /**
      * Static constructor
      */
-    public static function create (array $params = []): static
+    public static function create(array $params = []): static
     {
         return new static($params);
     }
 
     /**
      * Retrieve a property off of the class or from the data array.
+     *
      * @throws \InvalidArgumentException
      */
-    public function __get (string $property): mixed
+    public function __get(string $property): mixed
     {
         if (property_exists($this, $property)) {
             return $this->$property;

@@ -6,7 +6,7 @@ use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
 interface ValidatorInterface
 {
-    public function passes (): bool;
+    public function passes(): bool;
 
-    public function errors (): ErrorList;
+    public function errors(): ErrorList;
 }

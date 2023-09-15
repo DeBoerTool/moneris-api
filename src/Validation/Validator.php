@@ -9,7 +9,7 @@ use CraigPaul\Moneris\Validation\Errors\UnsupportedTransactionError;
 
 class Validator extends ValidatorAbstract
 {
-    protected function validate (): void
+    protected function validate(): void
     {
         if (!count($this->params)) {
             $this->errors->push(new EmptyError());
@@ -48,9 +48,9 @@ class Validator extends ValidatorAbstract
     /**
      * @throws \CraigPaul\Moneris\Exceptions\UnsupportedTransactionException
      */
-    protected function getValidator (): ValidatorInterface
+    protected function getValidator(): ValidatorInterface
     {
-        $fqcn = match($this->params['type']) {
+        $fqcn = match ($this->params['type']) {
             'res_get_expiring' => new PassthroughValidator(),
 
             'card_verification' => CardVerificationValidator::class,

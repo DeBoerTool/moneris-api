@@ -29,7 +29,7 @@ use CraigPaul\Moneris\Validation\ValidatorAbstract;
 class ValidatorTest extends TestCase
 {
     /** @test */
-    public function static_constructor (): void
+    public function static_constructor(): void
     {
         $validator = Validator::of($this->gateway(), []);
 
@@ -37,7 +37,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function failing_with_empty_params (): void
+    public function failing_with_empty_params(): void
     {
         $validator = new Validator($this->gateway(), []);
 
@@ -50,7 +50,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function failing_with_no_type_set (): void
+    public function failing_with_no_type_set(): void
     {
         $validator = new Validator($this->gateway(), ['foo' => 'bar']);
 
@@ -67,7 +67,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function failing_with_unsupported_type (): void
+    public function failing_with_unsupported_type(): void
     {
         $validator = new Validator($this->gateway(), ['type' => 'foo']);
 
@@ -80,7 +80,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function get_expiring (): void
+    public function get_expiring(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_get_expiring',
@@ -90,7 +90,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function card_verification (): void
+    public function card_verification(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'card_verification',
@@ -109,7 +109,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function card_verification_with_avs (): void
+    public function card_verification_with_avs(): void
     {
         $validator = new Validator($this->gateway(avs: true), [
             'type' => 'card_verification',
@@ -134,7 +134,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function card_verification_with_cvd (): void
+    public function card_verification_with_cvd(): void
     {
         $validator = new Validator($this->gateway(cvd: true), [
             'type' => 'card_verification',
@@ -150,14 +150,14 @@ class ValidatorTest extends TestCase
             'order_id' => '',
             'pan' => '',
             'expdate' => '',
-            'cvd' => ''
+            'cvd' => '',
         ]);
 
         $this->assertTrue($validator->passes());
     }
 
     /** @test */
-    public function card_verification_with_cof (): void
+    public function card_verification_with_cof(): void
     {
         $validator = new Validator($this->gateway(cof: true), [
             'type' => 'card_verification',
@@ -181,7 +181,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function purchase (): void
+    public function purchase(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'purchase',
@@ -201,7 +201,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function preauth (): void
+    public function preauth(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'preauth',
@@ -221,7 +221,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function preauth_with_avs (): void
+    public function preauth_with_avs(): void
     {
         $validator = new Validator($this->gateway(avs: true), [
             'type' => 'preauth',
@@ -240,15 +240,15 @@ class ValidatorTest extends TestCase
             'expdate' => '',
             'amount' => '',
             'avs_street_number' => '',
-	        'avs_street_name' => '',
-	        'avs_zipcode' => '',
+            'avs_street_name' => '',
+            'avs_zipcode' => '',
         ]);
 
         $this->assertTrue($validator->passes());
     }
 
     /** @test */
-    public function preauth_with_cvd (): void
+    public function preauth_with_cvd(): void
     {
         $validator = new Validator($this->gateway(cvd: true), [
             'type' => 'preauth',
@@ -273,7 +273,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function preauth_with_cof (): void
+    public function preauth_with_cof(): void
     {
         $validator = new Validator($this->gateway(cof: true), [
             'type' => 'preauth',
@@ -299,7 +299,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function tokenize (): void
+    public function tokenize(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_tokenize_cc',
@@ -318,7 +318,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function purchase_correction (): void
+    public function purchase_correction(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'purchasecorrection',
@@ -336,7 +336,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function completion (): void
+    public function completion(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'completion',
@@ -355,7 +355,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function refund (): void
+    public function refund(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'refund',
@@ -374,7 +374,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function add_card (): void
+    public function add_card(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_add_cc',
@@ -392,7 +392,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function add_card_with_cof (): void
+    public function add_card_with_cof(): void
     {
         $validator = new Validator($this->gateway(cof: true), [
             'type' => 'res_add_cc',
@@ -413,7 +413,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function update_card (): void
+    public function update_card(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_update_cc',
@@ -432,7 +432,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function update_card_with_cof (): void
+    public function update_card_with_cof(): void
     {
         $validator = new Validator($this->gateway(cof: true), [
             'type' => 'res_update_cc',
@@ -455,7 +455,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function delete_card (): void
+    public function delete_card(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_delete',
@@ -472,7 +472,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function lookup_full_card (): void
+    public function lookup_full_card(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_lookup_full',
@@ -489,7 +489,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function lookup_masked_card (): void
+    public function lookup_masked_card(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_lookup_masked',
@@ -506,7 +506,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function res_preauth (): void
+    public function res_preauth(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_preauth_cc',
@@ -525,7 +525,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function res_preauth_with_avs (): void
+    public function res_preauth_with_avs(): void
     {
         $validator = new Validator($this->gateway(avs: true), [
             'type' => 'res_preauth_cc',
@@ -550,7 +550,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function res_preauth_with_cvd (): void
+    public function res_preauth_with_cvd(): void
     {
         $validator = new Validator($this->gateway(cvd: true), [
             'type' => 'res_preauth_cc',
@@ -573,7 +573,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function res_preauth_with_cof (): void
+    public function res_preauth_with_cof(): void
     {
         $validator = new Validator($this->gateway(cof: true), [
             'type' => 'res_preauth_cc',
@@ -597,7 +597,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function passing_res_purchase (): void
+    public function passing_res_purchase(): void
     {
         $validator = new Validator($this->gateway(), [
             'type' => 'res_purchase_cc',

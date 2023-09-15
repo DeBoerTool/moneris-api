@@ -8,24 +8,24 @@ use IteratorAggregate;
 use JsonSerializable;
 use Traversable;
 
-class ErrorList implements IteratorAggregate, Countable, JsonSerializable
+class ErrorList implements Countable, IteratorAggregate, JsonSerializable
 {
     /** @var \CraigPaul\Moneris\Validation\Errors\ErrorInterface[] */
     private array $errors;
 
-    public function __construct (ErrorInterface ...$errors)
+    public function __construct(ErrorInterface ...$errors)
     {
         $this->errors = [];
 
         $this->push(...$errors);
     }
 
-    public static function of (ErrorInterface ...$errors): self
+    public static function of(ErrorInterface ...$errors): self
     {
         return new self(...$errors);
     }
 
-    public function push (ErrorInterface ...$errors): self
+    public function push(ErrorInterface ...$errors): self
     {
         foreach ($errors as $error) {
             $this->errors[] = $error;
@@ -34,37 +34,37 @@ class ErrorList implements IteratorAggregate, Countable, JsonSerializable
         return $this;
     }
 
-    public function merge (self $errors): self
+    public function merge(self $errors): self
     {
         return ErrorList::of(...$this->errors)->push(...$errors->all());
     }
 
-    public function has (): bool
+    public function has(): bool
     {
         return $this->count() > 0;
     }
 
-    public function get (int $index): ErrorInterface
+    public function get(int $index): ErrorInterface
     {
         return $this->errors[$index];
     }
 
-    public function all (): array
+    public function all(): array
     {
         return $this->errors;
     }
 
-    public function getIterator (): Traversable
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->errors);
     }
 
-    public function count (): int
+    public function count(): int
     {
         return count($this->errors);
     }
 
-    public function jsonSerialize ()
+    public function jsonSerialize()
     {
         return $this->errors;
     }

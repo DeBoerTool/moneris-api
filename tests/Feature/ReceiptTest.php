@@ -10,7 +10,7 @@ use CraigPaul\Moneris\Tests\TestCase;
 class ReceiptTest extends TestCase
 {
     /** @test */
-    public function serializing_to_json (): void
+    public function serializing_to_json(): void
     {
         $response = $this->gateway()->purchase([
             'order_id' => uniqid('1234-56789', true),

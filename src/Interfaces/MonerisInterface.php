@@ -7,5 +7,5 @@ interface MonerisInterface
     /**
      * Create and return a new Gateway instance.
      */
-    public function connect (): GatewayInterface;
+    public function connect(): GatewayInterface;
 }

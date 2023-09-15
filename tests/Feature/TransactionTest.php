@@ -12,10 +12,12 @@ use CraigPaul\Moneris\Transaction;
 class TransactionTest extends TestCase
 {
     protected GatewayInterface $gateway;
+
     protected array $params;
+
     protected Transaction $transaction;
 
-    public function setUp (): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -33,7 +35,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function getting_class_properties (): void
+    public function getting_class_properties(): void
     {
         $params = $this->params;
         $params['pan'] = $params['credit_card'];
@@ -44,7 +46,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function getting_the_amount (): void
+    public function getting_the_amount(): void
     {
         $tr = new Transaction($this->gateway(), $this->params);
 
@@ -56,7 +58,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function getting_the_transaction_number (): void
+    public function getting_the_transaction_number(): void
     {
         $tr = new Transaction($this->gateway(), []);
 
@@ -64,7 +66,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function getting_the_order_number (): void
+    public function getting_the_order_number(): void
     {
         $tr = new Transaction($this->gateway(), $this->params);
 
@@ -76,11 +78,11 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function formatting_expdate_from_month_and_year ():void
+    public function formatting_expdate_from_month_and_year(): void
     {
         $params = array_merge($this->params, [
             'expiry_month' => '12',
-            'expiry_year' => '20'
+            'expiry_year' => '20',
         ]);
 
         unset($params['expdate']);
@@ -91,7 +93,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function whitespace_removal (): void
+    public function whitespace_removal(): void
     {
         $transaction = new Transaction($this->gateway, [
             'type' => 'purchase',
@@ -113,20 +115,20 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function an_empty_key_is_removed (): void
+    public function an_empty_key_is_removed(): void
     {
         $tr = new Transaction($this->gateway(), array_merge($this->params, [
-            'key' => ''
+            'key' => '',
         ]));
 
         $this->assertFalse(isset($tr->params['key']));
     }
 
     /** @test */
-    public function description_key_is_renamed (): void
+    public function description_key_is_renamed(): void
     {
         $tr = new Transaction($this->gateway(), array_merge($this->params, [
-            'description' => 'my description'
+            'description' => 'my description',
         ]));
 
         $this->assertFalse(isset($tr->params['description']));
@@ -137,7 +139,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function parameter_validation (): void
+    public function parameter_validation(): void
     {
         $this->assertTrue($this->transaction->valid());
         $this->assertFalse($this->transaction->invalid());
@@ -149,7 +151,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function getting_xml (): void
+    public function getting_xml(): void
     {
         $xml = $this->transaction->toXml();
         $xml = simplexml_load_string($xml);

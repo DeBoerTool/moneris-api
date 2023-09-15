@@ -2,14 +2,15 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
-use CraigPaul\Moneris\Tests\TestCase;
-use Faker\Factory as Faker;
-use CraigPaul\Moneris\Vault;
+use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\CreditCard;
+use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
+use CraigPaul\Moneris\Tests\TestCase;
 use CraigPaul\Moneris\Transaction;
+use CraigPaul\Moneris\Vault;
+use Faker\Factory as Faker;
+
 use function mock_handler;
 
 /**
@@ -18,13 +19,18 @@ use function mock_handler;
 class VaultTest extends TestCase
 {
     protected array $billing;
+
     protected CreditCard $card;
+
     protected array $customer;
+
     protected array $items;
+
     protected array $params;
+
     protected Vault $vault;
 
-    public function setUp (): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -63,7 +69,7 @@ class VaultTest extends TestCase
                 'quantity' => '1',
                 'product_code' => $faker->isbn10,
                 'extended_amount' => $faker->randomFloat(2, 0.01, 999.99),
-            ]
+            ],
         ];
         $this->customer = [
             'email' => 'example@email.com',
@@ -75,7 +81,7 @@ class VaultTest extends TestCase
     }
 
     /** @test */
-    public function instantiating (): void
+    public function instantiating(): void
     {
         $vault = new Vault($this->id, $this->token, $this->environment);
 
@@ -86,7 +92,7 @@ class VaultTest extends TestCase
     }
 
     /** @test */
-    public function static_constructor (): void
+    public function static_constructor(): void
     {
         $vault = Vault::create($this->id, $this->token, $this->environment);
 
@@ -97,7 +103,7 @@ class VaultTest extends TestCase
     }
 
     /** @test */
-    public function adding_a_credit_card_and_getting_a_data_key (): void
+    public function adding_a_credit_card_and_getting_a_data_key(): void
     {
         $response = $this->vault->add($this->card);
         $receipt = $response->receipt();
@@ -456,7 +462,7 @@ class VaultTest extends TestCase
             'credit_card' => $this->visa,
             'expdate' => '2012',
             'payment_indicator' => 'C',
-            'payment_information' => '0'
+            'payment_information' => '0',
         ];
 
         $response = $gateway->preauth($preauth_params);
@@ -468,7 +474,7 @@ class VaultTest extends TestCase
             'data_key' => $key,
             'payment_indicator' => 'U',
             'payment_information' => '2',
-            'issuer_id' => $issuer_id
+            'issuer_id' => $issuer_id,
         ]);
 
         $response = $vault->purchase($params);

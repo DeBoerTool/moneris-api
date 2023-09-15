@@ -25,7 +25,7 @@ class CardVerificationValidator extends ValidatorAbstract
         'payment_information',
     ];
 
-    protected function validate (): void
+    protected function validate(): void
     {
         foreach ($this->mustBeSet as $key) {
             $this->mustBeSet($key);
