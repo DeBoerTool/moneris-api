@@ -2,12 +2,12 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 
 /**
  * @covers \CraigPaul\Moneris\Receipt
  */
-class ReceiptTest extends TestCase
+class ReceiptTest extends FeatureTestCase
 {
     /** @test */
     public function serializing_to_json(): void

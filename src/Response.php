@@ -1,48 +1,19 @@
 <?php
 
-/** @noinspection PhpUnused */
-
 namespace CraigPaul\Moneris;
 
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
-/**
- * CraigPaul\Moneris\Response
- *
- * @property array $errors
- * @property bool $failedAvs
- * @property bool $failedCvd
- * @property null|int $status
- * @property bool $successful
- * @property \CraigPaul\Moneris\Transaction $transaction
- */
 class Response
 {
-    /**
-     * Determine if we have failed Address Verification Service verification.
-     */
-    protected bool $failedAvs = false;
-
-    /**
-     * Determine if we have failed Card Validation Digits verification.
-     */
-    protected bool $failedCvd = false;
-
     /**
      * The error, or null if no error has occurred.
      */
     protected ResponseErrorEnum|null $error = null;
 
-    /**
-     * Determines whether the response was successful.
-     */
-    protected bool $successful = true;
-
     public function __construct(protected readonly Transaction $transaction)
     {
-        $this->errors = new ErrorList();
     }
 
     public function getTransaction(): Transaction

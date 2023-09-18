@@ -3,13 +3,13 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Customer;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use InvalidArgumentException;
 
 /**
  * @covers \CraigPaul\Moneris\Customer
  */
-class CustomerTest extends TestCase
+class CustomerTest extends FeatureTestCase
 {
     protected array $rawData = [
         'id' => null,

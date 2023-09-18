@@ -6,7 +6,7 @@ use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\Processor;
 use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Vault;
 use Faker\Factory as Faker;
@@ -16,7 +16,7 @@ use function mock_handler;
 /**
  * @covers \CraigPaul\Moneris\Vault
  */
-class VaultTest extends TestCase
+class VaultTest extends FeatureTestCase
 {
     protected array $billing;
 

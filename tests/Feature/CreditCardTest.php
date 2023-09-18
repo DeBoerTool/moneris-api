@@ -4,13 +4,13 @@ namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Customer;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Values\Crypt;
 
 /**
  * @covers \CraigPaul\Moneris\CreditCard
  */
-class CreditCardTest extends TestCase
+class CreditCardTest extends FeatureTestCase
 {
     protected CreditCard $card;
 

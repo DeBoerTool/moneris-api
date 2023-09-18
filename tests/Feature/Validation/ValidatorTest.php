@@ -2,7 +2,7 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation;
 
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
 use CraigPaul\Moneris\Validation\Errors\UnsupportedTransactionError;
@@ -26,7 +26,7 @@ use CraigPaul\Moneris\Validation\ValidatorAbstract;
  * @covers \CraigPaul\Moneris\Validation\RefundValidator
  * @covers \CraigPaul\Moneris\Validation\UpdateCardValidator
  */
-class ValidatorTest extends TestCase
+class ValidatorTest extends FeatureTestCase
 {
     /** @test */
     public function static_constructor(): void

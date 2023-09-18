@@ -5,7 +5,7 @@ namespace CraigPaul\Moneris\Tests\Feature;
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
@@ -13,7 +13,7 @@ use GuzzleHttp\Client;
 /**
  * @covers \CraigPaul\Moneris\Processor
  */
-class ProcessorTest extends TestCase
+class ProcessorTest extends FeatureTestCase
 {
     protected GatewayInterface $gateway;
 

@@ -3,14 +3,14 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
 /**
  * @covers \CraigPaul\Moneris\Transaction
  */
-class TransactionTest extends TestCase
+class TransactionTest extends FeatureTestCase
 {
     protected GatewayInterface $gateway;
 

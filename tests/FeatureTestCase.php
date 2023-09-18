@@ -6,8 +6,9 @@ use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Interfaces\MonerisInterface;
 use CraigPaul\Moneris\Moneris;
 use CraigPaul\Moneris\Values\Environment;
+use PHPUnit\Framework\TestCase;
 
-class TestCase extends \PHPUnit\Framework\TestCase
+class FeatureTestCase extends TestCase
 {
     protected Environment $environment;
 

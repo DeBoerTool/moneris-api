@@ -190,10 +190,10 @@ Verify the card first. Using this method, there is one additional caveat: Your v
 ```php
 $response = $gateway->verify($params);
 
-if ($response->successful && !$response->failedAvs && !$response->failedCvd) {
+if ($response->isSuccessful()) {
     $response = $gateway->purchase($params);
     
-    if ($response->successful) {
+    if ($response->isSuccessful()) {
         $receipt = $response->receipt();
     } else {
         $errors = $response->errors;
@@ -206,14 +206,15 @@ Void the transaction.
 ```php
 $response = $gateway->purchase($params);
 
-if ($response->successful && ($response->failedAvs || $response->failedCvd)) {
-    $errors = $response->errors;
-    $response = $gateway->void($response->transaction);
-} elseif (!$response->successful) {
-    $errors = $response->errors;
-} else {
-    $receipt = $response->receipt();
-}
+// TODO: rewrite this.
+//if ($response->successful && ($response->failedAvs || $response->failedCvd)) {
+//    $errors = $response->errors;
+//    $response = $gateway->void($response->transaction);
+//} elseif (!$response->successful) {
+//    $errors = $response->errors;
+//} else {
+//    $receipt = $response->receipt();
+//}
 ```
 
 ### Credential On File

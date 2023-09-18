@@ -2,14 +2,14 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Vault;
 use Faker\Factory as Faker;
 
 /**
  * @covers \CraigPaul\Moneris\Gateway
  */
-class GatewayTest extends TestCase
+class GatewayTest extends FeatureTestCase
 {
     /**
      * The billing / shipping info for customer info requests.

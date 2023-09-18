@@ -2,10 +2,10 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Values;
 
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Values\Environment;
 
-class EnvironmentTest extends TestCase
+class EnvironmentTest extends FeatureTestCase
 {
     /** @test */
     public function testing_environment(): void

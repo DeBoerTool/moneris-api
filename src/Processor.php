@@ -2,7 +2,7 @@
 
 namespace CraigPaul\Moneris;
 
-use CraigPaul\Moneris\Enums\ResponseErrorEnum;
+use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
 use CraigPaul\Moneris\Values\Environment;
 use GuzzleHttp\Client;
 use SimpleXMLElement;
@@ -55,15 +55,12 @@ class Processor
     public function process(Transaction $transaction): Response
     {
         if ($transaction->invalid()) {
-            $response = new Response($transaction);
-            $response->setError(ResponseErrorEnum::InvalidTransactionData);
-
-            return $response;
+            throw new InvalidTransactionException($transaction);
         }
 
-        $response = $this->submit($transaction);
+        $xml = $this->submit($transaction);
 
-        return $transaction->validate($response);
+        return $transaction->validate($xml);
     }
 
     /**

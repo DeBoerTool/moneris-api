@@ -6,7 +6,7 @@ use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
 use CraigPaul\Moneris\Response;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
@@ -14,7 +14,7 @@ use GuzzleHttp\Client;
 /**
  * @covers \CraigPaul\Moneris\Response
  */
-class ResponseTest extends TestCase
+class ResponseTest extends FeatureTestCase
 {
     protected GatewayInterface $gateway;
 
