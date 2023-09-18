@@ -531,7 +531,7 @@ Moneris API is open-sourced software licensed under the [MIT license](https://op
 
 [ico-version]: https://img.shields.io/github/v/release/DeBoerTool/moneris-api
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg
-[ico-build]: https://img.shields.io/github/workflow/status/DeBoerTool/moneris-api/PHPUnit%20Checks
+[ico-build]: https://img.shields.io/github/workflow/status/DeBoerTool/moneris-api/phpunit.yml?branch=trunk
 [ico-downloads]: https://img.shields.io/packagist/dt/dbt/moneris-api.svg
 
 [link-packagist]: https://packagist.org/packages/dbt/moneris-api
