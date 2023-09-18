@@ -93,7 +93,7 @@ class GatewayTest extends FeatureTestCase
         ]);
 
         $response = $this->gateway()->purchase($params);
-        $receipt = $response->receipt();
+        $receipt = $response->getReceipt();
 
         $this->assertTrue($response->isSuccessful());
         $this->assertTrue($receipt->read('complete'));
@@ -147,7 +147,7 @@ class GatewayTest extends FeatureTestCase
         ]);
 
         $response = $this->gateway()->preauth($params);
-        $receipt = $response->receipt();
+        $receipt = $response->getReceipt();
 
         $this->assertTrue($response->isSuccessful());
         $this->assertTrue($receipt->read('complete'));
@@ -227,7 +227,7 @@ class GatewayTest extends FeatureTestCase
     {
         $purchaseResponse = $this->gateway()->purchase($this->params);
         $voidResponse = $this->gateway()->void(
-            $purchaseResponse->transaction(),
+            $purchaseResponse->getTransaction(),
         );
 
         $this->assertTrue($voidResponse->isSuccessful());
@@ -238,7 +238,7 @@ class GatewayTest extends FeatureTestCase
     {
         $purchaseResponse = $this->gateway()->purchase($this->params);
         $refundResponse = $this->gateway()->refund(
-            $purchaseResponse->transaction(),
+            $purchaseResponse->getTransaction(),
         );
 
         $this->assertTrue($purchaseResponse->isSuccessful());
@@ -252,7 +252,7 @@ class GatewayTest extends FeatureTestCase
 
         $purchaseResponse = $this->gateway()->purchase($this->params);
         $refundResponse = $this->gateway()->refund(
-            transaction: $purchaseResponse->transaction(),
+            transaction: $purchaseResponse->getTransaction(),
             amount: $amount,
         );
 
@@ -260,7 +260,7 @@ class GatewayTest extends FeatureTestCase
         $this->assertTrue($refundResponse->isSuccessful());
         $this->assertSame(
             $amount,
-            $refundResponse->receipt()->read('amount'),
+            $refundResponse->getReceipt()->read('amount'),
         );
     }
 
@@ -269,7 +269,7 @@ class GatewayTest extends FeatureTestCase
     {
         $preauthResponse = $this->gateway()->preauth($this->params);
         $captureResponse = $this->gateway()->capture(
-            $preauthResponse->transaction()
+            $preauthResponse->getTransaction()
         );
 
         $this->assertTrue($preauthResponse->isSuccessful());
@@ -283,7 +283,7 @@ class GatewayTest extends FeatureTestCase
 
         $preauth = $this->gateway()->preauth($this->params);
         $capture = $this->gateway()->capture(
-            transaction: $preauth->transaction(),
+            transaction: $preauth->getTransaction(),
             amount: $amount
         );
 
@@ -291,7 +291,7 @@ class GatewayTest extends FeatureTestCase
         $this->assertTrue($capture->isSuccessful());
         $this->assertSame(
             $amount,
-            $capture->receipt()->read('amount'),
+            $capture->getReceipt()->read('amount'),
         );
     }
 

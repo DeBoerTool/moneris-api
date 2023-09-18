@@ -82,4 +82,9 @@ enum ResponseErrorEnum: int
     {
         return in_array($this->value, [-9, -10, -11, -12, -13]);
     }
+
+    public function isAvsOrCvd(): bool
+    {
+        return $this->isCvd() || $this->isAvs();
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation\Errors;
 
-use CraigPaul\Moneris\Tests\Support\Stubs\ErrorStub;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\Tests\Support\Stubs\ErrorStub;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;

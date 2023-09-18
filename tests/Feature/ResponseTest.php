@@ -69,10 +69,10 @@ class ResponseTest extends FeatureTestCase
     {
         $response = $this->processor->process($this->transaction)->validate();
 
-        $this->assertNotNull($response->receipt());
+        $this->assertNotNull($response->getReceipt());
         $this->assertSame(
             $this->params['order_id'],
-            $response->receipt()->read('id'),
+            $response->getReceipt()->read('id'),
         );
     }
 
@@ -81,7 +81,7 @@ class ResponseTest extends FeatureTestCase
     {
         $response = new Response(new Transaction($this->gateway(), []));
 
-        $this->assertNull($response->receipt());
+        $this->assertNull($response->getReceipt());
     }
 
     /** @test */

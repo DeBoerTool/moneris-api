@@ -20,10 +20,10 @@ class ReceiptTest extends FeatureTestCase
         ]);
 
         $receiptData = json_decode(
-            json_encode($response->receipt()),
+            json_encode($response->getReceipt()),
             associative: true
         );
 
-        $this->assertSame($response->receipt()->getData(), $receiptData);
+        $this->assertSame($response->getReceipt()->getData(), $receiptData);
     }
 }

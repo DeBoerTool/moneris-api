@@ -7,7 +7,7 @@
  
 ## Requirements
 
-PHP 8.0 and up.
+PHP 8.1 and up.
 
 ## Composer
 
@@ -204,17 +204,12 @@ if ($response->isSuccessful()) {
 Void the transaction.
 
 ```php
+/** @var \CraigPaul\Moneris\Response $response */
 $response = $gateway->purchase($params);
 
-// TODO: rewrite this.
-//if ($response->successful && ($response->failedAvs || $response->failedCvd)) {
-//    $errors = $response->errors;
-//    $response = $gateway->void($response->transaction);
-//} elseif (!$response->successful) {
-//    $errors = $response->errors;
-//} else {
-//    $receipt = $response->receipt();
-//}
+if (!$response->isSuccessful() && $response->getError()->isAvsOrCvd()) {
+    $response = $gateway->void($response->getTransaction());
+}
 ```
 
 ### Credential On File

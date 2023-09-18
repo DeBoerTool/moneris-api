@@ -2,7 +2,6 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
