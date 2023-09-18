@@ -2,10 +2,10 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\Response;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
@@ -13,7 +13,7 @@ use GuzzleHttp\Client;
 /**
  * @covers \CraigPaul\Moneris\Processor
  */
-class ProcessorTest extends TestCase
+class ProcessorTest extends FeatureTestCase
 {
     protected GatewayInterface $gateway;
 
@@ -43,34 +43,33 @@ class ProcessorTest extends TestCase
     }
 
     /** @test */
-    public function it_can_instantiate_via_the_constructor()
+    public function instantiation(): void
     {
         $processor = new Processor(new Client());
 
-        $this->assertEquals(Processor::class, get_class($processor));
+        $this->assertInstanceOf(Processor::class, $processor);
     }
 
     /** @test */
-    public function it_responds_to_an_invalid_transaction_with_the_proper_code_and_status()
+    public function invalid_transaction_data_throws(): void
     {
         $transaction = new Transaction($this->gateway);
 
-        $response = $this->processor->process($transaction);
+        $this->expectException(InvalidTransactionException::class);
 
-        $this->assertFalse($response->successful);
-        $this->assertEquals(Response::INVALID_TRANSACTION_DATA, $response->status);
+        $this->processor->process($transaction);
     }
 
     /** @test */
-    public function it_can_submit_a_proper_request_to_the_moneris_api()
+    public function submitting_successfully(): void
     {
         $response = $this->processor->process($this->transaction);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
-    public function it_can_submit_a_avs_secured_request_to_the_moneris_api()
+    public function it_can_submit_a_avs_secured_request_to_the_moneris_api(): void
     {
         $gateway = $this->gateway(avs: true);
         $response = $gateway->purchase([
@@ -83,11 +82,11 @@ class ProcessorTest extends TestCase
             'avs_zipcode' => 'X0X0X0',
         ]);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
-    public function it_can_submit_a_cvd_secured_request_to_the_moneris_api()
+    public function it_can_submit_a_cvd_secured_request_to_the_moneris_api(): void
     {
         $gateway = $this->gateway(cvd: true);
         $response = $gateway->purchase([
@@ -98,6 +97,6 @@ class ProcessorTest extends TestCase
             'cvd' => '111',
         ]);
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 }

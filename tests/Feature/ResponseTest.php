@@ -2,11 +2,11 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\Receipt;
 use CraigPaul\Moneris\Response;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
@@ -14,7 +14,7 @@ use GuzzleHttp\Client;
 /**
  * @covers \CraigPaul\Moneris\Response
  */
-class ResponseTest extends TestCase
+class ResponseTest extends FeatureTestCase
 {
     protected GatewayInterface $gateway;
 
@@ -50,21 +50,8 @@ class ResponseTest extends TestCase
     {
         $response = new Response($this->transaction);
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertSame(null, $response->status);
-        $this->assertSame(true, $response->successful);
-        $this->assertSame($this->transaction, $response->transaction);
-    }
-
-    /** @test */
-    public function static_constructor(): void
-    {
-        $response = Response::create($this->transaction);
-
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertSame(null, $response->status);
-        $this->assertSame(true, $response->successful);
-        $this->assertSame($this->transaction, $response->transaction);
+        $this->assertTrue($response->isSuccessful());
+        $this->assertSame($this->transaction, $response->getTransaction());
     }
 
     /** @test */
@@ -74,22 +61,18 @@ class ResponseTest extends TestCase
 
         $response = $response->validate();
 
-        $this->assertTrue($response->successful);
+        $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
     public function getting_a_receipt_for_a_successful_response(): void
     {
-        $response = $this->processor->process($this->transaction);
+        $response = $this->processor->process($this->transaction)->validate();
 
-        /** @var \CraigPaul\Moneris\Response $response */
-        $response = $response->validate();
-        $receipt = $response->receipt();
-
-        $this->assertInstanceOf(Receipt::class, $receipt);
+        $this->assertNotNull($response->getReceipt());
         $this->assertSame(
             $this->params['order_id'],
-            $receipt->read('id'),
+            $response->getReceipt()->read('id'),
         );
     }
 
@@ -98,7 +81,7 @@ class ResponseTest extends TestCase
     {
         $response = new Response(new Transaction($this->gateway(), []));
 
-        $this->assertNull($response->receipt());
+        $this->assertNull($response->getReceipt());
     }
 
     /** @test */
@@ -108,10 +91,10 @@ class ResponseTest extends TestCase
             'expdate' => 'foo',
         ]);
 
-        $this->assertFalse($response->successful);
+        $this->assertFalse($response->isSuccessful());
         $this->assertEquals(
-            Response::INVALID_EXPIRY_DATE,
-            $response->status
+            ResponseErrorEnum::InvalidExpiryDate,
+            $response->getError(),
         );
     }
 
@@ -122,8 +105,11 @@ class ResponseTest extends TestCase
             'credit_card' => '1234',
         ]);
 
-        $this->assertFalse($response->successful);
-        $this->assertEquals(Response::INVALID_CARD, $response->status);
+        $this->assertFalse($response->isSuccessful());
+        $this->assertEquals(
+            ResponseErrorEnum::InvalidCard,
+            $response->getError(),
+        );
     }
 
     protected function processTransaction($params = []): Response

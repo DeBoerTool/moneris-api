@@ -41,6 +41,36 @@ class Gateway implements GatewayInterface
     ) {
     }
 
+    public function getValidAvsCodes(): array
+    {
+        return $this->avsCodes;
+    }
+
+    public function getValidCvdCodes(): array
+    {
+        return $this->cvdCodes;
+    }
+
+    public function hasAvsEnabled(): bool
+    {
+        return $this->avs;
+    }
+
+    public function hasCvdEnabled(): bool
+    {
+        return $this->cvd;
+    }
+
+    public function isValidAvsCode(string $code): bool
+    {
+        return in_array($code, $this->getValidAvsCodes());
+    }
+
+    public function isValidCvdCode(string $code): bool
+    {
+        return in_array($code, $this->getValidCvdCodes());
+    }
+
     /**
      * Capture a pre-authorized transaction.
      *

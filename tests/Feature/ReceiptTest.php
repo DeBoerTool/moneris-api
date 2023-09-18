@@ -2,12 +2,12 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 
 /**
  * @covers \CraigPaul\Moneris\Receipt
  */
-class ReceiptTest extends TestCase
+class ReceiptTest extends FeatureTestCase
 {
     /** @test */
     public function serializing_to_json(): void
@@ -20,10 +20,10 @@ class ReceiptTest extends TestCase
         ]);
 
         $receiptData = json_decode(
-            json_encode($response->receipt()),
+            json_encode($response->getReceipt()),
             associative: true
         );
 
-        $this->assertSame($response->receipt()->getData(), $receiptData);
+        $this->assertSame($response->getReceipt()->getData(), $receiptData);
     }
 }

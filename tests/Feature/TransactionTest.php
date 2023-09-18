@@ -3,13 +3,14 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
+use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
 /**
  * @covers \CraigPaul\Moneris\Transaction
  */
-class TransactionTest extends TestCase
+class TransactionTest extends FeatureTestCase
 {
     protected GatewayInterface $gateway;
 
@@ -43,6 +44,17 @@ class TransactionTest extends TestCase
 
         $this->assertSame($this->gateway, $this->transaction->gateway);
         $this->assertSame($params, $this->transaction->params);
+    }
+
+    /** @test */
+    public function getting_the_error_list(): void
+    {
+        $this->assertInstanceOf(
+            ErrorList::class,
+            $this->transaction->getErrorList(),
+        );
+
+        $this->assertCount(0, $this->transaction->getErrorList());
     }
 
     /** @test */

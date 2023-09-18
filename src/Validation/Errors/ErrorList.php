@@ -6,9 +6,10 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use JsonSerializable;
+use Stringable;
 use Traversable;
 
-class ErrorList implements Countable, IteratorAggregate, JsonSerializable
+class ErrorList implements Countable, IteratorAggregate, JsonSerializable, Stringable
 {
     /** @var \CraigPaul\Moneris\Validation\Errors\ErrorInterface[] */
     private array $errors;
@@ -64,8 +65,16 @@ class ErrorList implements Countable, IteratorAggregate, JsonSerializable
         return count($this->errors);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->errors;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function __toString(): string
+    {
+        return json_encode($this->jsonSerialize(), JSON_THROW_ON_ERROR);
     }
 }

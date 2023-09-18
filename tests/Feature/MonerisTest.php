@@ -4,14 +4,14 @@ namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Gateway;
 use CraigPaul\Moneris\Moneris;
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Vault;
 use InvalidArgumentException;
 
 /**
  * @covers \CraigPaul\Moneris\Moneris
  */
-class MonerisTest extends TestCase
+class MonerisTest extends FeatureTestCase
 {
     /** @test */
     public function instantiation(): void

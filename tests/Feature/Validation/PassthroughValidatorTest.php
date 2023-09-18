@@ -2,13 +2,13 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation;
 
-use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Validation\PassthroughValidator;
 
 /**
  * @covers \CraigPaul\Moneris\Validation\PassthroughValidator
  */
-class PassthroughValidatorTest extends TestCase
+class PassthroughValidatorTest extends FeatureTestCase
 {
     /** @test */
     public function passing_and_getting_error(): void

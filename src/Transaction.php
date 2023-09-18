@@ -36,6 +36,11 @@ class Transaction
         $this->errors = new ErrorList();
     }
 
+    public function getErrorList(): ErrorList
+    {
+        return $this->errors;
+    }
+
     /**
      * Retrieve the amount for the transaction. The is only available on
      * certain transaction types.
@@ -87,7 +92,7 @@ class Transaction
     {
         $this->response = $result;
 
-        $response = Response::create($this);
+        $response = new Response($this);
         $response->validate();
 
         return $response;
