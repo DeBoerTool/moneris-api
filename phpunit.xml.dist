@@ -2,33 +2,18 @@
 <phpunit
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-  backupGlobals="false"
-  backupStaticAttributes="false"
   bootstrap="vendor/autoload.php"
   colors="true"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  processIsolation="false"
-  stopOnError="false"
   stopOnFailure="true"
   verbose="true"
 >
-  <coverage
-    processUncoveredFiles="true"
-    includeUncoveredFiles="true"
-    ignoreDeprecatedCodeUnits="false"
-  >
+  <coverage processUncoveredFiles="true">
     <include>
       <directory suffix=".php">./src</directory>
     </include>
 
     <report>
-      <html
-        outputDirectory="reports/coverage/html"
-        lowUpperBound="50"
-        highLowerBound="90"
-      />
+      <html outputDirectory="reports/coverage/html"/>
     </report>
   </coverage>
 

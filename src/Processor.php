@@ -25,9 +25,9 @@ class Processor
     /**
      * Global error response to maintain consistency.
      */
-    protected string $error = "<?xml version=\"1.0\"?><response><receipt><ReceiptId>Global Error Receipt</ReceiptId><ReferenceNum>null</ReferenceNum><ResponseCode>null</ResponseCode><ISO>null</ISO> <AuthCode>null</AuthCode><TransTime>null</TransTime><TransDate>null</TransDate><TransType>null</TransType><Complete>false</Complete><Message>null</Message><TransAmount>null</TransAmount><CardType>null</CardType><TransID>null</TransID><TimedOut>null</TimedOut></receipt></response>";
+    protected string $error = '<?xml version="1.0"?><response><receipt><ReceiptId>Global Error Receipt</ReceiptId><ReferenceNum>null</ReferenceNum><ResponseCode>null</ResponseCode><ISO>null</ISO> <AuthCode>null</AuthCode><TransTime>null</TransTime><TransDate>null</TransDate><TransType>null</TransType><Complete>false</Complete><Message>null</Message><TransAmount>null</TransAmount><CardType>null</CardType><TransID>null</TransID><TimedOut>null</TimedOut></receipt></response>';
 
-    public function __construct (Client $client)
+    public function __construct(Client $client)
     {
         $this->client = $client;
     }
@@ -35,7 +35,7 @@ class Processor
     /**
      * Retrieve the API configuration.
      */
-    public function config (Environment|null $environment = null): array
+    public function config(Environment|null $environment = null): array
     {
         /**
          * @codeCoverageIgnore
@@ -51,7 +51,7 @@ class Processor
      * Determine if the request is valid. If so, process the transaction via
      * the Moneris API.
      */
-    public function process (Transaction $transaction): Response
+    public function process(Transaction $transaction): Response
     {
         if ($transaction->invalid()) {
             $response = new Response($transaction);
@@ -70,7 +70,7 @@ class Processor
     /**
      * Parse the global error response stub.
      */
-    protected function error (): SimpleXMLElement
+    protected function error(): SimpleXMLElement
     {
         return simplexml_load_string($this->error);
     }
@@ -78,20 +78,17 @@ class Processor
     /**
      * Set up and send the request to the Moneris API.
      *
-     * @param array $config
      * @param string $url
      * @param string $xml
-     *
-     * @return string
      */
-    protected function send (array $config, $url = '', $xml = ''): string
+    protected function send(array $config, $url = '', $xml = ''): string
     {
         $response = $this->client->post($url, [
             'body' => $xml,
             'headers' => [
-                'User-Agent' => $config['api_version']
+                'User-Agent' => $config['api_version'],
             ],
-            'timeout' => $config['timeout']
+            'timeout' => $config['timeout'],
         ]);
 
         return $response->getBody()->getContents();
@@ -100,15 +97,14 @@ class Processor
     /**
      * Submit the transaction to the Moneris API.
      *
-     * @param \CraigPaul\Moneris\Transaction $transaction
      *
      * @return \SimpleXMLElement
      */
-    protected function submit (Transaction $transaction)
+    protected function submit(Transaction $transaction)
     {
         $config = $this->config($transaction->gateway->environment);
 
-        $url = $config['protocol'].'://'.$config['host'].':'.$config['port'].$config['url'];
+        $url = $config['protocol'] . '://' . $config['host'] . ':' . $config['port'] . $config['url'];
 
         $xml = str_replace(' </', '</', $transaction->toXml());
 

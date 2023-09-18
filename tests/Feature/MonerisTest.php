@@ -2,11 +2,11 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Moneris;
 use CraigPaul\Moneris\Gateway;
-use InvalidArgumentException;
+use CraigPaul\Moneris\Moneris;
 use CraigPaul\Moneris\Tests\TestCase;
 use CraigPaul\Moneris\Vault;
+use InvalidArgumentException;
 
 /**
  * @covers \CraigPaul\Moneris\Moneris
@@ -14,7 +14,7 @@ use CraigPaul\Moneris\Vault;
 class MonerisTest extends TestCase
 {
     /** @test */
-    public function instantiation (): void
+    public function instantiation(): void
     {
         $moneris = $this->moneris();
 
@@ -23,7 +23,7 @@ class MonerisTest extends TestCase
     }
 
     /** @test */
-    public function instantiation_with_optional_params (): void
+    public function instantiation_with_optional_params(): void
     {
         $moneris = $this->moneris(avs: true);
 
@@ -45,7 +45,7 @@ class MonerisTest extends TestCase
     }
 
     /** @test */
-    public function getting_the_gateway_via_static_method (): void
+    public function getting_the_gateway_via_static_method(): void
     {
         $gateway = Moneris::create($this->id, $this->token, $this->environment);
 
@@ -54,7 +54,7 @@ class MonerisTest extends TestCase
     }
 
     /** @test */
-    public function getting_the_vault_via_static_method (): void
+    public function getting_the_vault_via_static_method(): void
     {
         $vault = Moneris::vault($this->id, $this->token, $this->environment);
 
@@ -75,7 +75,7 @@ class MonerisTest extends TestCase
     }
 
     /** @test */
-    public function getting_the_gateway ()
+    public function getting_the_gateway()
     {
         $moneris = $this->moneris();
 
@@ -85,7 +85,7 @@ class MonerisTest extends TestCase
         $this->assertPropertiesAreGettable($gateway);
     }
 
-    protected function assertPropertiesAreGettable (object $object): void
+    protected function assertPropertiesAreGettable(object $object): void
     {
         $this->assertSame($this->id, $object->id);
         $this->assertSame($this->token, $object->token);

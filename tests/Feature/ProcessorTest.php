@@ -3,12 +3,12 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Tests\TestCase;
-use GuzzleHttp\Client;
-use CraigPaul\Moneris\Values\Crypt;
-use CraigPaul\Moneris\Response;
 use CraigPaul\Moneris\Processor;
+use CraigPaul\Moneris\Response;
+use CraigPaul\Moneris\Tests\TestCase;
 use CraigPaul\Moneris\Transaction;
+use CraigPaul\Moneris\Values\Crypt;
+use GuzzleHttp\Client;
 
 /**
  * @covers \CraigPaul\Moneris\Processor
@@ -16,11 +16,14 @@ use CraigPaul\Moneris\Transaction;
 class ProcessorTest extends TestCase
 {
     protected GatewayInterface $gateway;
+
     protected Processor $processor;
+
     protected Transaction $transaction;
+
     protected array $params;
 
-    public function setUp (): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -92,7 +95,7 @@ class ProcessorTest extends TestCase
             'amount' => '1.00',
             'credit_card' => $this->visa,
             'expdate' => '2012',
-            'cvd' => '111'
+            'cvd' => '111',
         ]);
 
         $this->assertTrue($response->successful);

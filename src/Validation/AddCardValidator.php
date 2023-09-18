@@ -13,7 +13,7 @@ class AddCardValidator extends ValidatorAbstract
         'issuer_id',
     ];
 
-    protected function validate (): void
+    protected function validate(): void
     {
         foreach ($this->mustBeSet as $key) {
             $this->mustBeSet($key);

@@ -8,9 +8,10 @@ trait SettableTrait
 {
     /**
      * Set a property that exists on the class.
+     *
      * @throws \InvalidArgumentException
      */
-    public function __set (string $property, mixed $value): void
+    public function __set(string $property, mixed $value): void
     {
         if (property_exists($this, $property)) {
             $this->$property = $value;

@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnused */
+<?php
+
+/** @noinspection PhpUnused */
 
 namespace CraigPaul\Moneris;
 
@@ -8,6 +10,7 @@ use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
 /**
  * CraigPaul\Moneris\Response
+ *
  * @property array $errors
  * @property bool $failedAvs
  * @property bool $failedCvd
@@ -19,34 +22,53 @@ class Response
 {
     use GettableTrait, SettableTrait;
 
-    const ERROR                    = -23;
+    const ERROR = -23;
+
     const INVALID_TRANSACTION_DATA = 0;
 
-    const FAILED_ATTEMPT            = -1;
+    const FAILED_ATTEMPT = -1;
+
     const CREATE_TRANSACTION_RECORD = -2;
-    const GLOBAL_ERROR_RECEIPT      = -3;
 
-    const SYSTEM_UNAVAILABLE    = -14;
-    const CARD_EXPIRED          = -15;
-    const INVALID_CARD          = -16;
-    const INSUFFICIENT_FUNDS    = -17;
-    const PREAUTH_FULL          = -18;
+    const GLOBAL_ERROR_RECEIPT = -3;
+
+    const SYSTEM_UNAVAILABLE = -14;
+
+    const CARD_EXPIRED = -15;
+
+    const INVALID_CARD = -16;
+
+    const INSUFFICIENT_FUNDS = -17;
+
+    const PREAUTH_FULL = -18;
+
     const DUPLICATE_TRANSACTION = -19;
-    const DECLINED              = -20;
-    const NOT_AUTHORIZED        = -21;
-    const INVALID_EXPIRY_DATE   = -22;
 
-    const CVD               = -4;
-    const CVD_NO_MATCH      = -5;
+    const DECLINED = -20;
+
+    const NOT_AUTHORIZED = -21;
+
+    const INVALID_EXPIRY_DATE = -22;
+
+    const CVD = -4;
+
+    const CVD_NO_MATCH = -5;
+
     const CVD_NOT_PROCESSED = -6;
-    const CVD_MISSING       = -7;
+
+    const CVD_MISSING = -7;
+
     const CVD_NOT_SUPPORTED = -8;
 
-    const AVS             = -9;
+    const AVS = -9;
+
     const AVS_POSTAL_CODE = -10;
-    const AVS_ADDRESS     = -11;
-    const AVS_NO_MATCH    = -12;
-    const AVS_TIMEOUT     = -13;
+
+    const AVS_ADDRESS = -11;
+
+    const AVS_NO_MATCH = -12;
+
+    const AVS_TIMEOUT = -13;
 
     const POST_FRAUD = -22;
 
@@ -74,15 +96,13 @@ class Response
 
     /**
      * Create a new Response instance.
-     *
-     * @param \CraigPaul\Moneris\Transaction $transaction
      */
     public function __construct(protected Transaction $transaction)
     {
         $this->errors = new ErrorList();
     }
 
-    public static function create (Transaction $transaction): self
+    public static function create(Transaction $transaction): self
     {
         return new self($transaction);
     }
@@ -90,7 +110,7 @@ class Response
     /**
      * Retrieve the transaction's receipt if it is available.
      */
-    public function receipt (): Receipt|null
+    public function receipt(): Receipt|null
     {
         if (!is_null($response = $this->transaction->response)) {
             return new Receipt($response->receipt);
@@ -102,7 +122,7 @@ class Response
     /**
      * Validate the response.
      */
-    public function validate (): self
+    public function validate(): self
     {
         $receipt = $this->receipt();
         $gateway = $this->transaction->gateway;
@@ -118,6 +138,7 @@ class Response
 
         if (!$this->successful) {
             $this->status = $this->convertReceiptCodeToStatus($receipt);
+
             return $this;
         }
 
@@ -149,7 +170,7 @@ class Response
         return $this;
     }
 
-    protected function convertReceiptCodeToStatus (Receipt $receipt): int
+    protected function convertReceiptCodeToStatus(Receipt $receipt): int
     {
         $code = $receipt->read('code');
 
@@ -174,7 +195,7 @@ class Response
         return $status;
     }
 
-    protected function convertReceiptMessageToStatus (Receipt $receipt): int|null
+    protected function convertReceiptMessageToStatus(Receipt $receipt): int|null
     {
         $message = (string) $receipt->read('message');
         $status = null;

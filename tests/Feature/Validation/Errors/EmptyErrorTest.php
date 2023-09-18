@@ -11,7 +11,7 @@ use CraigPaul\Moneris\Validation\Errors\EmptyError;
 class EmptyErrorTest extends TestCase
 {
     /** @test */
-    public function getting_code_and_message (): void
+    public function getting_code_and_message(): void
     {
         $error = new EmptyError();
 

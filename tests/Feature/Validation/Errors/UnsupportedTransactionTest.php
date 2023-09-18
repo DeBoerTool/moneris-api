@@ -11,7 +11,7 @@ use CraigPaul\Moneris\Validation\Errors\UnsupportedTransactionError;
 class UnsupportedTransactionTest extends TestCase
 {
     /** @test */
-    public function getting_code_and_message (): void
+    public function getting_code_and_message(): void
     {
         $error = new UnsupportedTransactionError();
 

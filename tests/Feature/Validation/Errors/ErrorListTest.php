@@ -15,7 +15,7 @@ use CraigPaul\Moneris\Validation\Errors\UnsupportedTransactionError;
 class ErrorListTest extends TestCase
 {
     /** @test */
-    public function pushing_errors_onto_the_stack (): void
+    public function pushing_errors_onto_the_stack(): void
     {
         $list = new ErrorList();
 
@@ -28,7 +28,7 @@ class ErrorListTest extends TestCase
     }
 
     /** @test */
-    public function getting_an_error (): void
+    public function getting_an_error(): void
     {
         $errors = [
             new ErrorStub(),
@@ -42,7 +42,7 @@ class ErrorListTest extends TestCase
     }
 
     /** @test */
-    public function merging_lists (): void
+    public function merging_lists(): void
     {
         $e1 = new ErrorStub();
         $e2 = new ErrorStub();
@@ -59,7 +59,7 @@ class ErrorListTest extends TestCase
     }
 
     /** @test */
-    public function iterating (): void
+    public function iterating(): void
     {
         $errors = [
             new ErrorStub(),
@@ -75,7 +75,7 @@ class ErrorListTest extends TestCase
     }
 
     /** @test */
-    public function getting_an_array_representation (): void
+    public function getting_an_array_representation(): void
     {
         $errors = new ErrorList(
             new NotSetError('my-field'),
@@ -89,7 +89,7 @@ class ErrorListTest extends TestCase
             [
                 'code' => 2,
                 'message' => 'Required field "my-field" not set.',
-                'field' => 'my-field'
+                'field' => 'my-field',
             ],
             [
                 'code' => 1,

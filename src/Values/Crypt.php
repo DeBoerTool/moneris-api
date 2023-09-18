@@ -8,19 +8,27 @@ use Stringable;
 
 final class Crypt implements Stringable
 {
-    public const MAIL_TELEPHONE_SINGLE        = 1;
-    public const MAIL_TELEPHONE_RECURRING     = 2;
-    public const MAIL_TELEPHONE_INSTALLMENT   = 3;
-    public const MAIL_TELEPHONE_UNKNOWN       = 4;
-    public const AUTHENTICATED_E_COMMERCE     = 5;
+    public const MAIL_TELEPHONE_SINGLE = 1;
+
+    public const MAIL_TELEPHONE_RECURRING = 2;
+
+    public const MAIL_TELEPHONE_INSTALLMENT = 3;
+
+    public const MAIL_TELEPHONE_UNKNOWN = 4;
+
+    public const AUTHENTICATED_E_COMMERCE = 5;
+
     public const NON_AUTHENTICATED_E_COMMERCE = 6;
-    public const SSL_ENABLED_MERCHANT         = 7;
-    public const NON_SECURE                   = 8;
-    public const NON_AUTHENTICATED            = 9;
+
+    public const SSL_ENABLED_MERCHANT = 7;
+
+    public const NON_SECURE = 8;
+
+    public const NON_AUTHENTICATED = 9;
 
     private int $crypt;
 
-    public function __construct (int $crypt)
+    public function __construct(int $crypt)
     {
         $validValues = array_values(
             (new ReflectionClass($this))->getConstants()
@@ -31,17 +39,17 @@ final class Crypt implements Stringable
             : throw new InvalidArgumentException('Invalid Crypt type.');
     }
 
-    public static function sslEnableMerchant (): self
+    public static function sslEnableMerchant(): self
     {
         return new self(self::SSL_ENABLED_MERCHANT);
     }
 
-    public function value (): int
+    public function value(): int
     {
         return $this->crypt;
     }
 
-    public function __toString (): string
+    public function __toString(): string
     {
         return (string) $this->value();
     }

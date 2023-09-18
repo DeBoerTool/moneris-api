@@ -3,13 +3,13 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Tests\TestCase;
-use GuzzleHttp\Client;
-use CraigPaul\Moneris\Values\Crypt;
+use CraigPaul\Moneris\Processor;
 use CraigPaul\Moneris\Receipt;
 use CraigPaul\Moneris\Response;
-use CraigPaul\Moneris\Processor;
+use CraigPaul\Moneris\Tests\TestCase;
 use CraigPaul\Moneris\Transaction;
+use CraigPaul\Moneris\Values\Crypt;
+use GuzzleHttp\Client;
 
 /**
  * @covers \CraigPaul\Moneris\Response
@@ -17,12 +17,16 @@ use CraigPaul\Moneris\Transaction;
 class ResponseTest extends TestCase
 {
     protected GatewayInterface $gateway;
+
     protected array $params;
+
     protected Processor $processor;
+
     protected Response $response;
+
     protected Transaction $transaction;
 
-    public function setUp (): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -42,7 +46,7 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function instantiating (): void
+    public function instantiating(): void
     {
         $response = new Response($this->transaction);
 
@@ -53,7 +57,7 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function static_constructor (): void
+    public function static_constructor(): void
     {
         $response = Response::create($this->transaction);
 
@@ -64,7 +68,7 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function getting_a_successful_response (): void
+    public function getting_a_successful_response(): void
     {
         $response = $this->processor->process($this->transaction);
 
@@ -74,7 +78,7 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function getting_a_receipt_for_a_successful_response (): void
+    public function getting_a_receipt_for_a_successful_response(): void
     {
         $response = $this->processor->process($this->transaction);
 
@@ -90,7 +94,7 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function receipt_is_null_when_unprocessed (): void
+    public function receipt_is_null_when_unprocessed(): void
     {
         $response = new Response(new Transaction($this->gateway(), []));
 
@@ -98,10 +102,10 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function processing_expdate_error_edge_cases_from_message (): void
+    public function processing_expdate_error_edge_cases_from_message(): void
     {
         $response = $this->processTransaction([
-            'expdate' => 'foo'
+            'expdate' => 'foo',
         ]);
 
         $this->assertFalse($response->successful);
@@ -112,17 +116,17 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function processing_cc_error_edge_cases_from_message (): void
+    public function processing_cc_error_edge_cases_from_message(): void
     {
         $response = $this->processTransaction([
-            'credit_card' => '1234'
+            'credit_card' => '1234',
         ]);
 
         $this->assertFalse($response->successful);
         $this->assertEquals(Response::INVALID_CARD, $response->status);
     }
 
-    protected function processTransaction ($params = []): Response
+    protected function processTransaction($params = []): Response
     {
         $this->params = array_merge($this->params, $params);
         $this->transaction = new Transaction($this->gateway, $this->params);

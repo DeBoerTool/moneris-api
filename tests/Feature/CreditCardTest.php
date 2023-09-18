@@ -2,10 +2,10 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Values\Crypt;
-use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\CreditCard;
+use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\Tests\TestCase;
+use CraigPaul\Moneris\Values\Crypt;
 
 /**
  * @covers \CraigPaul\Moneris\CreditCard
@@ -14,7 +14,7 @@ class CreditCardTest extends TestCase
 {
     protected CreditCard $card;
 
-    public function setUp (): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -22,7 +22,7 @@ class CreditCardTest extends TestCase
     }
 
     /** @test */
-    public function instantiation (): void
+    public function instantiation(): void
     {
         $crypt = Crypt::sslEnableMerchant();
 
@@ -35,7 +35,7 @@ class CreditCardTest extends TestCase
     }
 
     /** @test */
-    public function instantiation_via_static_constructor (): void
+    public function instantiation_via_static_constructor(): void
     {
         $crypt = new Crypt(5);
 
@@ -48,7 +48,7 @@ class CreditCardTest extends TestCase
     }
 
     /** @test */
-    public function setting_the_customer (): void
+    public function setting_the_customer(): void
     {
         $customer = Customer::create();
 

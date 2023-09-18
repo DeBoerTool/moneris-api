@@ -8,7 +8,7 @@ use CraigPaul\Moneris\Values\Environment;
 class EnvironmentTest extends TestCase
 {
     /** @test */
-    public function testing_environment (): void
+    public function testing_environment(): void
     {
         $env = Environment::testing();
 
@@ -17,7 +17,7 @@ class EnvironmentTest extends TestCase
     }
 
     /** @test */
-    public function staging_environment (): void
+    public function staging_environment(): void
     {
         $env = Environment::staging();
 
@@ -26,7 +26,7 @@ class EnvironmentTest extends TestCase
     }
 
     /** @test */
-    public function live_environment (): void
+    public function live_environment(): void
     {
         $env = Environment::live();
 

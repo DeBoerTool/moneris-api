@@ -10,13 +10,18 @@ use CraigPaul\Moneris\Values\Environment;
 class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected Environment $environment;
+
     protected string $id;
+
     protected string $token;
+
     protected string $amex;
+
     protected string $mastercard;
+
     protected string $visa;
 
-    public function setUp (): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -29,12 +34,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->environment = Environment::testing();
     }
 
-    protected function moneris (
+    protected function moneris(
         bool $avs = false,
         bool $cvd = false,
         bool $cof = false,
-    ): MonerisInterface
-    {
+    ): MonerisInterface {
         return new Moneris(
             $this->id,
             $this->token,
@@ -45,12 +49,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
         );
     }
 
-    protected function gateway (
+    protected function gateway(
         bool $avs = false,
         bool $cvd = false,
         bool $cof = false,
-    ): GatewayInterface
-    {
+    ): GatewayInterface {
         return Moneris::create(
             $this->id,
             $this->token,

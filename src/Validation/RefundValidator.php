@@ -10,7 +10,7 @@ class RefundValidator extends ValidatorAbstract
         'txn_number',
     ];
 
-    protected function validate (): void
+    protected function validate(): void
     {
         foreach ($this->mustBeSet as $key) {
             $this->mustBeSet($key);

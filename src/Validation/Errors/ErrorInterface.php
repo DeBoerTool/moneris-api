@@ -6,7 +6,7 @@ use JsonSerializable;
 
 interface ErrorInterface extends JsonSerializable
 {
-    public function code (): int;
+    public function code(): int;
 
-    public function message (): string;
+    public function message(): string;
 }

@@ -27,9 +27,10 @@ class Gateway implements GatewayInterface
     use GettableTrait, SettableTrait;
 
     protected array $avsCodes = ['A', 'B', 'D', 'M', 'P', 'W', 'X', 'Y', 'Z'];
+
     protected array $cvdCodes = ['M', 'Y', 'P', 'S', 'U'];
 
-    public function __construct (
+    public function __construct(
         protected string $id,
         protected string $token,
         protected Environment $environment,
@@ -37,23 +38,19 @@ class Gateway implements GatewayInterface
         protected bool $cvd = false,
         protected bool $cof = false,
         protected Transaction|null $transaction = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Capture a pre-authorized transaction.
      *
-     * @param \CraigPaul\Moneris\Transaction|string $transaction
      * @param string|null $order
-     * @param mixed|null $amount
-     *
-     * @return \CraigPaul\Moneris\Response
      */
-    public function capture (
-        Transaction|string $transaction,
+    public function capture(
+        string|Transaction $transaction,
         string|null $order = null,
         mixed $amount = null
-    ): Response
-    {
+    ): Response {
         $transactionNumber = $transaction;
 
         if ($transaction instanceof Transaction) {
@@ -82,7 +79,7 @@ class Gateway implements GatewayInterface
     /**
      * Alias for self::vault().
      */
-    public function cards (): Vault
+    public function cards(): Vault
     {
         return $this->vault();
     }
@@ -90,7 +87,7 @@ class Gateway implements GatewayInterface
     /**
      * Create a new Vault instance.
      */
-    public function vault (): Vault
+    public function vault(): Vault
     {
         return new Vault(
             $this->id,
@@ -105,7 +102,7 @@ class Gateway implements GatewayInterface
     /**
      * Pre-authorize a purchase.
      */
-    public function preauth (array $params = []): Response
+    public function preauth(array $params = []): Response
     {
         $params = array_merge($params, [
             'type' => 'preauth',
@@ -120,7 +117,7 @@ class Gateway implements GatewayInterface
     /**
      * Make a purchase.
      */
-    public function purchase (array $params = []): Response
+    public function purchase(array $params = []): Response
     {
         $params = array_merge($params, [
             'type' => 'purchase',
@@ -135,12 +132,11 @@ class Gateway implements GatewayInterface
     /**
      * Refund a transaction.
      */
-    public function refund (
-        Transaction|string $transaction,
+    public function refund(
+        string|Transaction $transaction,
         string|null $order = null,
         mixed $amount = null
-    ): Response
-    {
+    ): Response {
         if ($transaction instanceof Transaction) {
             $order = $transaction->order();
             $amount = is_null($amount)
@@ -165,7 +161,7 @@ class Gateway implements GatewayInterface
     /**
      * Validate CVD and/or AVS prior to attempting a purchase.
      */
-    public function verify (array $params = []): Response
+    public function verify(array $params = []): Response
     {
         $params = array_merge($params, [
             'type' => 'card_verification',
@@ -181,10 +177,9 @@ class Gateway implements GatewayInterface
      * Void a transaction.
      */
     public function void(
-        Transaction|string $transaction,
+        string|Transaction $transaction,
         string|null $order = null
-    ): Response
-    {
+    ): Response {
         if ($transaction instanceof Transaction) {
             $order = $transaction->order();
             $transaction = $transaction->number();
@@ -205,7 +200,7 @@ class Gateway implements GatewayInterface
     /**
      * Process a transaction through the Moneris API.
      */
-    protected function process (Transaction $transaction): Response
+    protected function process(Transaction $transaction): Response
     {
         $processor = new Processor(new Client());
 
@@ -215,7 +210,7 @@ class Gateway implements GatewayInterface
     /**
      * Get or create a new Transaction instance.
      */
-    protected function transaction (array|null $params = null): Transaction
+    protected function transaction(array|null $params = null): Transaction
     {
         return !$this->transaction || is_array($params)
             ? $this->transaction = new Transaction($this, $params)

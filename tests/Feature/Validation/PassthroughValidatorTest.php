@@ -11,7 +11,7 @@ use CraigPaul\Moneris\Validation\PassthroughValidator;
 class PassthroughValidatorTest extends TestCase
 {
     /** @test */
-    public function passing_and_getting_error (): void
+    public function passing_and_getting_error(): void
     {
         $val = new PassthroughValidator();
 

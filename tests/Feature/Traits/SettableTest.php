@@ -10,17 +10,17 @@ class SettableTest extends TestCase
 {
     private object $stub;
 
-    public function setUp (): void
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->stub = new class ()
+        $this->stub = new class()
         {
             use SettableTrait;
 
             private mixed $myProp = null;
 
-            public function myProp (): mixed
+            public function myProp(): mixed
             {
                 return $this->myProp;
             }
@@ -28,7 +28,7 @@ class SettableTest extends TestCase
     }
 
     /** @test */
-    public function setting_a_property (): void
+    public function setting_a_property(): void
     {
         $this->assertNull($this->stub->myProp());
 
@@ -38,7 +38,7 @@ class SettableTest extends TestCase
     }
 
     /** @test */
-    public function failing_to_set_a_property (): void
+    public function failing_to_set_a_property(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
