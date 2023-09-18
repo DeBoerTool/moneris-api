@@ -3,6 +3,7 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
+use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
@@ -51,17 +52,13 @@ class ProcessorTest extends FeatureTestCase
     }
 
     /** @test */
-    public function invalid_transaction_data(): void
+    public function invalid_transaction_data_throws(): void
     {
         $transaction = new Transaction($this->gateway);
 
-        $response = $this->processor->process($transaction);
+        $this->expectException(InvalidTransactionException::class);
 
-        $this->assertFalse($response->isSuccessful());
-        $this->assertEquals(
-            ResponseErrorEnum::InvalidTransactionData,
-            $response->getError(),
-        );
+        $this->processor->process($transaction);
     }
 
     /** @test */
