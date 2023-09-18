@@ -113,8 +113,8 @@ class VaultTest extends FeatureTestCase
     }
 
     /** @test */
-    public function it_can_add_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage()
-    {
+    public function it_can_add_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage(
+    ) {
         $params = [
             'id' => uniqid('customer-', true),
             'email' => 'example@email.com',
@@ -160,8 +160,8 @@ class VaultTest extends FeatureTestCase
     }
 
     /** @test */
-    public function it_can_update_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage()
-    {
+    public function it_can_update_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage(
+    ) {
         $params = [
             'id' => uniqid('customer-', true),
             'email' => 'example@email.com',
@@ -200,8 +200,8 @@ class VaultTest extends FeatureTestCase
     }
 
     /** @test */
-    public function it_can_tokenize_a_previous_transaction_to_add_the_transactions_credit_card_in_the_moneris_vault_and_returns_a_data_key_for_storage()
-    {
+    public function it_can_tokenize_a_previous_transaction_to_add_the_transactions_credit_card_in_the_moneris_vault_and_returns_a_data_key_for_storage(
+    ) {
         $gateway = $this->gateway();
 
         $response = $gateway->purchase([
@@ -219,8 +219,8 @@ class VaultTest extends FeatureTestCase
     }
 
     /** @test */
-    public function it_can_peek_into_the_vault_and_retrieve_a_masked_credit_card_from_the_moneris_vault_with_a_valid_data_key()
-    {
+    public function it_can_peek_into_the_vault_and_retrieve_a_masked_credit_card_from_the_moneris_vault_with_a_valid_data_key(
+    ) {
         $response = $this->vault->add($this->card);
         $key = $response->getReceipt()->read('key');
 
@@ -241,16 +241,18 @@ class VaultTest extends FeatureTestCase
     public function it_can_retrieve_all_expiring_credit_cards_from_the_moneris_vault()
     {
         $expiry = date('ym', strtotime('today + 10 days'));
-        $cards = [];
+        $cardAddResponses = [];
 
         $card = CreditCard::create($this->visa, $expiry);
-        $cards[] = $this->vault->add($card);
+        $cardAddResponses[] = $this->vault->add($card);
         $card = CreditCard::create($this->mastercard, $expiry);
-        $cards[] = $this->vault->add($card);
+        $cardAddResponses[] = $this->vault->add($card);
         $card = CreditCard::create($this->amex, $expiry);
-        $cards[] = $this->vault->add($card);
+        $cardAddResponses[] = $this->vault->add($card);
 
-        $client = mock_handler((new VaultExpiringStub())->render($cards));
+        $client = mock_handler(
+            (new VaultExpiringStub())->render($cardAddResponses),
+        );
 
         $params = ['type' => 'res_get_expiring'];
         $transaction = new Transaction($this->vault, $params);
@@ -264,7 +266,7 @@ class VaultTest extends FeatureTestCase
         $this->assertGreaterThan(0, count($receipt->read('data')));
 
         /** @var \CraigPaul\Moneris\Response $card */
-        foreach ($cards as $index => $card) {
+        foreach ($cardAddResponses as $index => $card) {
             /** @var \CraigPaul\Moneris\Receipt $rec */
             $rec = $card->getReceipt();
 
@@ -394,8 +396,8 @@ class VaultTest extends FeatureTestCase
     }
 
     /** @test */
-    public function it_can_submit_a_cvd_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault()
-    {
+    public function it_can_submit_a_cvd_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
+    ) {
         $vault = $this->gateway(cvd: true)->cards();
 
         $response = $this->vault->add($this->card);
@@ -415,8 +417,8 @@ class VaultTest extends FeatureTestCase
     }
 
     /** @test */
-    public function it_can_submit_an_avs_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault()
-    {
+    public function it_can_submit_an_avs_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
+    ) {
         $vault = $this->gateway(avs: true)->cards();
 
         $response = $this->vault->add($this->card);
