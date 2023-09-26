@@ -73,6 +73,6 @@ class Validator extends ValidatorAbstract
             ),
         };
 
-        return new $fqcn($this->gateway, $this->params);
+        return new $fqcn($this->config, $this->params);
     }
 }

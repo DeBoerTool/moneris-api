@@ -73,6 +73,14 @@ enum ResponseErrorEnum: int
         };
     }
 
+    public static function fromCvdCode(string $code): self
+    {
+        return match ($code) {
+            'N' => self::CvdNoMatch,
+            default => self::CvdGeneric,
+        };
+    }
+
     public function isAvs(): bool
     {
         return in_array($this->value, [-9, -10, -11, -12, -13]);
@@ -80,7 +88,7 @@ enum ResponseErrorEnum: int
 
     public function isCvd(): bool
     {
-        return in_array($this->value, [-9, -10, -11, -12, -13]);
+        return in_array($this->value, [-4, -5, -6, -7, -8]);
     }
 
     public function isAvsOrCvd(): bool

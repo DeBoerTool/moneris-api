@@ -2,14 +2,13 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Tests\FeatureTestCase;
-use CraigPaul\Moneris\Vault;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use Faker\Factory as Faker;
 
 /**
  * @covers \CraigPaul\Moneris\Gateway
  */
-class GatewayTest extends FeatureTestCase
+class GatewayTest extends TestCase
 {
     /**
      * The billing / shipping info for customer info requests.
@@ -64,16 +63,6 @@ class GatewayTest extends FeatureTestCase
             'billing' => $this->billing,
             'shipping' => $this->billing,
         ];
-    }
-
-    /** @test */
-    public function instantiation(): void
-    {
-        $gateway = $this->gateway();
-
-        $this->assertSame($this->id, $gateway->id);
-        $this->assertSame($this->token, $gateway->token);
-        $this->assertSame($this->environment, $gateway->environment);
     }
 
     /** @test */
@@ -293,16 +282,5 @@ class GatewayTest extends FeatureTestCase
             $amount,
             $capture->getReceipt()->read('amount'),
         );
-    }
-
-    /** @test */
-    public function getting_the_vault(): void
-    {
-        $vault = $this->gateway()->cards();
-
-        $this->assertInstanceOf(Vault::class, $vault);
-        $this->assertSame($this->id, $vault->id);
-        $this->assertSame($this->token, $vault->token);
-        $this->assertSame($this->environment, $vault->environment);
     }
 }

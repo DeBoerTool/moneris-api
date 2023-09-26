@@ -2,13 +2,13 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation\Errors;
 
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
 
 /**
  * @covers \CraigPaul\Moneris\Validation\Errors\NotSetError
  */
-class NotSetErrorTest extends FeatureTestCase
+class NotSetErrorTest extends TestCase
 {
     /** @test */
     public function getting_code_and_message(): void

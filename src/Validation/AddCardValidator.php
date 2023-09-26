@@ -19,7 +19,7 @@ class AddCardValidator extends ValidatorAbstract
             $this->mustBeSet($key);
         }
 
-        if ($this->gateway->cof) {
+        if ($this->config->useCof) {
             foreach ($this->mustBeSetWithCof as $key) {
                 $this->mustBeSet($key);
             }

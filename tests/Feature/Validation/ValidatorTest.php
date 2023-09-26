@@ -1,13 +1,14 @@
 <?php
 
+/** @noinspection PhpPossiblePolymorphicInvocationInspection */
+
 namespace CraigPaul\Moneris\Tests\Feature\Validation;
 
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
 use CraigPaul\Moneris\Validation\Errors\UnsupportedTransactionError;
 use CraigPaul\Moneris\Validation\Validator;
-use CraigPaul\Moneris\Validation\ValidatorAbstract;
 
 /**
  * Most of the validation tests here are to make sure that the resolution logic
@@ -26,20 +27,26 @@ use CraigPaul\Moneris\Validation\ValidatorAbstract;
  * @covers \CraigPaul\Moneris\Validation\RefundValidator
  * @covers \CraigPaul\Moneris\Validation\UpdateCardValidator
  */
-class ValidatorTest extends FeatureTestCase
+class ValidatorTest extends TestCase
 {
-    /** @test */
-    public function static_constructor(): void
-    {
-        $validator = Validator::of($this->gateway(), []);
+    protected function validator(
+        array $data = [],
+        bool $avs = false,
+        bool $cvd = false,
+        bool $cof = false,
+    ): Validator {
+        $gateway = $this->gateway(avs: $avs, cvd: $cvd, cof: $cof);
 
-        $this->assertInstanceOf(ValidatorAbstract::class, $validator);
+        return new Validator(
+            config: $gateway->getConfig(),
+            params: $data,
+        );
     }
 
     /** @test */
     public function failing_with_empty_params(): void
     {
-        $validator = new Validator($this->gateway(), []);
+        $validator = $this->validator();
 
         $this->assertFalse($validator->passes());
         $this->assertCount(1, $validator->errors());
@@ -52,7 +59,7 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function failing_with_no_type_set(): void
     {
-        $validator = new Validator($this->gateway(), ['foo' => 'bar']);
+        $validator = $this->validator(['foo' => 'bar']);
 
         $this->assertFalse($validator->passes());
         $this->assertCount(1, $validator->errors());
@@ -69,7 +76,7 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function failing_with_unsupported_type(): void
     {
-        $validator = new Validator($this->gateway(), ['type' => 'foo']);
+        $validator = $this->validator(['type' => 'foo']);
 
         $this->assertFalse($validator->passes());
         $this->assertCount(1, $validator->errors());
@@ -82,9 +89,7 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function get_expiring(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_get_expiring',
-        ]);
+        $validator = $this->validator(['type' => 'res_get_expiring']);
 
         $this->assertTrue($validator->passes());
     }
@@ -92,13 +97,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function card_verification(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'card_verification',
-        ]);
+        $validator = $this->validator(['type' => 'card_verification']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'card_verification',
             'order_id' => '',
             'pan' => '',
@@ -111,24 +114,30 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function card_verification_with_avs(): void
     {
-        $validator = new Validator($this->gateway(avs: true), [
-            'type' => 'card_verification',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'card_verification',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+            ],
+            avs: true,
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(avs: true), [
-            'type' => 'card_verification',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'avs_street_number' => '',
-            'avs_street_name' => '',
-            'avs_zipcode' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'card_verification',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'avs_street_number' => '',
+                'avs_street_name' => '',
+                'avs_zipcode' => '',
+            ],
+            avs: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -136,22 +145,28 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function card_verification_with_cvd(): void
     {
-        $validator = new Validator($this->gateway(cvd: true), [
-            'type' => 'card_verification',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'card_verification',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+            ],
+            cvd: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cvd: true), [
-            'type' => 'card_verification',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'cvd' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'card_verification',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'cvd' => '',
+            ],
+            cvd: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -159,23 +174,29 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function card_verification_with_cof(): void
     {
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'card_verification',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'card_verification',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+            ],
+            cof: true,
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'card_verification',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'payment_indicator' => '',
-            'payment_information' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'card_verification',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'payment_indicator' => '',
+                'payment_information' => '',
+            ],
+            cof: true,
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -183,13 +204,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function purchase(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'purchase',
-        ]);
+        $validator = $this->validator(['type' => 'purchase']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'purchase',
             'order_id' => '',
             'pan' => '',
@@ -203,13 +222,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function preauth(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'preauth',
-        ]);
+        $validator = $this->validator(['type' => 'preauth']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'preauth',
             'order_id' => '',
             'pan' => '',
@@ -223,26 +240,32 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function preauth_with_avs(): void
     {
-        $validator = new Validator($this->gateway(avs: true), [
-            'type' => 'preauth',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'amount' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'preauth',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'amount' => '',
+            ],
+            avs: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(avs: true), [
-            'type' => 'preauth',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'amount' => '',
-            'avs_street_number' => '',
-            'avs_street_name' => '',
-            'avs_zipcode' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'preauth',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'amount' => '',
+                'avs_street_number' => '',
+                'avs_street_name' => '',
+                'avs_zipcode' => '',
+            ],
+            avs: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -250,24 +273,30 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function preauth_with_cvd(): void
     {
-        $validator = new Validator($this->gateway(cvd: true), [
-            'type' => 'preauth',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'amount' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'preauth',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'amount' => '',
+            ],
+            cvd: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cvd: true), [
-            'type' => 'preauth',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'amount' => '',
-            'cvd' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'preauth',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'amount' => '',
+                'cvd' => '',
+            ],
+            cvd: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -275,25 +304,31 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function preauth_with_cof(): void
     {
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'preauth',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'amount' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'preauth',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'amount' => '',
+            ],
+            cof: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'preauth',
-            'order_id' => '',
-            'pan' => '',
-            'expdate' => '',
-            'amount' => '',
-            'payment_indicator' => '',
-            'payment_information' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'preauth',
+                'order_id' => '',
+                'pan' => '',
+                'expdate' => '',
+                'amount' => '',
+                'payment_indicator' => '',
+                'payment_information' => '',
+            ],
+            cof: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -301,32 +336,27 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function tokenize(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_tokenize_cc',
-        ]);
+        $validator = $this->validator(['type' => 'res_tokenize_cc']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_tokenize_cc',
             'order_id' => '',
             'txn_number' => '',
         ]);
 
         $this->assertTrue($validator->passes());
-
     }
 
     /** @test */
     public function purchase_correction(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'purchasecorrection',
-        ]);
+        $validator = $this->validator(['type' => 'purchasecorrection']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'purchasecorrection',
             'order_id' => '',
             'txn_number' => '',
@@ -338,13 +368,13 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function completion(): void
     {
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'completion',
         ]);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'completion',
             'comp_amount' => '',
             'order_id' => '',
@@ -357,13 +387,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function refund(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'refund',
-        ]);
+        $validator = $this->validator(['type' => 'refund']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'refund',
             'amount' => '',
             'order_id' => '',
@@ -376,13 +404,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function add_card(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_add_cc',
-        ]);
+        $validator = $this->validator(['type' => 'res_add_cc']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_add_cc',
             'pan' => '',
             'expdate' => '',
@@ -394,20 +420,26 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function add_card_with_cof(): void
     {
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'res_add_cc',
-            'pan' => '',
-            'expdate' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_add_cc',
+                'pan' => '',
+                'expdate' => '',
+            ],
+            cof: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'res_add_cc',
-            'pan' => '',
-            'expdate' => '',
-            'issuer_id' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_add_cc',
+                'pan' => '',
+                'expdate' => '',
+                'issuer_id' => '',
+            ],
+            cof: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -415,13 +447,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function update_card(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_update_cc',
-        ]);
+        $validator = $this->validator(['type' => 'res_update_cc']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_update_cc',
             'pan' => '',
             'expdate' => '',
@@ -434,22 +464,28 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function update_card_with_cof(): void
     {
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'res_update_cc',
-            'pan' => '',
-            'expdate' => '',
-            'data_key' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_update_cc',
+                'pan' => '',
+                'expdate' => '',
+                'data_key' => '',
+            ],
+            cof: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'res_update_cc',
-            'pan' => '',
-            'expdate' => '',
-            'data_key' => '',
-            'issuer_id' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_update_cc',
+                'pan' => '',
+                'expdate' => '',
+                'data_key' => '',
+                'issuer_id' => '',
+            ],
+            cof: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -457,13 +493,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function delete_card(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_delete',
-        ]);
+        $validator = $this->validator(['type' => 'res_delete']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_delete',
             'data_key' => '',
         ]);
@@ -474,13 +508,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function lookup_full_card(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_lookup_full',
-        ]);
+        $validator = $this->validator(['type' => 'res_lookup_full']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_lookup_full',
             'data_key' => '',
         ]);
@@ -491,13 +523,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function lookup_masked_card(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_lookup_masked',
-        ]);
+        $validator = $this->validator(['type' => 'res_lookup_masked']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_lookup_masked',
             'data_key' => '',
         ]);
@@ -508,13 +538,11 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function res_preauth(): void
     {
-        $validator = new Validator($this->gateway(), [
-            'type' => 'res_preauth_cc',
-        ]);
+        $validator = $this->validator(['type' => 'res_preauth_cc']);
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_preauth_cc',
             'data_key' => '',
             'order_id' => '',
@@ -527,24 +555,30 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function res_preauth_with_avs(): void
     {
-        $validator = new Validator($this->gateway(avs: true), [
-            'type' => 'res_preauth_cc',
-            'data_key' => '',
-            'order_id' => '',
-            'amount' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_preauth_cc',
+                'data_key' => '',
+                'order_id' => '',
+                'amount' => '',
+            ],
+            avs: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(avs: true), [
-            'type' => 'res_preauth_cc',
-            'data_key' => '',
-            'order_id' => '',
-            'amount' => '',
-            'avs_street_number' => '',
-            'avs_street_name' => '',
-            'avs_zipcode' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_preauth_cc',
+                'data_key' => '',
+                'order_id' => '',
+                'amount' => '',
+                'avs_street_number' => '',
+                'avs_street_name' => '',
+                'avs_zipcode' => '',
+            ],
+            avs: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -552,22 +586,28 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function res_preauth_with_cvd(): void
     {
-        $validator = new Validator($this->gateway(cvd: true), [
-            'type' => 'res_preauth_cc',
-            'data_key' => '',
-            'order_id' => '',
-            'amount' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_preauth_cc',
+                'data_key' => '',
+                'order_id' => '',
+                'amount' => '',
+            ],
+            cvd: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cvd: true), [
-            'type' => 'res_preauth_cc',
-            'data_key' => '',
-            'order_id' => '',
-            'amount' => '',
-            'cvd' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_preauth_cc',
+                'data_key' => '',
+                'order_id' => '',
+                'amount' => '',
+                'cvd' => '',
+            ],
+            cvd: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -575,23 +615,29 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function res_preauth_with_cof(): void
     {
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'res_preauth_cc',
-            'data_key' => '',
-            'order_id' => '',
-            'amount' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_preauth_cc',
+                'data_key' => '',
+                'order_id' => '',
+                'amount' => '',
+            ],
+            cof: true
+        );
 
         $this->assertFalse($validator->passes());
 
-        $validator = new Validator($this->gateway(cof: true), [
-            'type' => 'res_preauth_cc',
-            'data_key' => '',
-            'order_id' => '',
-            'amount' => '',
-            'payment_indicator' => '',
-            'payment_information' => '',
-        ]);
+        $validator = $this->validator(
+            data: [
+                'type' => 'res_preauth_cc',
+                'data_key' => '',
+                'order_id' => '',
+                'amount' => '',
+                'payment_indicator' => '',
+                'payment_information' => '',
+            ],
+            cof: true
+        );
 
         $this->assertTrue($validator->passes());
     }
@@ -599,7 +645,7 @@ class ValidatorTest extends FeatureTestCase
     /** @test */
     public function passing_res_purchase(): void
     {
-        $validator = new Validator($this->gateway(), [
+        $validator = $this->validator([
             'type' => 'res_purchase_cc',
             'data_key' => '',
             'order_id' => '',

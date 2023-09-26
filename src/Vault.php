@@ -2,185 +2,128 @@
 
 namespace CraigPaul\Moneris;
 
+use CraigPaul\Moneris\Data\Transactable\AddCardData;
+use CraigPaul\Moneris\Data\Transactable\DeleteCardData;
+use CraigPaul\Moneris\Data\Transactable\PeekData;
+use CraigPaul\Moneris\Data\Transactable\TokenizeData;
+use CraigPaul\Moneris\Data\Transactable\UpdateCardData;
+use CraigPaul\Moneris\Data\Transactable\UpdateDetailsData;
+use CraigPaul\Moneris\Data\Transactable\VaultVerificationData;
+use CraigPaul\Moneris\Interfaces\GatewayConfigInterface;
 use CraigPaul\Moneris\Traits\GettableTrait;
-use CraigPaul\Moneris\Values\Crypt;
+use GuzzleHttp\Client;
 
-class Vault extends Gateway
+class Vault
 {
     use GettableTrait;
 
+    protected GatewayConfigInterface $config;
+
     /**
-     * Create a new Vault instance.
-     *
-     * @param string $id
-     * @param string $token
-     * @param string $environment
-     * @return $this
+     * Since COF is now mandatory for Vault transactions, it is enabled
+     * automatically.
      */
-    public static function create($id = '', $token = '', $environment = '')
+    public function __construct(GatewayConfigInterface $config)
     {
-        return new static($id, $token, $environment);
+        $this->config = $config->forVault();
+    }
+
+    public function getConfig(): GatewayConfigInterface
+    {
+        return $this->config;
+    }
+
+    public function getProcessor(): Processor
+    {
+        return new Processor(
+            config: $this->config->connectionConfig,
+            guzzle: new Client(),
+        );
+    }
+
+    public function verify(VaultVerificationData $data): Response
+    {
+        return $this->getProcessor()->process(
+            new Transaction($this->config, $data),
+        );
     }
 
     /**
-     * Add a credit card to the Vault.
+     * Add a credit card to the Vault. This should only be done after card
+     * verification using COF for cards that support it, as you will need the
+     * Issuer ID to add the card.
      */
-    public function add(CreditCard $card, array $extraParams = []): Response
+    public function add(AddCardData $data): Response
     {
-        $params = array_merge($extraParams, [
-            'type' => 'res_add_cc',
-            'crypt_type' => $card->crypt,
-            'pan' => $card->number,
-            'expdate' => $card->expiry,
-        ]);
-
-        if (!is_null($card->customer)) {
-            $params = array_merge($params, [
-                'cust_id' => $card->customer->id,
-                'phone' => $card->customer->phone,
-                'email' => $card->customer->email,
-                'note' => $card->customer->note,
-            ]);
-        }
-
-        $transaction = $this->transaction($params);
-
-        return $this->process($transaction);
-    }
-
-    /**
-     * Delete a credit card from the Vault.
-     *
-     * @param string $key
-     * @return \CraigPaul\Moneris\Response
-     */
-    public function delete($key = '')
-    {
-        $params = [
-            'type' => 'res_delete',
-            'data_key' => $key,
-        ];
-
-        $transaction = $this->transaction($params);
-
-        return $this->process($transaction);
-    }
-
-    /**
-     * Get all expiring credit cards from the Moneris Vault.
-     *
-     * @return \CraigPaul\Moneris\Response
-     */
-    public function expiring()
-    {
-        $params = ['type' => 'res_get_expiring'];
-
-        $transaction = $this->transaction($params);
-
-        return $this->process($transaction);
-    }
-
-    /**
-     * Peek into the Moneris Vault and retrieve a credit card
-     * profile associated with a given data key.
-     *
-     * @param string $key
-     * @return \CraigPaul\Moneris\Response
-     */
-    public function peek($key = '')
-    {
-        $params = [
-            'type' => 'res_lookup_masked',
-            'data_key' => $key,
-        ];
-
-        $transaction = $this->transaction($params);
-
-        return $this->process($transaction);
-    }
-
-    /**
-     * Pre-authorize a purchase.
-     */
-    public function preauth(array $params = []): Response
-    {
-        $params = array_merge($params, [
-            'type' => 'res_preauth_cc',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-        ]);
-
-        $transaction = $this->transaction($params);
-
-        return $this->process($transaction);
-    }
-
-    /**
-     * Make a purchase.
-     */
-    public function purchase(array $params = []): Response
-    {
-        $params = array_merge($params, [
-            'type' => 'res_purchase_cc',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-        ]);
-
-        $transaction = $this->transaction($params);
-
-        return $this->process($transaction);
-    }
-
-    /**
-     * Tokenize a previous transaction to save the credit
-     * card used in the Moneris Vault.
-     *
-     * @param string|null $order
-     * @return \CraigPaul\Moneris\Response
-     */
-    public function tokenize($transaction, $order = null)
-    {
-        if ($transaction instanceof Transaction) {
-            $order = $transaction->order();
-            $transaction = $transaction->number();
-        }
-
-        $params = [
-            'type' => 'res_tokenize_cc',
-            'txn_number' => $transaction,
-            'order_id' => $order,
-        ];
-
-        $transaction = $this->transaction($params);
-
-        return $this->process($transaction);
+        return $this->getProcessor()->process(
+            $data->getTransaction($this->config),
+        );
     }
 
     /**
      * Update an existing credit card in the Vault.
+     *
+     * If you want to update the card number, use the UpdateCardData
+     * object. This will require CoF data, specifically the Issuer ID, for
+     * cards that support it, meaning that you will need to verify the card
+     * again before updating.
+     *
+     * If you want to update non-card-number data, use the UpdateDetailsData
+     * object, which will allow you to update the expiry date, the AVS data,
+     * and/or the CardCustomer data. This type of update does not require
+     * CoF data, since the Issuer ID will remain the same for the same card
+     * number.
      */
-    public function update(
-        CreditCard $card,
-        string $key = '',
-        array $extraParams = []
-    ): Response {
-        $params = array_merge($extraParams, [
-            'type' => 'res_update_cc',
-            'data_key' => $key,
-            'crypt_type' => $card->crypt,
-            'pan' => $card->number,
-            'expdate' => $card->expiry,
-        ]);
+    public function update(UpdateCardData|UpdateDetailsData $data): Response
+    {
+        return $this->getProcessor()->process(
+            $data->getTransaction($this->config),
+        );
+    }
 
-        if (!is_null($card->customer)) {
-            $params = array_merge($params, [
-                'cust_id' => $card->customer->id,
-                'phone' => $card->customer->phone,
-                'email' => $card->customer->email,
-                'note' => $card->customer->note,
-            ]);
-        }
+    /**
+     * Delete a credit card from the Vault.
+     */
+    public function delete(DeleteCardData $data): Response
+    {
+        return $this->getProcessor()->process(
+            $data->getTransaction($this->config),
+        );
+    }
 
-        $transaction = $this->transaction($params);
+    /**
+     * Get all expiring credit cards from the Moneris Vault.
+     */
+    public function expiring(): Response
+    {
+        return $this->getProcessor()->process(
+            new Transaction($this->config, ['type' => 'res_get_expiring']),
+        );
+    }
 
-        return $this->process($transaction);
+    /**
+     * Peek into the Moneris Vault and retrieve a credit card profile
+     * associated with a given data key.
+     */
+    public function peek(PeekData $data): Response
+    {
+        return $this->getProcessor()->process(
+            new Transaction($this->config, $data),
+        );
+    }
+
+    /**
+     * Creates a new credit card profile using the credit card number, expiry
+     * date and e-commerce indicator that were submitted in a previous
+     * financial transaction.
+     *
+     * Previous transactions to be tokenized must have included the Credential
+     * on File Info object.
+     */
+    public function tokenize(TokenizeData $data): Response
+    {
+        return $this->getProcessor()->process(
+            $data->getTransaction($this->config),
+        );
     }
 }

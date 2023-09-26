@@ -256,14 +256,14 @@ $value = $gateway->vault();
 
 ### Add a Card
 
-> **Note:** The expiry passed into the credit card is in the format of YYMM as that is how Moneris accepts it. 
+> **Note:** The expiry passed into the credit card is in the format of YYMM as that is how Moneris accepts it.
 
 ```php
-use CraigPaul\Moneris\CreditCard;
+use CraigPaul\Moneris\Data\Transactable\AddCardData;
 
 ...
 
-$card = CreditCard::create('4242424242424242', '2012');
+$card = AddCardData::create('4242424242424242', '2012');
 
 $response = $vault->add($card);
 ```
@@ -301,7 +301,7 @@ In order to sync your customer information with the credit cards stored in the V
 #### Add a Card
 
 ```php
-use CraigPaul\Moneris\Customer;
+use CraigPaul\Moneris\Data\Card\CardCustomerData;
 
 ...
 
@@ -312,7 +312,7 @@ $params = [
     'note' => 'Customer note',
 ];
 
-$customer = Customer::create($params);
+$customer = CardCustomerData::create($params);
 $card = CreditCard::create('4242424242424242', '2012');
 $card = $card->attach($customer);
 
@@ -322,7 +322,7 @@ $response = $vault->add($card);
 #### Update a Card and Customer
 
 ```php
-use CraigPaul\Moneris\Customer;
+use CraigPaul\Moneris\Data\Card\CardCustomerData;
 
 ...
 
@@ -333,7 +333,7 @@ $params = [
     'note' => 'Customer note',
 ];
 
-$customer = Customer::create($params);
+$customer = CardCustomerData::create($params);
 $card = CreditCard::create('4242424242424242', '2012');
 $card = $card->attach($customer);
 

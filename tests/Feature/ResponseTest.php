@@ -1,36 +1,25 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
-use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Processor;
 use CraigPaul\Moneris\Response;
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
-use GuzzleHttp\Client;
 
 /**
  * @covers \CraigPaul\Moneris\Response
  */
-class ResponseTest extends FeatureTestCase
+class ResponseTest extends TestCase
 {
-    protected GatewayInterface $gateway;
-
     protected array $params;
-
-    protected Processor $processor;
-
-    protected Response $response;
-
-    protected Transaction $transaction;
 
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->gateway = $this->gateway();
 
         $this->params = [
             'type' => 'purchase',
@@ -40,24 +29,17 @@ class ResponseTest extends FeatureTestCase
             'credit_card' => $this->visa,
             'expdate' => '2012',
         ];
-
-        $this->transaction = new Transaction($this->gateway, $this->params);
-        $this->processor = new Processor(new Client());
-    }
-
-    /** @test */
-    public function instantiating(): void
-    {
-        $response = new Response($this->transaction);
-
-        $this->assertTrue($response->isSuccessful());
-        $this->assertSame($this->transaction, $response->getTransaction());
     }
 
     /** @test */
     public function getting_a_successful_response(): void
     {
-        $response = $this->processor->process($this->transaction);
+        $response = $this->gateway()->getProcessor()->process(
+            new Transaction(
+                config: $this->gateway()->getConfig(),
+                params: $this->params,
+            ),
+        );
 
         $response = $response->validate();
 
@@ -67,19 +49,28 @@ class ResponseTest extends FeatureTestCase
     /** @test */
     public function getting_a_receipt_for_a_successful_response(): void
     {
-        $response = $this->processor->process($this->transaction)->validate();
+        $response = $this->gateway()->getProcessor()->process(
+            new Transaction(
+                config: $this->gateway()->getConfig(),
+                params: $this->params,
+            ),
+        );
 
-        $this->assertNotNull($response->getReceipt());
+        $validated = $response->validate();
+
+        $this->assertNotNull($validated->getReceipt());
         $this->assertSame(
             $this->params['order_id'],
-            $response->getReceipt()->read('id'),
+            $validated->getReceipt()->read('id'),
         );
     }
 
     /** @test */
     public function receipt_is_null_when_unprocessed(): void
     {
-        $response = new Response(new Transaction($this->gateway(), []));
+        $response = new Response(
+            new Transaction($this->gateway()->getConfig(), []),
+        );
 
         $this->assertNull($response->getReceipt());
     }
@@ -87,9 +78,12 @@ class ResponseTest extends FeatureTestCase
     /** @test */
     public function processing_expdate_error_edge_cases_from_message(): void
     {
-        $response = $this->processTransaction([
-            'expdate' => 'foo',
-        ]);
+        $response = $this->gateway()->getProcessor()->process(
+            new Transaction(
+                config: $this->gateway()->getConfig(),
+                params: array_merge($this->params, ['expdate' => 'foo']),
+            ),
+        );
 
         $this->assertFalse($response->isSuccessful());
         $this->assertEquals(
@@ -101,24 +95,17 @@ class ResponseTest extends FeatureTestCase
     /** @test */
     public function processing_cc_error_edge_cases_from_message(): void
     {
-        $response = $this->processTransaction([
-            'credit_card' => '1234',
-        ]);
+        $response = $this->gateway()->getProcessor()->process(
+            new Transaction(
+                config: $this->gateway()->getConfig(),
+                params: array_merge($this->params, ['credit_card' => '1234']),
+            ),
+        );
 
         $this->assertFalse($response->isSuccessful());
         $this->assertEquals(
             ResponseErrorEnum::InvalidCard,
             $response->getError(),
         );
-    }
-
-    protected function processTransaction($params = []): Response
-    {
-        $this->params = array_merge($this->params, $params);
-        $this->transaction = new Transaction($this->gateway, $this->params);
-
-        $response = $this->processor->process($this->transaction);
-
-        return $response->validate();
     }
 }

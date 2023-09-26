@@ -2,14 +2,14 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Customer;
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\Data\Card\CardCustomerData;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use InvalidArgumentException;
 
 /**
- * @covers \CraigPaul\Moneris\Customer
+ * @covers \CraigPaul\Moneris\Data\Card\CardCustomerData
  */
-class CustomerTest extends FeatureTestCase
+class CustomerTest extends TestCase
 {
     protected array $rawData = [
         'id' => null,
@@ -21,18 +21,18 @@ class CustomerTest extends FeatureTestCase
     /** @test */
     public function instantiation(): void
     {
-        $customer = new Customer();
+        $customer = new CardCustomerData();
 
-        $this->assertInstanceOf(Customer::class, $customer);
+        $this->assertInstanceOf(CardCustomerData::class, $customer);
         $this->assertSame($this->rawData, $customer->data);
     }
 
     /** @test */
     public function static_constructor(): void
     {
-        $customer = Customer::create();
+        $customer = CardCustomerData::create();
 
-        $this->assertInstanceOf(Customer::class, $customer);
+        $this->assertInstanceOf(CardCustomerData::class, $customer);
         $this->assertSame($this->rawData, $customer->data);
     }
 
@@ -46,7 +46,7 @@ class CustomerTest extends FeatureTestCase
             'note' => 'Customer note',
         ];
 
-        $customer = Customer::create($params);
+        $customer = CardCustomerData::create($params);
 
         array_walk(
             $params,
@@ -59,7 +59,7 @@ class CustomerTest extends FeatureTestCase
     /** @test */
     public function failing_to_get_customer_data(): void
     {
-        $customer = Customer::create();
+        $customer = CardCustomerData::create();
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -71,7 +71,7 @@ class CustomerTest extends FeatureTestCase
     /** @test */
     public function setting_data(): void
     {
-        $customer = Customer::create();
+        $customer = CardCustomerData::create();
 
         $this->assertSame($this->rawData, $customer->data);
 

@@ -19,7 +19,7 @@
 
   <testsuites>
     <testsuite name="Tests">
-      <directory suffix="Test.php">./tests/</directory>
+      <directory>./tests/</directory>
     </testsuite>
   </testsuites>
 
@@ -29,4 +29,11 @@
       file="vendor/mockery/mockery/library/Mockery/Adapter/Phpunit/TestListener.php"
     />
   </listeners>
+
+  <php>
+    <env name="STORE_ID" value="store2"/>
+    <env name="STORE_TOKEN" value="yesguy"/>
+    <env name="AVS_STORE_ID" value="store5"/>
+    <env name="AVS_STORE_TOKEN" value="yesguy"/>
+  </php>
 </phpunit>

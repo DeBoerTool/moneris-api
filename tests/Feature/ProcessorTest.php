@@ -1,11 +1,12 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
-use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
@@ -13,65 +14,51 @@ use GuzzleHttp\Client;
 /**
  * @covers \CraigPaul\Moneris\Processor
  */
-class ProcessorTest extends FeatureTestCase
+class ProcessorTest extends TestCase
 {
-    protected GatewayInterface $gateway;
-
-    protected Processor $processor;
-
-    protected Transaction $transaction;
-
-    protected array $params;
-
-    public function setUp(): void
+    protected function processor(): Processor
     {
-        parent::setUp();
-
-        $this->gateway = $this->gateway();
-
-        $this->params = [
-            'type' => 'purchase',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-            'order_id' => uniqid('1234-56789', true),
-            'amount' => '1.00',
-            'credit_card' => $this->visa,
-            'expdate' => '2012',
-        ];
-
-        $this->transaction = new Transaction($this->gateway, $this->params);
-        $this->processor = new Processor(new Client());
-    }
-
-    /** @test */
-    public function instantiation(): void
-    {
-        $processor = new Processor(new Client());
-
-        $this->assertInstanceOf(Processor::class, $processor);
+        return new Processor(
+            config: $this->gateway()->getConfig()->getConnectionConfig(),
+            guzzle: new Client()
+        );
     }
 
     /** @test */
     public function invalid_transaction_data_throws(): void
     {
-        $transaction = new Transaction($this->gateway);
+        $transaction = new Transaction($this->gateway()->getConfig());
 
         $this->expectException(InvalidTransactionException::class);
 
-        $this->processor->process($transaction);
+        $this->processor()->process($transaction);
     }
 
     /** @test */
-    public function submitting_successfully(): void
+    public function processing_succeeds(): void
     {
-        $response = $this->processor->process($this->transaction);
+        $response = $this->processor()->process(
+            new Transaction(
+                $this->gateway()->getConfig(),
+                [
+                    'type' => 'purchase',
+                    'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+                    'order_id' => uniqid('1234-56789', true),
+                    'amount' => '1.00',
+                    'credit_card' => $this->visa,
+                    'expdate' => '2012',
+                ],
+            ),
+        );
 
         $this->assertTrue($response->isSuccessful());
     }
 
     /** @test */
-    public function it_can_submit_a_avs_secured_request_to_the_moneris_api(): void
+    public function avs_secured_processing_succeeds(): void
     {
         $gateway = $this->gateway(avs: true);
+
         $response = $gateway->purchase([
             'order_id' => uniqid('1234-56789', true),
             'amount' => '1.00',
@@ -86,9 +73,10 @@ class ProcessorTest extends FeatureTestCase
     }
 
     /** @test */
-    public function it_can_submit_a_cvd_secured_request_to_the_moneris_api(): void
+    public function cvd_secured_processing_succeeds(): void
     {
         $gateway = $this->gateway(cvd: true);
+
         $response = $gateway->purchase([
             'order_id' => uniqid('1234-56789', true),
             'amount' => '1.00',

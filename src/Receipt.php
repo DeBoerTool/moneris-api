@@ -2,6 +2,10 @@
 
 namespace CraigPaul\Moneris;
 
+use Closure;
+use CraigPaul\Moneris\Enums\AvsCode;
+use CraigPaul\Moneris\Enums\CardType;
+use CraigPaul\Moneris\Enums\CvdCode;
 use CraigPaul\Moneris\Traits\PreparableTrait;
 use JsonSerializable;
 
@@ -35,28 +39,55 @@ class Receipt implements JsonSerializable
         ]);
     }
 
+    public function hasGlobalError(): bool
+    {
+        return $this->read('id') === 'Global Error Receipt';
+    }
+
+    public function getCardType(): CardType
+    {
+        return CardType::fromResponseCode($this->read('card'));
+    }
+
+    public function getIssuerId(): string|null
+    {
+        return $this->whenNotNullish($this->read('issuer_id'));
+    }
+
+    public function getDataKey(): string|null
+    {
+        return $this->whenNotNullish($this->read('key'));
+    }
+
     public function hasAvsCode(): bool
     {
-        return !is_null($this->getAvsCode()) && $this->getAvsCode() !== 'null';
+        return !$this->isNullish($this->getRawAvsCode());
+    }
+
+    public function getRawAvsCode(): string|null
+    {
+        return $this->read('avs_result');
+    }
+
+    public function getAvsCode(): AvsCode|null
+    {
+        return $this->whenNotNullish(
+            $this->getRawAvsCode(),
+            fn () => AvsCode::from($this->getRawAvsCode()),
+        );
     }
 
     public function hasCvdCode(): bool
     {
-        return !is_null($this->getCvdCode()) && $this->getCvdCode() !== 'null';
+        return !$this->isNullish($this->getCvdCode());
     }
 
-    public function getAvsCode(): string|null
+    public function getCvdCode(): CvdCode|null
     {
-        return !is_null($this->read('avs_result'))
-            ? $this->read('avs_result')
-            : null;
-    }
-
-    public function getCvdCode(): string|null
-    {
-        return !is_null($this->read('cvd_result'))
-            ? $this->read('cvd_result')
-            : null;
+        return $this->whenNotNullish(
+            $this->read('cvd_result'),
+            fn () => CvdCode::from(substr($this->read('cvd_result'), 1, 1)),
+        );
     }
 
     public function getCode(): string
@@ -74,10 +105,6 @@ class Receipt implements JsonSerializable
         return $this->getCode() !== 'null';
     }
 
-    /**
-     * TODO: Convert these magic numbers into something with actual contextual
-     *       meaning.
-     */
     public function hasSuccessCode(): bool
     {
         $code = (int) $this->getCode();
@@ -157,5 +184,23 @@ class Receipt implements JsonSerializable
     public function jsonSerialize(): array
     {
         return $this->getData();
+    }
+
+    protected function isNullish(mixed $value): bool
+    {
+        return is_null($value) || $value === 'null';
+    }
+
+    protected function whenNotNullish(
+        mixed $value,
+        Closure|null $transform = null
+    ): mixed {
+        if ($this->isNullish($value)) {
+            return null;
+        }
+
+        return $transform
+            ? $transform($value)
+            : $value;
     }
 }

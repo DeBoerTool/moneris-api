@@ -2,7 +2,10 @@
 
 namespace CraigPaul\Moneris;
 
-use CraigPaul\Moneris\Interfaces\GatewayInterface;
+use Adbar\Dot;
+use CraigPaul\Moneris\Config\GatewayConfig;
+use CraigPaul\Moneris\Interfaces\TransactableDataInterface;
+use CraigPaul\Moneris\Support\XmlReader;
 use CraigPaul\Moneris\Traits\GettableTrait;
 use CraigPaul\Moneris\Traits\SettableTrait;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
@@ -21,7 +24,7 @@ class Transaction
 
     protected ErrorList $errors;
 
-    protected SimpleXMLElement|null $response = null;
+    protected SimpleXMLElement|null $xmlResponse = null;
 
     /**
      * The extra parameters needed for Moneris.
@@ -29,16 +32,41 @@ class Transaction
     protected array $params;
 
     public function __construct(
-        protected GatewayInterface $gateway,
-        array $params = []
+        protected GatewayConfig $config,
+        array|TransactableDataInterface $params = [],
     ) {
-        $this->params = $this->prepare($params);
         $this->errors = new ErrorList();
+
+        $this->params = $params instanceof TransactableDataInterface
+            ? $params->getTransactableData()
+            : $this->prepare($params);
     }
 
     public function getErrorList(): ErrorList
     {
         return $this->errors;
+    }
+
+    public function getConfig(): GatewayConfig
+    {
+        return $this->config;
+    }
+
+    public function getXmlResponse(): SimpleXMLElement|null
+    {
+        return $this->xmlResponse;
+    }
+
+    public function getXmlArray(): array
+    {
+        $reader = new XmlReader($this->getXmlResponse());
+
+        return $reader->toArray();
+    }
+
+    public function getPath(string $dotNotatedPath): mixed
+    {
+        return (new Dot($this->getXmlArray()))->get($dotNotatedPath);
     }
 
     /**
@@ -69,11 +97,11 @@ class Transaction
      */
     public function number(): string|null
     {
-        if (is_null($this->response)) {
+        if (is_null($this->xmlResponse)) {
             return null;
         }
 
-        return (string) $this->response->receipt->TransID;
+        return (string) $this->xmlResponse->receipt->TransID;
     }
 
     /**
@@ -90,7 +118,7 @@ class Transaction
      */
     public function validate(SimpleXMLElement $result): Response
     {
-        $this->response = $result;
+        $this->xmlResponse = $result;
 
         $response = new Response($this);
         $response->validate();
@@ -104,7 +132,7 @@ class Transaction
      */
     public function valid(): bool
     {
-        $validator = new Validator($this->gateway, $this->params);
+        $validator = new Validator($this->config, $this->params);
 
         if (!$validator->passes()) {
             $this->errors = $validator->errors();
@@ -120,17 +148,19 @@ class Transaction
      */
     public function toXml(): bool|string
     {
-        $gateway = $this->gateway;
         $params = $this->params;
 
-        $type = in_array($params['type'], ['txn', 'acs']) ? 'MpiRequest' : 'request';
+        $type = in_array($params['type'], ['txn', 'acs'])
+            ? 'MpiRequest'
+            : 'request';
 
         $xml = new SimpleXMLElement("<$type/>");
-        $xml->addChild('store_id', $gateway->id);
-        $xml->addChild('api_token', $gateway->token);
+        $xml->addChild('store_id', $this->config->storeId);
+        $xml->addChild('api_token', $this->config->apiToken);
 
         $type = $xml->addChild($params['type']);
-        $efraud = in_array(
+
+        $eFraud = in_array(
             $params['type'],
             [
                 'purchase',
@@ -150,14 +180,18 @@ class Transaction
 
         unset($params['type']);
 
-        if ($gateway->cvd && $efraud) {
+        if ($this->config->useCvd && $eFraud) {
             $cvd = $type->addChild('cvd_info');
-            $cvd->addChild('cvd_indicator', '1');
-            $cvd->addChild('cvd_value', $params['cvd']);
-            unset($params['cvd']);
+
+            $cvdInfo = $params['cvd_info'];
+
+            $cvd->addChild('cvd_indicator', $cvdInfo['cvd_indicator']);
+            $cvd->addChild('cvd_value', $cvdInfo['cvd_value']);
+
+            unset($params['cvd_indicator'], $params['cvd_value']);
         }
 
-        if ($gateway->avs && $efraud) {
+        if ($this->config->useAvs && $eFraud) {
             $avs = $type->addChild('avs_info');
 
             foreach ($params as $key => $value) {
@@ -166,11 +200,12 @@ class Transaction
                 }
 
                 $avs->addChild($key, $value);
+
                 unset($params[$key]);
             }
         }
 
-        if ($gateway->cof && ($efraud || $cc_action)) {
+        if ($this->config->useCof && ($eFraud || $cc_action)) {
             $cofInfo = $type->addChild('cof_info');
             if (!empty($params['payment_indicator'])) {
                 $cofInfo->addChild('payment_indicator', $params['payment_indicator']);

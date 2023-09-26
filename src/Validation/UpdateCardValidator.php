@@ -5,8 +5,6 @@ namespace CraigPaul\Moneris\Validation;
 class UpdateCardValidator extends ValidatorAbstract
 {
     protected array $mustBeSet = [
-        'pan',
-        'expdate',
         'data_key',
     ];
 
@@ -20,7 +18,7 @@ class UpdateCardValidator extends ValidatorAbstract
             $this->mustBeSet($key);
         }
 
-        if ($this->gateway->cof) {
+        if ($this->config->useCof) {
             foreach ($this->mustBeSetWithCof as $key) {
                 $this->mustBeSet($key);
             }

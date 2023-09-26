@@ -2,13 +2,13 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation\Errors;
 
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 
 /**
  * @covers \CraigPaul\Moneris\Validation\Errors\EmptyError
  */
-class EmptyErrorTest extends FeatureTestCase
+class EmptyErrorTest extends TestCase
 {
     /** @test */
     public function getting_code_and_message(): void

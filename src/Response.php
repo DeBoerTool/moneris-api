@@ -2,8 +2,14 @@
 
 namespace CraigPaul\Moneris;
 
+use Adbar\Dot;
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
-use CraigPaul\Moneris\Interfaces\GatewayInterface;
+use CraigPaul\Moneris\Interfaces\GatewayConfigInterface;
+use CraigPaul\Moneris\Sources\AvsResultSource;
+use CraigPaul\Moneris\Sources\CvdResultSource;
+use CraigPaul\Moneris\Support\XmlReader;
+use CraigPaul\Moneris\Values\AvsResult;
+use CraigPaul\Moneris\Values\CvdResult;
 
 class Response
 {
@@ -11,6 +17,10 @@ class Response
      * The error, or null if no error has occurred.
      */
     protected ResponseErrorEnum|null $error = null;
+
+    protected AvsResult|null $avsResult = null;
+
+    protected CvdResult|null $cvdResult = null;
 
     public function __construct(protected readonly Transaction $transaction)
     {
@@ -28,16 +38,16 @@ class Response
 
     public function getReceipt(): Receipt|null
     {
-        if (is_null($this->transaction->response)) {
+        if (is_null($this->transaction->getXmlResponse())) {
             return null;
         }
 
-        return new Receipt($this->transaction->response->receipt);
+        return new Receipt($this->transaction->getXmlResponse()->receipt);
     }
 
-    public function getGateway(): GatewayInterface
+    public function getConfig(): GatewayConfigInterface
     {
-        return $this->transaction->gateway;
+        return $this->transaction->getConfig();
     }
 
     public function getTransaction(): Transaction
@@ -45,41 +55,56 @@ class Response
         return $this->transaction;
     }
 
+    public function getAvsResult(): AvsResult|null
+    {
+        return $this->avsResult;
+    }
+
+    public function getCvdResult(): CvdResult|null
+    {
+        return $this->cvdResult;
+    }
+
     public function validate(): self
     {
-        if ($this->getReceipt()->read('id') === 'Global Error Receipt') {
+        $receipt = $this->getReceipt();
+
+        if ($receipt->hasGlobalError()) {
             $this->error = ResponseErrorEnum::GlobalErrorReceipt;
 
             return $this;
         }
 
-        if (!$this->getReceipt()->isSuccessful()) {
+        if (!$receipt->isSuccessful()) {
             $this->error = $this->convertReceiptCodeToError($this->getReceipt());
-
-            return $this;
         }
 
-        if ($this->getGateway()->hasAvsEnabled() && $this->getReceipt()->hasAvsCode()) {
-            $avsCode = $this->getReceipt()->getAvsCode();
-
-            if (!$this->getGateway()->isValidAvsCode($avsCode)) {
-                $this->error = ResponseErrorEnum::fromAvsCode($avsCode);
-
-                return $this;
-            }
+        if ($this->getConfig()->useAvs() && $receipt->hasAvsCode()) {
+            $this->avsResult = AvsResultSource::resolve(
+                $receipt->getCardType(),
+                $receipt->getAvsCode(),
+            );
         }
 
-        if ($this->getGateway()->hasCvdEnabled() && $this->getReceipt()->hasCvdCode()) {
-            $cvdCode = $this->getReceipt()->getCvdCode();
-
-            if (!$this->getGateway()->isValidCvdCode($cvdCode[1])) {
-                $this->error = ResponseErrorEnum::CvdGeneric;
-
-                return $this;
-            }
+        if ($this->getConfig()->useCvd() && $receipt->hasCvdCode()) {
+            $this->cvdResult = CvdResultSource::resolve(
+                $this->getReceipt()->getCvdCode(),
+            );
         }
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        $reader = new XmlReader($this->transaction->getXmlResponse());
+
+        return $reader->toArray();
+    }
+
+    public function getPath(string $dotNotatedPath): mixed
+    {
+        return (new Dot($this->toArray()))->get($dotNotatedPath);
     }
 
     protected function convertReceiptCodeToError(

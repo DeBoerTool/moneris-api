@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  backupGlobals="false"
-  backupStaticAttributes="false"
   bootstrap="vendor/autoload.php"
   colors="true"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  processIsolation="false"
-  stopOnError="false"
-  stopOnFailure="false"
   verbose="true"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
 >
@@ -22,7 +14,7 @@
 
   <testsuites>
     <testsuite name="Tests">
-      <directory suffix="Test.php">./tests/</directory>
+      <directory>./tests/</directory>
     </testsuite>
   </testsuites>
 
@@ -32,4 +24,11 @@
       file="vendor/mockery/mockery/library/Mockery/Adapter/Phpunit/TestListener.php"
     />
   </listeners>
+
+  <php>
+    <env name="STORE_ID" value="store2"/>
+    <env name="STORE_TOKEN" value="yesguy"/>
+    <env name="AVS_STORE_ID" value="store5"/>
+    <env name="AVS_STORE_TOKEN" value="yesguy"/>
+  </php>
 </phpunit>

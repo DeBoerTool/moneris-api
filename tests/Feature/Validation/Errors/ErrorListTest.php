@@ -2,8 +2,8 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation\Errors;
 
-use CraigPaul\Moneris\Tests\FeatureTestCase;
-use CraigPaul\Moneris\Tests\Support\Stubs\ErrorStub;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
+use CraigPaul\Moneris\TestSupport\Stubs\ErrorStub;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
@@ -12,7 +12,7 @@ use CraigPaul\Moneris\Validation\Errors\UnsupportedTransactionError;
 /**
  * @covers \CraigPaul\Moneris\Validation\Errors\ErrorList
  */
-class ErrorListTest extends FeatureTestCase
+class ErrorListTest extends TestCase
 {
     /** @test */
     public function pushing_errors_onto_the_stack(): void

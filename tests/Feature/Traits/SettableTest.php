@@ -2,11 +2,11 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Traits;
 
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Traits\SettableTrait;
 use InvalidArgumentException;
 
-class SettableTest extends FeatureTestCase
+class SettableTest extends TestCase
 {
     private object $stub;
 

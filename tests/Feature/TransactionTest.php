@@ -2,48 +2,33 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
-use CraigPaul\Moneris\Interfaces\GatewayInterface;
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
 /**
  * @covers \CraigPaul\Moneris\Transaction
  */
-class TransactionTest extends FeatureTestCase
+class TransactionTest extends TestCase
 {
-    protected GatewayInterface $gateway;
-
-    protected array $params;
-
-    protected Transaction $transaction;
-
-    public function setUp(): void
+    protected function params(): array
     {
-        parent::setUp();
-
-        $this->gateway = $this->gateway();
-
-        $this->params = [
+        return [
             'type' => 'purchase',
             'order_id' => uniqid('1234-56789', true),
             'amount' => '1.00',
             'credit_card' => $this->visa,
             'expdate' => '2012',
         ];
-
-        $this->transaction = new Transaction($this->gateway, $this->params);
     }
 
-    /** @test */
-    public function getting_class_properties(): void
+    protected function transaction(array|null $params = null): Transaction
     {
-        $params = $this->params;
-        $params['pan'] = $params['credit_card'];
-        unset($params['credit_card']);
+        $params = is_null($params)
+            ? $this->params()
+            : $params;
 
-        $this->assertSame($this->gateway, $this->transaction->gateway);
-        $this->assertSame($params, $this->transaction->params);
+        return new Transaction($this->gateway()->getConfig(), $params);
     }
 
     /** @test */
@@ -51,63 +36,58 @@ class TransactionTest extends FeatureTestCase
     {
         $this->assertInstanceOf(
             ErrorList::class,
-            $this->transaction->getErrorList(),
+            $this->transaction()->getErrorList(),
         );
 
-        $this->assertCount(0, $this->transaction->getErrorList());
+        $this->assertCount(0, $this->transaction()->getErrorList());
     }
 
     /** @test */
     public function getting_the_amount(): void
     {
-        $tr = new Transaction($this->gateway(), $this->params);
-
-        $this->assertSame('1.00', $tr->amount());
-
-        $tr = new Transaction($this->gateway(), []);
-
-        $this->assertNull($tr->amount());
+        $this->assertSame('1.00', $this->transaction()->amount());
+        $this->assertNull($this->transaction([])->amount());
     }
 
     /** @test */
     public function getting_the_transaction_number(): void
     {
-        $tr = new Transaction($this->gateway(), []);
-
-        $this->assertNull($tr->number());
+        $this->assertNull($this->transaction()->number());
     }
 
     /** @test */
     public function getting_the_order_number(): void
     {
-        $tr = new Transaction($this->gateway(), $this->params);
+        $params = $this->params();
 
-        $this->assertSame($this->params['order_id'], $tr->order());
+        $this->assertSame(
+            $params['order_id'],
+            $this->transaction($params)->order()
+        );
 
-        $tr = new Transaction($this->gateway(), []);
-
-        $this->assertNull($tr->order());
+        $this->assertNull($this->transaction([])->order());
     }
 
     /** @test */
     public function formatting_expdate_from_month_and_year(): void
     {
-        $params = array_merge($this->params, [
+        $params = array_merge($this->params(), [
             'expiry_month' => '12',
             'expiry_year' => '20',
         ]);
 
         unset($params['expdate']);
 
-        $transaction = new Transaction($this->gateway, $params);
-
-        $this->assertSame('2012', $transaction->params['expdate']);
+        $this->assertSame(
+            '2012',
+            $this->transaction($params)->params['expdate'],
+        );
     }
 
     /** @test */
     public function whitespace_removal(): void
     {
-        $transaction = new Transaction($this->gateway, [
+        $transaction = new Transaction($this->gateway()->getConfig(), [
             'type' => 'purchase',
             'order_id' => '   1234-567890',
             'amount' => '1.00',
@@ -127,36 +107,38 @@ class TransactionTest extends FeatureTestCase
     }
 
     /** @test */
-    public function an_empty_key_is_removed(): void
+    public function empty_key_removal(): void
     {
-        $tr = new Transaction($this->gateway(), array_merge($this->params, [
-            'key' => '',
-        ]));
+        $transaction = new Transaction(
+            $this->gateway()->getConfig(),
+            array_merge($this->params(), ['key' => '']),
+        );
 
-        $this->assertFalse(isset($tr->params['key']));
+        $this->assertFalse(isset($transaction->params['key']));
     }
 
     /** @test */
     public function description_key_is_renamed(): void
     {
-        $tr = new Transaction($this->gateway(), array_merge($this->params, [
-            'description' => 'my description',
-        ]));
+        $transaction = new Transaction(
+            $this->gateway()->getConfig(),
+            array_merge($this->params(), ['description' => 'my description']),
+        );
 
-        $this->assertFalse(isset($tr->params['description']));
+        $this->assertFalse(isset($transaction->params['description']));
         $this->assertSame(
             'my description',
-            $tr->params['dynamic_descriptor']
+            $transaction->params['dynamic_descriptor'],
         );
     }
 
     /** @test */
     public function parameter_validation(): void
     {
-        $this->assertTrue($this->transaction->valid());
-        $this->assertFalse($this->transaction->invalid());
+        $this->assertTrue($this->transaction()->valid());
+        $this->assertFalse($this->transaction()->invalid());
 
-        $transaction = new Transaction($this->gateway);
+        $transaction = new Transaction($this->gateway()->getConfig());
 
         $this->assertFalse($transaction->valid());
         $this->assertTrue($transaction->invalid());
@@ -165,7 +147,7 @@ class TransactionTest extends FeatureTestCase
     /** @test */
     public function getting_xml(): void
     {
-        $xml = $this->transaction->toXml();
+        $xml = $this->transaction()->toXml();
         $xml = simplexml_load_string($xml);
 
         $this->assertNotEquals(false, $xml);

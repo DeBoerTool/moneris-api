@@ -17,7 +17,7 @@ class CardVerificationValidator extends ValidatorAbstract
     ];
 
     protected array $mustBeSetWithCvd = [
-        'cvd',
+        'cvd_info',
     ];
 
     protected array $mustBeSetWithCof = [
@@ -31,19 +31,19 @@ class CardVerificationValidator extends ValidatorAbstract
             $this->mustBeSet($key);
         }
 
-        if ($this->gateway->avs) {
+        if ($this->config->useAvs) {
             foreach ($this->mustBeSetWithAvs as $key) {
                 $this->mustBeSet($key);
             }
         }
 
-        if ($this->gateway->cvd) {
+        if ($this->config->useCvd) {
             foreach ($this->mustBeSetWithCvd as $key) {
                 $this->mustBeSet($key);
             }
         }
 
-        if ($this->gateway->cof) {
+        if ($this->config->useCof) {
             foreach ($this->mustBeSetWithCof as $key) {
                 $this->mustBeSet($key);
             }

@@ -3,49 +3,21 @@
 namespace CraigPaul\Moneris;
 
 use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
-use CraigPaul\Moneris\Values\Environment;
-use GuzzleHttp\Client;
+use CraigPaul\Moneris\Interfaces\ConnectionConfigInterface;
+use GuzzleHttp\ClientInterface;
 use SimpleXMLElement;
 
 class Processor
 {
-    protected Client $client;
-
-    /**
-     * API configuration.
-     */
-    protected array $config = [
-        'protocol' => 'https',
-        'host' => 'esqa.moneris.com',
-        'port' => '443',
-        'url' => '/gateway2/servlet/MpgRequest',
-        'api_version' => 'PHP - 2.5.6',
-        'timeout' => 60,
-    ];
-
     /**
      * Global error response to maintain consistency.
      */
     protected string $error = '<?xml version="1.0"?><response><receipt><ReceiptId>Global Error Receipt</ReceiptId><ReferenceNum>null</ReferenceNum><ResponseCode>null</ResponseCode><ISO>null</ISO> <AuthCode>null</AuthCode><TransTime>null</TransTime><TransDate>null</TransDate><TransType>null</TransType><Complete>false</Complete><Message>null</Message><TransAmount>null</TransAmount><CardType>null</CardType><TransID>null</TransID><TimedOut>null</TimedOut></receipt></response>';
 
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
-
-    /**
-     * Retrieve the API configuration.
-     */
-    public function config(Environment|null $environment = null): array
-    {
-        /**
-         * @codeCoverageIgnore
-         */
-        if ($environment && $environment->isLive()) {
-            $this->config['host'] = 'www3.moneris.com';
-        }
-
-        return $this->config;
+    public function __construct(
+        public readonly ConnectionConfigInterface $config,
+        protected ClientInterface $guzzle,
+    ) {
     }
 
     /**
@@ -58,6 +30,7 @@ class Processor
             throw new InvalidTransactionException($transaction);
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $xml = $this->submit($transaction);
 
         return $transaction->validate($xml);
@@ -72,39 +45,25 @@ class Processor
     }
 
     /**
-     * Set up and send the request to the Moneris API.
-     *
-     * @param string $url
-     * @param string $xml
-     */
-    protected function send(array $config, $url = '', $xml = ''): string
-    {
-        $response = $this->client->post($url, [
-            'body' => $xml,
-            'headers' => [
-                'User-Agent' => $config['api_version'],
-            ],
-            'timeout' => $config['timeout'],
-        ]);
-
-        return $response->getBody()->getContents();
-    }
-
-    /**
      * Submit the transaction to the Moneris API.
      *
-     *
-     * @return \SimpleXMLElement
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function submit(Transaction $transaction)
+    protected function submit(Transaction $transaction): SimpleXMLElement
     {
-        $config = $this->config($transaction->gateway->environment);
-
-        $url = $config['protocol'] . '://' . $config['host'] . ':' . $config['port'] . $config['url'];
-
+        // Get the XML representation of the Transaction.
         $xml = str_replace(' </', '</', $transaction->toXml());
 
-        $response = $this->send($config, $url, $xml);
+        // Send the XML to the Moneris API, with headers and timeout from the
+        // config.
+        $response = $this->guzzle
+            ->post($this->config->getFullUrl(), [
+                'body' => $xml,
+                'headers' => $this->config->getHeaders(),
+                'timeout' => $this->config->timeout,
+            ])
+            ->getBody()
+            ->getContents();
 
         if (!$response) {
             return $this->error();

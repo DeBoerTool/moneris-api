@@ -2,11 +2,11 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Values;
 
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Values\Crypt;
 use InvalidArgumentException;
 
-class CryptTest extends FeatureTestCase
+class CryptTest extends TestCase
 {
     /** @test */
     public function instantiating_with_valid_type(): void
