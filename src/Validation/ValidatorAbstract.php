@@ -2,7 +2,7 @@
 
 namespace CraigPaul\Moneris\Validation;
 
-use CraigPaul\Moneris\Config\GatewayConfig;
+use CraigPaul\Moneris\Config\Credentials;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
 
@@ -13,7 +13,7 @@ abstract class ValidatorAbstract implements ValidatorInterface
     protected ErrorList $errors;
 
     public function __construct(
-        protected GatewayConfig $config,
+        protected Credentials $config,
         protected array $params,
     ) {
         $this->errors = new ErrorList();

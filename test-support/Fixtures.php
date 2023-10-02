@@ -7,9 +7,10 @@ use CraigPaul\Moneris\Data\AvsData;
 use CraigPaul\Moneris\Data\Card\CardCustomerData;
 use CraigPaul\Moneris\Data\Card\ItemData;
 use CraigPaul\Moneris\Data\Card\ItemDataList;
-use CraigPaul\Moneris\Data\Customer\AddressData;
+use CraigPaul\Moneris\Data\AddressData;
 use CraigPaul\Moneris\Data\Customer\CustomerData;
 use CraigPaul\Moneris\Data\CvdData;
+use CraigPaul\Moneris\Values\Amount;
 use CraigPaul\Moneris\Values\OrderId;
 use Faker\Generator;
 use Ramsey\Uuid\Uuid;
@@ -18,6 +19,11 @@ class Fixtures
 {
     public function __construct(public readonly Generator $faker)
     {
+    }
+
+    public function approvedAmount(): Amount
+    {
+        return Amount::fromFloat(1.00);
     }
 
     public function cvdData(): CvdData

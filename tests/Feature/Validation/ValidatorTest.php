@@ -220,7 +220,7 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
-    public function preauth(): void
+    public function vaultPreauth(): void
     {
         $validator = $this->validator(['type' => 'preauth']);
 

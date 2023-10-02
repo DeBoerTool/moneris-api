@@ -2,28 +2,13 @@
 
 namespace CraigPaul\Moneris\Values;
 
-use CraigPaul\Moneris\Interfaces\DataInterface;
-use Stringable;
+use CraigPaul\Moneris\Support\Xml\AddXmlInterface;
+use CraigPaul\Moneris\Support\DataInterface;
+use CraigPaul\Moneris\Support\Values\StringValue;
+use SimpleXMLElement;
 
-class Amount implements DataInterface, Stringable
+class Amount extends StringValue implements DataInterface, AddXmlInterface
 {
-    public function __construct(public readonly string $amount)
-    {
-    }
-
-    public static function of(float|self|string $amount): static
-    {
-        if ($amount instanceof Amount) {
-            return new static($amount->amount);
-        }
-
-        if (is_float($amount)) {
-            return self::fromFloat($amount);
-        }
-
-        return new static($amount);
-    }
-
     public static function fromFloat(float $amount): static
     {
         return new static(
@@ -37,16 +22,16 @@ class Amount implements DataInterface, Stringable
 
     public function toCaptureAmount(): CaptureAmount
     {
-        return new CaptureAmount($this->amount);
-    }
-
-    public function __toString(): string
-    {
-        return $this->amount;
+        return new CaptureAmount($this->value);
     }
 
     public function toArray(): array
     {
-        return ['amount' => $this->amount];
+        return ['amount' => $this->value];
+    }
+
+    public function addXml(SimpleXMLElement $element): void
+    {
+        $element->addChild('amount', $this->value);
     }
 }

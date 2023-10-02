@@ -2,25 +2,25 @@
 
 namespace CraigPaul\Moneris;
 
-use CraigPaul\Moneris\Config\GatewayConfig;
-use CraigPaul\Moneris\Data\Transactable\CaptureData;
-use CraigPaul\Moneris\Data\Transactable\CorrectionData;
-use CraigPaul\Moneris\Data\Transactable\PreauthData;
-use CraigPaul\Moneris\Data\Transactable\PurchaseData;
-use CraigPaul\Moneris\Data\Transactable\RefundData;
-use CraigPaul\Moneris\Data\Transactable\VaultPreauthData;
-use CraigPaul\Moneris\Data\Transactable\VaultPurchaseData;
-use CraigPaul\Moneris\Data\Transactable\VerificationData;
-use CraigPaul\Moneris\Interfaces\GatewayConfigInterface;
+use CraigPaul\Moneris\Config\Credentials;
+use CraigPaul\Moneris\Data\Transactable\Capture;
+use CraigPaul\Moneris\Data\Transactable\Correction;
+use CraigPaul\Moneris\Data\Transactable\Preauth;
+use CraigPaul\Moneris\Data\Transactable\Purchase;
+use CraigPaul\Moneris\Data\Transactable\Refund;
+use CraigPaul\Moneris\Transactables\VaultPreauth;
+use CraigPaul\Moneris\Data\Transactable\VaultPurchase;
+use CraigPaul\Moneris\Transactables\VerifyCard;
+use CraigPaul\Moneris\Support\Setup\CredentialsInterface;
 use GuzzleHttp\Client;
 
 class Gateway
 {
-    public function __construct(public readonly GatewayConfig $config)
+    public function __construct(public readonly Credentials $config)
     {
     }
 
-    public function getConfig(): GatewayConfigInterface
+    public function getConfig(): CredentialsInterface
     {
         return $this->config;
     }
@@ -38,12 +38,12 @@ class Gateway
         );
     }
 
-    public function purchase(PurchaseData|VaultPurchaseData $data): Response
+    public function purchase(Purchase|VaultPurchase $data): OldResponse
     {
         return $this->process($data->getTransaction($this->config));
     }
 
-    public function preauth(PreauthData|VaultPreauthData $data): Response
+    public function preauth(Preauth|VaultPreauth $data): OldResponse
     {
         return $this->process($data->getTransaction($this->config));
     }
@@ -51,28 +51,28 @@ class Gateway
     /**
      * Capture a pre-authorized transaction.
      */
-    public function capture(CaptureData $data): Response
+    public function capture(Capture $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),
         );
     }
 
-    public function refund(RefundData $data): Response
+    public function refund(Refund $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),
         );
     }
 
-    public function correction(CorrectionData $data): Response
+    public function correction(Correction $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),
         );
     }
 
-    public function verify(VerificationData $data): Response
+    public function verify(VerifyCard $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),
@@ -82,7 +82,7 @@ class Gateway
     /**
      * Process a transaction through the Moneris API.
      */
-    protected function process(Transaction $transaction): Response
+    protected function process(Transaction $transaction): OldResponse
     {
         $processor = new Processor(
             config: $this->config->connectionConfig,

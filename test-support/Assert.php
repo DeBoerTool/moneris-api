@@ -8,14 +8,20 @@ use CraigPaul\Moneris\Data\Card\CardCustomerData;
 use CraigPaul\Moneris\Data\Customer\CustomerData;
 use CraigPaul\Moneris\Enums\AvsCode;
 use CraigPaul\Moneris\Enums\CvdCode;
-use CraigPaul\Moneris\Interfaces\CardInterface;
+use CraigPaul\Moneris\Support\Cards\CardInterface;
+use CraigPaul\Moneris\OldResponse;
 use CraigPaul\Moneris\Response;
 use CraigPaul\Moneris\Values\MaskedCardNumber;
 
 class Assert extends \PHPUnit\Framework\Assert
 {
+    public function response(Response $response): AssertResponse
+    {
+        return new AssertResponse($response);
+    }
+
     public function hasCardCustomer(
-        Response $response,
+        OldResponse $response,
         CardCustomerData $customer,
     ): void {
         $data = $response->getReceipt()?->read('data');
@@ -30,21 +36,10 @@ class Assert extends \PHPUnit\Framework\Assert
 
     public function isSuccessful(Response $response): void
     {
-        self::assertNull(
-            $response->getError(),
-            sprintf(
-                'The response had an error: "%s".',
-                $response->getError()?->value,
-            ),
-        );
-
-        self::assertTrue(
-            $response->isSuccessful(),
-            'The response was not successful.',
-        );
+        self::assertTrue($response->getResponseCode()->isSuccessful());
     }
 
-    public function isNotSuccessful(Response $response): void
+    public function isNotSuccessful(OldResponse $response): void
     {
         self::assertFalse(
             $response->isSuccessful(),
@@ -53,7 +48,7 @@ class Assert extends \PHPUnit\Framework\Assert
     }
 
     public function hasVaultKey(
-        Response $response,
+        OldResponse $response,
         string|null $expected = null,
     ): void {
         $this->isSuccessful($response);
@@ -65,7 +60,7 @@ class Assert extends \PHPUnit\Framework\Assert
         }
     }
 
-    public function hasMaskedCardNumber(Response $response, string $actual): void
+    public function hasMaskedCardNumber(OldResponse $response, string $actual): void
     {
         self::assertNotNull($response->getReceipt()?->read('data'));
 
@@ -77,35 +72,26 @@ class Assert extends \PHPUnit\Framework\Assert
         );
     }
 
-    public function isComplete(Response $response): void
+    public function isComplete(OldResponse $response): void
     {
         self::assertTrue($response->getReceipt()->read('complete'));
     }
 
     public function hasCvdResult(
         Response $response,
-        CvdCode $cvdCode = CvdCode::M
+        CvdCode $cvdCode,
     ): void {
         $code = sprintf('1%s', $cvdCode->name);
 
-        self::assertSame($code, $response->getReceipt()->read('cvd_result'));
+        self::assertSame($code, $response->read('CvdResultCode'));
     }
 
-    public function hasCvdSuccess(
-        Response $response,
-        CvdCode $cvdCode = CvdCode::M,
-    ): void {
-        $code = sprintf('1%s', $cvdCode->name);
-
-        self::assertSame($code, $response->getReceipt()->read('cvd_result'));
-    }
-
-    public function hasCvdFailure(Response $response): void
+    public function hasCvdFailure(OldResponse $response): void
     {
         self::assertSame('1N', $response->getReceipt()->read('cvd_result'));
     }
 
-    public function hasAvsResult(Response $response, AvsCode $avsCode): void
+    public function hasAvsResult(OldResponse $response, AvsCode $avsCode): void
     {
         self::assertNotNull($response->getAvsResult());
         self::assertSame(
@@ -114,24 +100,24 @@ class Assert extends \PHPUnit\Framework\Assert
         );
     }
 
-    public function hasIssuerId(Response $response): void
+    public function hasIssuerId(OldResponse $response): void
     {
         self::assertNotNull($response->getReceipt()?->getIssuerId());
     }
 
-    public function hasAvsData(Response $response, AvsData $avsData): void
+    public function hasAvsData(OldResponse $response, AvsData $avsData): void
     {
         $this->checkAvsData($response, $avsData);
     }
 
-    public function hasNoAvsData(Response $beforeUpdatePeekResponse): void
+    public function hasNoAvsData(OldResponse $beforeUpdatePeekResponse): void
     {
         $this->checkAvsData($beforeUpdatePeekResponse, null);
     }
 
     public function verificationSuccess(
         CardInterface $card,
-        Response $response,
+        OldResponse $response,
     ): void {
         $this->isSuccessful($response);
 
@@ -141,7 +127,7 @@ class Assert extends \PHPUnit\Framework\Assert
         }
     }
 
-    public function hasNoCardCustomer(Response $response): void
+    public function hasNoCardCustomer(OldResponse $response): void
     {
         $data = $response->getTransaction()->getPath('receipt.ResolveData');
 
@@ -152,7 +138,7 @@ class Assert extends \PHPUnit\Framework\Assert
     }
 
     public function hasExpiry(
-        Response $updateResponse,
+        OldResponse $updateResponse,
         Expiry|string $expiry,
     ): void {
         $transaction = $updateResponse->getTransaction();
@@ -166,7 +152,7 @@ class Assert extends \PHPUnit\Framework\Assert
     // Internal //
 
     protected function checkAvsData(
-        Response $response,
+        OldResponse $response,
         AvsData|null $avsData,
     ): void {
         $avsData = $avsData ?? new AvsData('', '', '');
@@ -182,12 +168,12 @@ class Assert extends \PHPUnit\Framework\Assert
     {
         self::assertStringContainsString(
             'APPROVED',
-            $response->getTransaction()->getPath('receipt.Message'),
+            $response->getMessage(),
         );
     }
 
     public function isDeclined(
-        Response $response,
+        OldResponse $response,
         string $expectedSubstring = 'declined',
     ): void {
         self::assertStringContainsString(
@@ -197,7 +183,7 @@ class Assert extends \PHPUnit\Framework\Assert
     }
 
     public function hasCustomerData(
-        Response $response,
+        OldResponse $response,
         CustomerData $customerData,
     ): void {
         dd($response);

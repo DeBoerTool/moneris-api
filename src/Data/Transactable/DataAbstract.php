@@ -2,18 +2,18 @@
 
 namespace CraigPaul\Moneris\Data\Transactable;
 
-use CraigPaul\Moneris\Enums\CryptEnum;
-use CraigPaul\Moneris\Enums\DataTypeEnum;
-use CraigPaul\Moneris\Interfaces\DataInterface;
-use CraigPaul\Moneris\Interfaces\GatewayConfigInterface;
-use CraigPaul\Moneris\Interfaces\TransactableDataInterface;
+use CraigPaul\Moneris\Enums\Crypt;
+use CraigPaul\Moneris\Enums\TransactionType;
+use CraigPaul\Moneris\Support\DataInterface;
+use CraigPaul\Moneris\Support\Setup\CredentialsInterface;
+use CraigPaul\Moneris\Support\Transactables\TransactableDataInterface;
 
 abstract class DataAbstract implements TransactableDataInterface
 {
     protected function __construct(
         public readonly array $data,
-        public readonly DataTypeEnum $type,
-        public readonly CryptEnum $crypt = CryptEnum::SslEnabledMerchant,
+        public readonly TransactionType $type,
+        public readonly Crypt $crypt = Crypt::SslEnabledMerchant,
         public readonly bool $useAvs = false,
         public readonly bool $useCvd = false,
         public readonly bool $useCof = false,
@@ -46,8 +46,8 @@ abstract class DataAbstract implements TransactableDataInterface
     }
 
     public function setFeatures(
-        GatewayConfigInterface $config
-    ): GatewayConfigInterface {
+        CredentialsInterface $config
+    ): CredentialsInterface {
         return $config->withFeatures(
             useAvs: $this->useAvs,
             useCvd: $this->useCvd,

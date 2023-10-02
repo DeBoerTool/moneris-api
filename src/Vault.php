@@ -2,14 +2,14 @@
 
 namespace CraigPaul\Moneris;
 
-use CraigPaul\Moneris\Data\Transactable\AddCardData;
-use CraigPaul\Moneris\Data\Transactable\DeleteCardData;
-use CraigPaul\Moneris\Data\Transactable\PeekData;
-use CraigPaul\Moneris\Data\Transactable\TokenizeData;
-use CraigPaul\Moneris\Data\Transactable\UpdateCardData;
-use CraigPaul\Moneris\Data\Transactable\UpdateDetailsData;
+use CraigPaul\Moneris\Transactables\AddCard;
+use CraigPaul\Moneris\Transactables\DeleteCard;
+use CraigPaul\Moneris\Transactables\LookupCard;
+use CraigPaul\Moneris\Data\Transactable\Tokenize;
+use CraigPaul\Moneris\Transactables\UpdateCard;
+use CraigPaul\Moneris\Data\Transactable\UpdateCardDetails;
 use CraigPaul\Moneris\Data\Transactable\VaultVerificationData;
-use CraigPaul\Moneris\Interfaces\GatewayConfigInterface;
+use CraigPaul\Moneris\Support\Setup\CredentialsInterface;
 use CraigPaul\Moneris\Traits\GettableTrait;
 use GuzzleHttp\Client;
 
@@ -17,18 +17,18 @@ class Vault
 {
     use GettableTrait;
 
-    protected GatewayConfigInterface $config;
+    protected CredentialsInterface $config;
 
     /**
      * Since COF is now mandatory for Vault transactions, it is enabled
      * automatically.
      */
-    public function __construct(GatewayConfigInterface $config)
+    public function __construct(CredentialsInterface $config)
     {
         $this->config = $config->forVault();
     }
 
-    public function getConfig(): GatewayConfigInterface
+    public function getConfig(): CredentialsInterface
     {
         return $this->config;
     }
@@ -41,7 +41,7 @@ class Vault
         );
     }
 
-    public function verify(VaultVerificationData $data): Response
+    public function verify(VaultVerificationData $data): OldResponse
     {
         return $this->getProcessor()->process(
             new Transaction($this->config, $data),
@@ -53,7 +53,7 @@ class Vault
      * verification using COF for cards that support it, as you will need the
      * Issuer ID to add the card.
      */
-    public function add(AddCardData $data): Response
+    public function add(AddCard $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),
@@ -74,7 +74,7 @@ class Vault
      * CoF data, since the Issuer ID will remain the same for the same card
      * number.
      */
-    public function update(UpdateCardData|UpdateDetailsData $data): Response
+    public function update(UpdateCard|UpdateCardDetails $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),
@@ -84,7 +84,7 @@ class Vault
     /**
      * Delete a credit card from the Vault.
      */
-    public function delete(DeleteCardData $data): Response
+    public function delete(DeleteCard $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),
@@ -94,7 +94,7 @@ class Vault
     /**
      * Get all expiring credit cards from the Moneris Vault.
      */
-    public function expiring(): Response
+    public function expiring(): OldResponse
     {
         return $this->getProcessor()->process(
             new Transaction($this->config, ['type' => 'res_get_expiring']),
@@ -105,7 +105,7 @@ class Vault
      * Peek into the Moneris Vault and retrieve a credit card profile
      * associated with a given data key.
      */
-    public function peek(PeekData $data): Response
+    public function peek(LookupCard $data): OldResponse
     {
         return $this->getProcessor()->process(
             new Transaction($this->config, $data),
@@ -120,7 +120,7 @@ class Vault
      * Previous transactions to be tokenized must have included the Credential
      * on File Info object.
      */
-    public function tokenize(TokenizeData $data): Response
+    public function tokenize(Tokenize $data): OldResponse
     {
         return $this->getProcessor()->process(
             $data->getTransaction($this->config),

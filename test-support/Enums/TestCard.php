@@ -8,7 +8,7 @@ use CraigPaul\Moneris\Cards\Expiry\Expiry;
 use CraigPaul\Moneris\Cards\MasterCard;
 use CraigPaul\Moneris\Cards\Visa;
 use CraigPaul\Moneris\Enums\CardType;
-use CraigPaul\Moneris\Interfaces\CardInterface;
+use CraigPaul\Moneris\Support\Cards\CardInterface;
 
 enum TestCard: string
 {
@@ -29,8 +29,10 @@ enum TestCard: string
         ];
     }
 
-    public function toCard(Expiry $expiry): CardInterface
+    public function toCard(Expiry|null $expiry = null): CardInterface
     {
+        $expiry = $expiry ?? new Expiry('2512');
+
         return match ($this->name) {
             'MasterCard' => new MasterCard($this->value, $expiry),
             'Visa' => new Visa($this->value, $expiry),

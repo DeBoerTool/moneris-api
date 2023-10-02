@@ -6,10 +6,10 @@ use CraigPaul\Moneris\Cards\Amex;
 use CraigPaul\Moneris\Cards\MasterCard;
 use CraigPaul\Moneris\Cards\Visa;
 use CraigPaul\Moneris\Data\Cof\CofVerificationData;
-use CraigPaul\Moneris\Data\Transactable\VerificationData;
+use CraigPaul\Moneris\Transactables\VerifyCard;
 use CraigPaul\Moneris\Enums\AvsCode;
 use CraigPaul\Moneris\Enums\CvdCode;
-use CraigPaul\Moneris\Interfaces\CardInterface;
+use CraigPaul\Moneris\Support\Cards\CardInterface;
 use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\TestSupport\Verification\AmexSource;
 use CraigPaul\Moneris\TestSupport\Verification\MasterCardSource;
@@ -25,61 +25,77 @@ class GatewayVerifyTest extends TestCase
      */
     public function verifying_with_cvd_visa(): void
     {
-        // Approved with CVD match
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Approved with CVD match //
+
+        $v1 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new Visa(
                 number: VisaSource::getApprovedMatch(CvdCode::M),
-                expiry: '2012'
+                expiry: '2012',
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdSuccess($response);
+        $this->assert
+            ->response($v1->submit($this->http(), $this->credentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasCvdResult(CvdCode::M);
 
-        // Declined with CVD match
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Declined with CVD match //
+
+        $v2 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new Visa(
                 number: VisaSource::getDeclinedMatch(CvdCode::M),
                 expiry: '2012',
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        // Approved with CVD mismatch
-        $this->assert->isNotSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdSuccess($response);
+        $this->assert
+            ->response($v2->submit($this->http(), $this->credentials()))
+            ->isUnsuccessful()
+            ->isDeclined()
+            ->isComplete()
+            ->hasCvdResult(CvdCode::M);
 
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Approved with CVD mismatch //
+
+        $v3 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new Visa(
                 number: VisaSource::getApprovedMatch(CvdCode::N),
                 expiry: '2012',
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdFailure($response);
+        $this->assert
+            ->response($v3->submit($this->http(), $this->credentials()))
+            ->isSuccessful()
+            ->isComplete()
+            ->isApproved()
+            ->hasCvdResult(CvdCode::N);
 
-        // Declined with CVD mismatch
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Declined with CVD mismatch //
+
+        $v4 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new Visa(
                 number: VisaSource::getDeclinedMatch(CvdCode::N),
                 expiry: '2012',
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isNotSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdFailure($response);
+        $this->assert
+            ->response($v4->submit($this->http(), $this->credentials()))
+            ->isUnsuccessful()
+            ->isDeclined('call for')
+            ->isComplete()
+            ->hasCvdResult(CvdCode::N);
     }
 
     /**
@@ -90,80 +106,101 @@ class GatewayVerifyTest extends TestCase
      */
     public function verifying_with_cvd_mastercard(): void
     {
-        // Approved with CVD match
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Approved with CVD match //
+
+        $v1 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new MasterCard(
                 number: MasterCardSource::getApprovedMatch(CvdCode::M),
                 expiry: '2012',
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdSuccess($response);
+        $this->assert
+            ->response($v1->submit($this->http(), $this->credentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasCvdResult(CvdCode::M);
 
-        // Declined with CVD mismatch
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Declined with CVD mismatch //
+
+        $v2 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new MasterCard(
                 number: MasterCardSource::getDeclinedMatch(CvdCode::N),
                 expiry: '2012',
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isNotSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdFailure($response);
+        $this->assert
+            ->response($v2->submit($this->http(), $this->credentials()))
+            ->isDeclined('call for')
+            ->isUnsuccessful()
+            ->isComplete()
+            ->hasCvdResult(CvdCode::N);
     }
 
     /** @test */
     public function verifying_with_cvd_amex(): void
     {
-        // Approved with CVD match
-        $cvdCode = CvdCode::Y;
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Approved with CVD match //
+
+        $v1Cvd = CvdCode::Y;
+        $v1 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new Amex(
-                number: AmexSource::getApprovedMatch($cvdCode),
+                number: AmexSource::getApprovedMatch($v1Cvd),
                 expiry: '2012'
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdSuccess($response, $cvdCode);
+        $this->assert
+            ->response($v1->submit($this->http(), $this->credentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasCvdResult($v1Cvd);
 
         // Approved with CVD mismatch
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        $v2Cvd = CvdCode::N;
+        $v2 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new Amex(
-                number: AmexSource::getApprovedMatch(CvdCode::N),
+                number: AmexSource::getApprovedMatch($v2Cvd),
                 expiry: '2012'
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdFailure($response);
+        $this->assert
+            ->response($v2->submit($this->http(), $this->credentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasCvdResult($v2Cvd);
 
-        // Declined with CVD mismatch
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        // Declined with CVD mismatch //
+
+        $v3Cvd = CvdCode::N;
+        $v3 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: new Amex(
-                number: AmexSource::getDeclinedMatch(CvdCode::N),
+                number: AmexSource::getDeclinedMatch($v3Cvd),
                 expiry: '2012'
             ),
             cvdData: $this->fixtures->cvdData(),
-        ));
+        );
 
-        $this->assert->isNotSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdFailure($response);
+        $this->assert
+            ->response($v3->submit($this->http(), $this->credentials()))
+            ->isDeclined()
+            ->isUnsuccessful()
+            ->isComplete()
+            ->hasCvdResult($v3Cvd);
     }
 
     /** @test */
@@ -176,58 +213,67 @@ class GatewayVerifyTest extends TestCase
             $this->fixtures->expiry(),
         );
 
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        $verify = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: $creditCard,
             avsData: $avsData,
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
         // 2023-09-21 According to the Moneris documentation this test credit
         // card should be returning an AVS code of 'D' but it is returning 'Y'.
         // This may change in the future, so if this test starts failing with
         // a non-matching code, that may be the reason.
-        $this->assert->hasAvsResult($response, AvsCode::Y);
+        $this->assert
+            ->response($verify->submit($this->http(), $this->avsCredentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasAvsResult(AvsCode::Y);
     }
 
     /** @test */
     public function verifying_with_avs_mastercard(): void
     {
-        // Approved with AVS match
+        // Approved with AVS match //
+
         $avsCode = AvsCode::X;
         $creditCard = new MasterCard(
             MasterCardSource::getApprovedMatch(avs: $avsCode),
             $this->fixtures->expiry(),
         );
 
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        $v1 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: $creditCard,
             avsData: $this->fixtures->avsData(),
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasAvsResult($response, $avsCode);
+        $this->assert
+            ->response($v1->submit($this->http(), $this->avsCredentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasAvsResult($avsCode);
 
-        // Declined with AVS mismatch
+        // Declined with AVS mismatch //
         $avsCode = AvsCode::N;
         $creditCard = new MasterCard(
             MasterCardSource::getDeclinedMatch(avs: $avsCode),
             $this->fixtures->expiry(),
         );
 
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        $v2 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: $creditCard,
             avsData: $this->fixtures->avsData(),
-        ));
+        );
 
-        $this->assert->isDeclined($response, 'call for');
-        $this->assert->isNotSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasAvsResult($response, $avsCode);
+        $this->assert
+            ->response($v2->submit($this->http(), $this->avsCredentials()))
+            ->isDeclined('call for')
+            ->isUnsuccessful()
+            ->isComplete()
+            ->hasAvsResult($avsCode);
     }
 
     /** @test */
@@ -239,15 +285,18 @@ class GatewayVerifyTest extends TestCase
             $this->fixtures->expiry(),
         );
 
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->uid(),
+        $v1 = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
             creditCard: $creditCard,
             avsData: $this->fixtures->avsData(),
-        ));
+        );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasAvsResult($response, $avsCode);
+        $this->assert
+            ->response($v1->submit($this->http(), $this->avsCredentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasAvsResult($avsCode);
     }
 
     /**
@@ -270,22 +319,21 @@ class GatewayVerifyTest extends TestCase
         CvdCode $cvdCode,
         AvsCode $avsCode,
     ): void {
-        $response = $this->gateway()->verify(new VerificationData(
-            orderId: $this->fixtures->orderId(),
-            creditCard: $creditCard,
-            cvdData: $this->fixtures->cvdData(),
-            avsData: $this->fixtures->avsData(),
-            cofData: new CofVerificationData(),
-        ));
+            $v1 = new VerifyCard(
+                orderId: $this->fixtures->orderId(),
+                creditCard: $creditCard,
+                cvdData: $this->fixtures->cvdData(),
+                avsData: $this->fixtures->avsData(),
+                cofData: new CofVerificationData(),
+            );
 
-        $this->assert->isSuccessful($response);
-        $this->assert->isComplete($response);
-        $this->assert->hasCvdResult($response, $cvdCode);
-        $this->assert->hasAvsResult($response, $avsCode);
-
-        // Amex will fail without this check.
-        if ($creditCard->supportsCof()) {
-            $this->assert->hasIssuerId($response);
-        }
+        $this->assert
+            ->response($v1->submit($this->http(), $this->avsCredentials()))
+            ->isApproved()
+            ->isSuccessful()
+            ->isComplete()
+            ->hasCvdResult($cvdCode)
+            ->hasAvsResult($avsCode)
+            ->hasIssuerId($creditCard);
     }
 }

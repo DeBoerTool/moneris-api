@@ -31,4 +31,9 @@ enum CvdCode: string
     case Y = 'Y';
     case D = 'D';
     case Other = 'Other';
+
+    public function toResultCode(): string
+    {
+        return sprintf('1%s', $this->name);
+    }
 }

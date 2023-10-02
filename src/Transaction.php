@@ -3,9 +3,9 @@
 namespace CraigPaul\Moneris;
 
 use Adbar\Dot;
-use CraigPaul\Moneris\Config\GatewayConfig;
-use CraigPaul\Moneris\Interfaces\TransactableDataInterface;
-use CraigPaul\Moneris\Support\XmlReader;
+use CraigPaul\Moneris\Config\Credentials;
+use CraigPaul\Moneris\Support\Transactables\TransactableDataInterface;
+use CraigPaul\Moneris\Xml\Reader;
 use CraigPaul\Moneris\Traits\GettableTrait;
 use CraigPaul\Moneris\Traits\SettableTrait;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
@@ -32,7 +32,7 @@ class Transaction
     protected array $params;
 
     public function __construct(
-        protected GatewayConfig $config,
+        protected Credentials $config,
         array|TransactableDataInterface $params = [],
     ) {
         $this->errors = new ErrorList();
@@ -47,7 +47,7 @@ class Transaction
         return $this->errors;
     }
 
-    public function getConfig(): GatewayConfig
+    public function getConfig(): Credentials
     {
         return $this->config;
     }
@@ -59,7 +59,7 @@ class Transaction
 
     public function getXmlArray(): array
     {
-        $reader = new XmlReader($this->getXmlResponse());
+        $reader = new Reader($this->getXmlResponse());
 
         return $reader->toArray();
     }
@@ -116,11 +116,11 @@ class Transaction
     /**
      * Validate the result of the Moneris API call.
      */
-    public function validate(SimpleXMLElement $result): Response
+    public function validate(SimpleXMLElement $result): OldResponse
     {
         $this->xmlResponse = $result;
 
-        $response = new Response($this);
+        $response = new OldResponse($this);
         $response->validate();
 
         return $response;
@@ -223,6 +223,8 @@ class Transaction
         }
 
         $this->append($params, $type);
+
+        var_dump($xml->asXML());
 
         return $xml->asXML();
     }

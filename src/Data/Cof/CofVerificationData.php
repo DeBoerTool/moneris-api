@@ -4,7 +4,9 @@ namespace CraigPaul\Moneris\Data\Cof;
 
 use CraigPaul\Moneris\Enums\CofPaymentIndicator;
 use CraigPaul\Moneris\Enums\CofPaymentInformation;
-use CraigPaul\Moneris\Interfaces\DataInterface;
+use CraigPaul\Moneris\Support\Xml\AddXmlInterface;
+use CraigPaul\Moneris\Support\DataInterface;
+use SimpleXMLElement;
 
 /**
  * This object represents the COF data required to get an IssuerId from the
@@ -25,7 +27,7 @@ use CraigPaul\Moneris\Interfaces\DataInterface;
  * The Card Verification request, including the Credential on File Info object,
  * must be sent immediately prior to storing cardholder credentials.
  */
-class CofVerificationData implements DataInterface
+class CofVerificationData implements DataInterface, AddXmlInterface
 {
     public function toArray(): array
     {
@@ -34,5 +36,14 @@ class CofVerificationData implements DataInterface
             'payment_information' => CofPaymentInformation::First->value,
             'payment_indicator' => CofPaymentIndicator::Unscheduled->value,
         ];
+    }
+
+    public function addXml(SimpleXMLElement $element): void
+    {
+        $cof = $element->addChild('cof_info');
+
+        foreach ($this->toArray() as $key => $value) {
+            $cof->addChild($key, $value);
+        }
     }
 }

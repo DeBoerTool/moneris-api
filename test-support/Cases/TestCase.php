@@ -6,24 +6,44 @@ use CraigPaul\Moneris\Cards\Amex;
 use CraigPaul\Moneris\Cards\Expiry\Expiry;
 use CraigPaul\Moneris\Cards\MasterCard;
 use CraigPaul\Moneris\Cards\Visa;
-use CraigPaul\Moneris\Config\ConnectionConfig;
-use CraigPaul\Moneris\Config\GatewayConfig;
+use CraigPaul\Moneris\Config\HttpConfig;
+use CraigPaul\Moneris\Config\Credentials;
+use CraigPaul\Moneris\Data\AvsData;
+use CraigPaul\Moneris\Data\Cof\CofAddOrUpdateCardData;
+use CraigPaul\Moneris\Data\Cof\CofPurchaseData;
+use CraigPaul\Moneris\Data\Cof\CofVerificationData;
+use CraigPaul\Moneris\Data\Transactable\Capture;
+use CraigPaul\Moneris\Data\Transactable\Preauth;
+use CraigPaul\Moneris\Data\Transactable\Purchase;
 use CraigPaul\Moneris\Enums\AvsCode;
 use CraigPaul\Moneris\Enums\CardType;
 use CraigPaul\Moneris\Enums\CvdCode;
 use CraigPaul\Moneris\Gateway;
-use CraigPaul\Moneris\Interfaces\CardInterface;
-use CraigPaul\Moneris\Interfaces\ConnectionConfigInterface;
+use CraigPaul\Moneris\Http;
+use CraigPaul\Moneris\Support\Cards\CardInterface;
+use CraigPaul\Moneris\Support\Setup\CredentialsInterface;
+use CraigPaul\Moneris\Support\Http\HttpConfigInterface;
+use CraigPaul\Moneris\Support\Http\HttpInterface;
+use CraigPaul\Moneris\Support\Transactables\TransactableInterface;
 use CraigPaul\Moneris\TestSupport\Assert;
+use CraigPaul\Moneris\TestSupport\AssertResponse;
+use CraigPaul\Moneris\TestSupport\Data\TransactionAndOrderIds;
 use CraigPaul\Moneris\TestSupport\Enums\TestCard;
 use CraigPaul\Moneris\TestSupport\Fixtures;
 use CraigPaul\Moneris\TestSupport\Verification\AmexSource;
 use CraigPaul\Moneris\TestSupport\Verification\MasterCardSource;
 use CraigPaul\Moneris\TestSupport\Verification\VisaSource;
+use CraigPaul\Moneris\Transactables\AddCard;
+use CraigPaul\Moneris\Transactables\VaultPreauth;
+use CraigPaul\Moneris\Transactables\VerifyCard;
 use CraigPaul\Moneris\Values\Amount;
+use CraigPaul\Moneris\Values\DataKey;
+use CraigPaul\Moneris\Values\IssuerId;
 use CraigPaul\Moneris\Values\OrderId;
+use CraigPaul\Moneris\Values\TransactionId;
 use Faker\Factory;
 use Faker\Generator;
+use GuzzleHttp\Client;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Ramsey\Uuid\Uuid;
@@ -51,9 +71,49 @@ class TestCase extends PHPUnitTestCase
         return Factory::create();
     }
 
-    protected function testConnectionConfig(): ConnectionConfigInterface
+    protected function testHttpConfig(): HttpConfigInterface
     {
-        return new ConnectionConfig(host: 'esqa.moneris.com');
+        return new HttpConfig(host: 'esqa.moneris.com');
+    }
+
+    protected function credentials(): CredentialsInterface
+    {
+        return new Credentials(
+            $this->testHttpConfig(),
+            storeId: $_ENV['STORE_ID'],
+            apiToken: $_ENV['STORE_TOKEN'],
+        );
+    }
+
+    protected function avsCredentials(): CredentialsInterface
+    {
+        return new Credentials(
+            $this->testHttpConfig(),
+            storeId: $_ENV['AVS_STORE_ID'],
+            apiToken: $_ENV['AVS_STORE_TOKEN'],
+        );
+    }
+
+    public function submit(
+        TransactableInterface $transactable,
+        bool $avs = false,
+    ): AssertResponse {
+        return new AssertResponse(
+            $transactable->submit(
+                http: $this->http(),
+                credentials: $avs
+                    ? $this->avsCredentials()
+                    : $this->credentials(),
+            )
+        );
+    }
+
+    protected function http(): HttpInterface
+    {
+        return new Http(
+            config: $this->testHttpConfig(),
+            guzzle: new Client(),
+        );
     }
 
     /**
@@ -61,11 +121,13 @@ class TestCase extends PHPUnitTestCase
      */
     protected function gateway(): Gateway
     {
-        return new Gateway(new GatewayConfig(
-            $this->testConnectionConfig(),
-            storeId: $_ENV['STORE_ID'],
-            apiToken: $_ENV['STORE_TOKEN'],
-        ));
+        return new Gateway(
+            new Credentials(
+                $this->testHttpConfig(),
+                storeId: $_ENV['STORE_ID'],
+                apiToken: $_ENV['STORE_TOKEN'],
+            )
+        );
     }
 
     /**
@@ -75,11 +137,13 @@ class TestCase extends PHPUnitTestCase
      */
     protected function avsGateway(): Gateway
     {
-        return new Gateway(new GatewayConfig(
-            $this->testConnectionConfig(),
-            storeId: $_ENV['AVS_STORE_ID'],
-            apiToken: $_ENV['AVS_STORE_TOKEN'],
-        ));
+        return new Gateway(
+            new Credentials(
+                $this->testHttpConfig(),
+                storeId: $_ENV['AVS_STORE_ID'],
+                apiToken: $_ENV['AVS_STORE_TOKEN'],
+            )
+        );
     }
 
     protected function uid(): string
@@ -181,25 +245,147 @@ class TestCase extends PHPUnitTestCase
         ];
     }
 
-    public function approvedAmount(): Amount
-    {
-        return Amount::fromFloat(1.00);
+    // Common Procedures //
+
+    protected function verifyCard(
+        CardInterface $card,
+        AvsData|null $avsData = null,
+    ): IssuerId|null {
+        $verify = new VerifyCard(
+            orderId: $this->fixtures->orderId(),
+            creditCard: $card,
+            cvdData: $this->fixtures->cvdData(),
+            avsData: $avsData,
+            cofData: new CofVerificationData(),
+        );
+
+        return $this->submit($verify, avs: (bool) $avsData)
+            ->isComplete()
+            ->isSuccessful()
+            ->hasIssuerId($card)
+            ->getResponse()
+            ->getIssuerId();
     }
 
-    public function approvedAmountFor(CardType $cardType): Amount
-    {
-        return match ($cardType) {
-            CardType::Visa => new Amount('10.21'),
-            CardType::AmericanExpress => new Amount('10.21'),
-            CardType::MasterCard => Amount::fromFloat(1.00),
-            default => throw new InvalidArgumentException(
-                sprintf('Invalid card type "%s" provided.', $cardType->name)
-            ),
-        };
+    protected function addCard(
+        CardInterface $card,
+        IssuerId|null $issuerId,
+        AvsData|null $avsData = null,
+    ): DataKey {
+        $add = new AddCard(
+            creditCard: $card,
+            cofData: new CofAddOrUpdateCardData($issuerId),
+            avsData: $avsData,
+        );
+
+        return $this->submit($add, avs: (bool) $avsData)
+            ->isComplete()
+            ->isSuccessful()
+            ->hasDataKey()
+            ->getResponse()
+            ->getDataKey();
     }
 
-    public function orderId(): OrderId
+    protected function vaultPreauth(
+        DataKey $dataKey,
+        IssuerId|null $issuerId,
+        Amount $amount,
+    ): TransactionAndOrderIds {
+        $orderId = $this->fixtures->orderId();
+
+        $preauth = new VaultPreauth(
+            dataKey: $dataKey,
+            orderId: $orderId,
+            amount: $amount,
+            cofData: $issuerId
+                ? new CofPurchaseData($issuerId)
+                : null,
+        );
+
+        $transactionId = $this->submit($preauth)
+            ->isSuccessful()
+            ->isComplete()
+            ->hasTransactionId()
+            ->getResponse()
+            ->getTransactionId();
+
+        return new TransactionAndOrderIds($transactionId, $orderId);
+    }
+
+    protected function preauth(
+        CardInterface $card,
+        Amount $amount,
+    ): TransactionAndOrderIds {
+        $orderId = $this->fixtures->orderId();
+
+        $preauth = new Preauth(
+            orderId: $orderId,
+            creditCard: $card,
+            amount: $amount,
+        );
+
+        $transactionId = $this->submit($preauth)
+            ->isComplete()
+            ->isSuccessful()
+            ->isApproved()
+            ->getResponse()
+            ->getTransactionId();
+
+        return new TransactionAndOrderIds($transactionId, $orderId);
+    }
+
+    protected function purchase(
+        CardInterface $card,
+        Amount $amount,
+    ): TransactionAndOrderIds {
+        $orderId = $this->fixtures->orderId();
+
+        $purchase = new Purchase(
+            orderId: $orderId,
+            creditCard: $card,
+            amount: $amount,
+        );
+
+        $transactionId = $this->submit($purchase)
+            ->isComplete()
+            ->isSuccessful()
+            ->isApproved()
+            ->getResponse()
+            ->getTransactionId();
+
+        return new TransactionAndOrderIds($transactionId, $orderId);
+    }
+
+    protected function capture(
+        TransactionId $transactionId,
+        OrderId $orderId,
+        Amount $amount,
+    ): TransactionId
     {
-        return OrderId::of($this->uid());
+        $capture = new Capture(
+            transactionId: $transactionId,
+            orderId: $orderId,
+            amount: $amount,
+        );
+
+        return $this->submit($capture)
+            ->isSuccessful()
+            ->isComplete()
+            ->isApproved()
+            ->getResponse()
+            ->getTransactionId();
+    }
+
+    protected function preauthAndCapture(
+        CardInterface $card,
+        Amount $amount,
+    ): TransactionAndOrderIds
+    {
+        $ids = $this->preauth($card, $amount);
+
+        return new TransactionAndOrderIds(
+            $this->capture($ids->transactionId, $ids->orderId, $amount),
+            $ids->orderId,
+        );
     }
 }

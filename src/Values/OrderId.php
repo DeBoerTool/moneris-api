@@ -2,29 +2,20 @@
 
 namespace CraigPaul\Moneris\Values;
 
-use CraigPaul\Moneris\Interfaces\DataInterface;
-use Stringable;
+use CraigPaul\Moneris\Support\Values\StringValue;
+use CraigPaul\Moneris\Support\Xml\AddXmlInterface;
+use CraigPaul\Moneris\Support\DataInterface;
+use SimpleXMLElement;
 
-class OrderId implements DataInterface, Stringable
+class OrderId extends StringValue implements DataInterface, AddXmlInterface
 {
-    public function __construct(public readonly string $orderId)
-    {
-    }
-
-    public static function of(self|string $amount): self
-    {
-        return is_string($amount)
-            ? new self($amount)
-            : $amount;
-    }
-
-    public function __toString(): string
-    {
-        return $this->orderId;
-    }
-
     public function toArray(): array
     {
-        return ['order_id' => $this->orderId];
+        return ['order_id' => $this->value];
+    }
+
+    public function addXml(SimpleXMLElement $element): void
+    {
+        $element->addChild('order_id', $this->value);
     }
 }

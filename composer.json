@@ -10,7 +10,7 @@
         },
         {
             "name": "Daniel S. Deboer",
-            "email": "dandb@hey.com"
+            "email": "daniel.s.deboer@gmail.com"
         }
     ],
     "require": {
@@ -29,7 +29,8 @@
     },
     "autoload": {
         "psr-4": {
-            "CraigPaul\\Moneris\\": "src/"
+            "CraigPaul\\Moneris\\": "src/",
+            "CraigPaul\\Moneris\\Support\\": "support/"
         }
     },
     "autoload-dev": {

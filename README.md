@@ -204,7 +204,7 @@ if ($response->isSuccessful()) {
 Void the transaction.
 
 ```php
-/** @var \CraigPaul\Moneris\Response $response */
+/** @var \CraigPaul\Moneris\OldResponse $response */
 $response = $gateway->purchase($params);
 
 if (!$response->isSuccessful() && $response->getError()->isAvsOrCvd()) {
@@ -259,11 +259,11 @@ $value = $gateway->vault();
 > **Note:** The expiry passed into the credit card is in the format of YYMM as that is how Moneris accepts it.
 
 ```php
-use CraigPaul\Moneris\Data\Transactable\AddCardData;
+use CraigPaul\Moneris\Transactables\AddCard;
 
 ...
 
-$card = AddCardData::create('4242424242424242', '2012');
+$card = AddCard::create('4242424242424242', '2012');
 
 $response = $vault->add($card);
 ```

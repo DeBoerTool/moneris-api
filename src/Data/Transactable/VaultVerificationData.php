@@ -5,8 +5,8 @@ namespace CraigPaul\Moneris\Data\Transactable;
 use CraigPaul\Moneris\Data\AvsData;
 use CraigPaul\Moneris\Data\Cof\CofData;
 use CraigPaul\Moneris\Data\CvdData;
-use CraigPaul\Moneris\Enums\DataTypeEnum;
-use CraigPaul\Moneris\Interfaces\TransactableDataInterface;
+use CraigPaul\Moneris\Enums\TransactionType;
+use CraigPaul\Moneris\Support\Transactables\TransactableDataInterface;
 
 class VaultVerificationData extends DataAbstract implements TransactableDataInterface
 {
@@ -29,7 +29,7 @@ class VaultVerificationData extends DataAbstract implements TransactableDataInte
                 $avsData,
                 $cofData,
             ),
-            type: DataTypeEnum::VaultVerification,
+            type: TransactionType::VaultVerification,
         );
     }
 }

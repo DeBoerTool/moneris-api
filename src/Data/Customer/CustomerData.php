@@ -3,10 +3,13 @@
 namespace CraigPaul\Moneris\Data\Customer;
 
 use CraigPaul\Moneris\Data\Card\ItemDataList;
-use CraigPaul\Moneris\Interfaces\DataInterface;
+use CraigPaul\Moneris\Support\Xml\AddXmlInterface;
+use CraigPaul\Moneris\Support\DataInterface;
+use CraigPaul\Moneris\Data\AddressData;
 use CraigPaul\Moneris\Traits\PreparableTrait;
+use SimpleXMLElement;
 
-class CustomerData implements DataInterface
+class CustomerData implements DataInterface, AddXmlInterface
 {
     use PreparableTrait;
 
@@ -43,5 +46,21 @@ class CustomerData implements DataInterface
             'cust_id' => $this->customerId,
             'cust_info' => $custInfo,
         ];
+    }
+
+    public function addXml(SimpleXMLElement $element): void
+    {
+        $element->addChild('cust_id', $this->customerId);
+
+        $custInfo = $element->addChild('cust_info');
+
+        $custInfo->addChild('email', $this->email);
+
+        $custInfo->addChild('instructions', $this->instructions);
+
+        $this->billing?->addXml($custInfo->addChild('billing'));
+        $this->shipping?->addXml($custInfo->addChild('shipping'));
+
+        $this->items?->addXml($custInfo);
     }
 }

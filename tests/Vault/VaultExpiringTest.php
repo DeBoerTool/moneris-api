@@ -4,7 +4,7 @@ namespace CraigPaul\Moneris\Tests\Vault;
 
 use CraigPaul\Moneris\Data\Card\CardData;
 use CraigPaul\Moneris\Data\Cof\CofAddOrUpdateCardData;
-use CraigPaul\Moneris\Data\Transactable\AddCardData;
+use CraigPaul\Moneris\Transactables\AddCard;
 use CraigPaul\Moneris\Processor;
 use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\TestSupport\Enums\TestCard;
@@ -24,7 +24,7 @@ class VaultExpiringTest extends TestCase
         $cofData = new CofAddOrUpdateCardData('null');
 
         foreach ($cards as $card) {
-            $cardAddResponses[] = $vault->add(new AddCardData(
+            $cardAddResponses[] = $vault->add(new AddCard(
                 cardData: new CardData($card),
                 cofData: $cofData,
             ));
@@ -49,7 +49,7 @@ class VaultExpiringTest extends TestCase
         $this->assertTrue($response->isSuccessful());
         $this->assertGreaterThan(0, count($receipt->read('data')));
 
-        /** @var \CraigPaul\Moneris\Response $card */
+        /** @var \CraigPaul\Moneris\OldResponse $card */
         foreach ($cardAddResponses as $index => $card) {
             /** @var \CraigPaul\Moneris\Receipt $rec */
             $rec = $card->getReceipt();

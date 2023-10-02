@@ -3,8 +3,8 @@
 namespace CraigPaul\Moneris\Data\Card;
 
 use CraigPaul\Moneris\Data\EmptyData;
-use CraigPaul\Moneris\Interfaces\CardInterface;
-use CraigPaul\Moneris\Interfaces\DataInterface;
+use CraigPaul\Moneris\Support\Cards\CardInterface;
+use CraigPaul\Moneris\Support\DataInterface;
 
 class CardData implements DataInterface
 {

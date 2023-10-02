@@ -2,10 +2,12 @@
 
 namespace CraigPaul\Moneris\Cards\Expiry;
 
-use CraigPaul\Moneris\Interfaces\DataInterface;
+use CraigPaul\Moneris\Support\Xml\AddXmlInterface;
+use CraigPaul\Moneris\Support\DataInterface;
+use SimpleXMLElement;
 use Stringable;
 
-class Expiry implements DataInterface, Stringable
+class Expiry implements DataInterface, Stringable, AddXmlInterface
 {
     public function __construct(public readonly string $yymm)
     {
@@ -31,5 +33,10 @@ class Expiry implements DataInterface, Stringable
     public function __toString(): string
     {
         return $this->yymm;
+    }
+
+    public function addXml(SimpleXMLElement $element): void
+    {
+        $element->addChild('expdate', (string) $this);
     }
 }

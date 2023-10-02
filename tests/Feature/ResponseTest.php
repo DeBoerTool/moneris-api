@@ -5,13 +5,13 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
-use CraigPaul\Moneris\Response;
+use CraigPaul\Moneris\OldResponse;
 use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 
 /**
- * @covers \CraigPaul\Moneris\Response
+ * @covers \CraigPaul\Moneris\OldResponse
  */
 class ResponseTest extends TestCase
 {
@@ -68,7 +68,7 @@ class ResponseTest extends TestCase
     /** @test */
     public function receipt_is_null_when_unprocessed(): void
     {
-        $response = new Response(
+        $response = new OldResponse(
             new Transaction($this->gateway()->getConfig(), []),
         );
 

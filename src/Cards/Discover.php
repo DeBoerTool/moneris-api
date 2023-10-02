@@ -4,7 +4,8 @@ namespace CraigPaul\Moneris\Cards;
 
 use CraigPaul\Moneris\Cards\Expiry\Expiry;
 use CraigPaul\Moneris\Enums\CardType;
-use CraigPaul\Moneris\Interfaces\CardInterface;
+use CraigPaul\Moneris\Support\Cards\CardAbstract;
+use CraigPaul\Moneris\Support\Cards\CardInterface;
 
 class Discover extends CardAbstract implements CardInterface
 {

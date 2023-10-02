@@ -3,22 +3,22 @@
 namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Data\Card\CardCustomerData;
-use CraigPaul\Moneris\Data\Transactable\AddCardData;
+use CraigPaul\Moneris\Transactables\AddCard;
 use CraigPaul\Moneris\TestSupport\Cases\TestCase;
 use CraigPaul\Moneris\Values\Crypt;
 
 /**
- * @covers \CraigPaul\Moneris\Data\Transactable\AddCardData
+ * @covers \CraigPaul\Moneris\Transactables\AddCard
  */
 class CreditCardTest extends TestCase
 {
-    protected AddCardData $card;
+    protected AddCard $card;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->card = AddCardData::create($this->visa, '2012');
+        $this->card = AddCard::create($this->visa, '2012');
     }
 
     /** @test */
@@ -26,9 +26,9 @@ class CreditCardTest extends TestCase
     {
         $crypt = Crypt::sslEnableMerchant();
 
-        $card = new AddCardData($this->visa, '2012', $crypt);
+        $card = new AddCard($this->visa, '2012', $crypt);
 
-        $this->assertInstanceOf(AddCardData::class, $card);
+        $this->assertInstanceOf(AddCard::class, $card);
         $this->assertSame($this->visa, $card->number);
         $this->assertSame('2012', $card->expiry);
         $this->assertSame($crypt, $card->crypt);
@@ -39,9 +39,9 @@ class CreditCardTest extends TestCase
     {
         $crypt = new Crypt(5);
 
-        $card = AddCardData::create($this->visa, '2012', $crypt);
+        $card = AddCard::create($this->visa, '2012', $crypt);
 
-        $this->assertInstanceOf(AddCardData::class, $card);
+        $this->assertInstanceOf(AddCard::class, $card);
         $this->assertSame($this->visa, $card->number);
         $this->assertSame('2012', $card->expiry);
         $this->assertSame($crypt, $card->crypt);

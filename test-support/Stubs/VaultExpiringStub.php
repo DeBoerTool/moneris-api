@@ -8,7 +8,7 @@ class VaultExpiringStub
     {
         $xmlResponseString = '<?xml version="1.0"?><response><receipt>';
 
-        /** @var \CraigPaul\Moneris\Response $cardResponse */
+        /** @var \CraigPaul\Moneris\OldResponse $cardResponse */
         foreach ($cardResponses as $cardResponse) {
             $receipt = $cardResponse->getReceipt();
             $data = $receipt->read('data');

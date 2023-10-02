@@ -2,23 +2,16 @@
 
 namespace CraigPaul\Moneris\Values;
 
-use Stringable;
+use CraigPaul\Moneris\Support\Values\StringValue;
 
-class MaskedCardNumber implements Stringable
+class MaskedCardNumber extends StringValue
 {
-    public readonly string $number;
-
     public function __construct(string $number)
     {
-        $this->number = sprintf(
+        parent::__construct(sprintf(
             '%s***%s',
             substr($number, 0, 4),
             substr($number, -4)
-        );
-    }
-
-    public function __toString(): string
-    {
-        return $this->number;
+        ));
     }
 }

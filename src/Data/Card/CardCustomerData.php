@@ -2,14 +2,16 @@
 
 namespace CraigPaul\Moneris\Data\Card;
 
-use CraigPaul\Moneris\Interfaces\DataInterface;
+use CraigPaul\Moneris\Support\Xml\AddXmlInterface;
+use CraigPaul\Moneris\Support\DataInterface;
 use CraigPaul\Moneris\Traits\PreparableTrait;
+use SimpleXMLElement;
 
 /**
  * The customer data that can be attached to Vault transactions is different
  * from the customer data that can be attached to Purchase transactions.
  */
-class CardCustomerData implements DataInterface
+class CardCustomerData implements DataInterface, AddXmlInterface
 {
     use PreparableTrait;
 
@@ -31,18 +33,10 @@ class CardCustomerData implements DataInterface
         ];
     }
 
-    /**
-     * Get the customer data formatted for a purchase transaction.
-     */
-    public function getPurchaseArray(): array
+    public function addXml(SimpleXMLElement $element): void
     {
-        return [
-            'cust_id' => $this->customerId,
-            'cust_info' => [
-                'email' => $this->email,
-                'phone' => $this->phone,
-                'note' => $this->note,
-            ],
-        ];
+        foreach ($this->toArray() as $key => $value) {
+            $element->addChild($key, $value);
+        }
     }
 }

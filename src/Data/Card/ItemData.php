@@ -2,10 +2,11 @@
 
 namespace CraigPaul\Moneris\Data\Card;
 
-use CraigPaul\Moneris\Interfaces\DataInterface;
+use CraigPaul\Moneris\Support\Xml\AddXmlInterface;
+use CraigPaul\Moneris\Support\DataInterface;
+use SimpleXMLElement;
 
-// 'item' => ['name', 'quantity', 'product_code', 'extended_amount'],
-class ItemData implements DataInterface
+class ItemData implements DataInterface, AddXmlInterface
 {
     public function __construct(
         public readonly string $name = '',
@@ -23,5 +24,14 @@ class ItemData implements DataInterface
             'product_code' => $this->productCode,
             'extended_amount' => $this->extendedAmount,
         ];
+    }
+
+    public function addXml(SimpleXMLElement $element): void
+    {
+        $item = $element->addChild('item');
+
+        foreach ($this->toArray() as $key => $value) {
+            $item->addChild($key, $value);
+        }
     }
 }
