@@ -9,20 +9,20 @@ use CraigPaul\Moneris\Transaction;
 
 class InvalidTransactionExceptionTest extends UnitTestCase
 {
-    /** @test */
-    public function getting_the_message(): void
-    {
-        $transaction = new Transaction(new GatewayStub(), [
-            'type' => 'not a valid type.',
-        ]);
+	/** @test */
+	public function getting_the_message(): void
+	{
+		$transaction = new Transaction(new GatewayStub(), [
+			'type' => 'not a valid type.',
+		]);
 
-        $this->assertFalse($transaction->valid());
+		$this->assertFalse($transaction->valid());
 
-        $exception = new InvalidTransactionException($transaction);
+		$exception = new InvalidTransactionException($transaction);
 
-        $this->assertStringContainsString(
-            'Unsupported transaction type',
-            $exception->getMessage(),
-        );
-    }
+		$this->assertStringContainsString(
+			'Unsupported transaction type',
+			$exception->getMessage(),
+		);
+	}
 }

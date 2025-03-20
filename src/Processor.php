@@ -9,113 +9,110 @@ use SimpleXMLElement;
 
 class Processor
 {
-    protected Client $client;
+	/**
+	 * API configuration.
+	 */
+	protected array $config = [
+		'protocol' => 'https',
+		'host' => 'esqa.moneris.com',
+		'port' => '443',
+		'url' => '/gateway2/servlet/MpgRequest',
+		'api_version' => 'PHP - 2.5.6',
+		'timeout' => 60,
+	];
 
-    /**
-     * API configuration.
-     */
-    protected array $config = [
-        'protocol' => 'https',
-        'host' => 'esqa.moneris.com',
-        'port' => '443',
-        'url' => '/gateway2/servlet/MpgRequest',
-        'api_version' => 'PHP - 2.5.6',
-        'timeout' => 60,
-    ];
+	/**
+	 * Global error response to maintain consistency.
+	 */
+	protected string $error = '<?xml version="1.0"?><response><receipt><ReceiptId>Global Error Receipt</ReceiptId><ReferenceNum>null</ReferenceNum><ResponseCode>null</ResponseCode><ISO>null</ISO> <AuthCode>null</AuthCode><TransTime>null</TransTime><TransDate>null</TransDate><TransType>null</TransType><Complete>false</Complete><Message>null</Message><TransAmount>null</TransAmount><CardType>null</CardType><TransID>null</TransID><TimedOut>null</TimedOut></receipt></response>';
 
-    /**
-     * Global error response to maintain consistency.
-     */
-    protected string $error = '<?xml version="1.0"?><response><receipt><ReceiptId>Global Error Receipt</ReceiptId><ReferenceNum>null</ReferenceNum><ResponseCode>null</ResponseCode><ISO>null</ISO> <AuthCode>null</AuthCode><TransTime>null</TransTime><TransDate>null</TransDate><TransType>null</TransType><Complete>false</Complete><Message>null</Message><TransAmount>null</TransAmount><CardType>null</CardType><TransID>null</TransID><TimedOut>null</TimedOut></receipt></response>';
-
-    public function __construct(Client $client)
+	public function __construct(protected Client $client)
     {
-        $this->client = $client;
     }
 
-    /**
-     * Retrieve the API configuration.
-     */
-    public function config(Environment|null $environment = null): array
-    {
-        /**
-         * @codeCoverageIgnore
-         */
-        if ($environment && $environment->isLive()) {
-            $this->config['host'] = 'www3.moneris.com';
-        }
+	/**
+	 * Retrieve the API configuration.
+	 */
+	public function config(Environment|null $environment = null): array
+	{
+		/**
+		 * @codeCoverageIgnore
+		 */
+		if ($environment && $environment->isLive()) {
+			$this->config['host'] = 'www3.moneris.com';
+		}
 
-        return $this->config;
-    }
+		return $this->config;
+	}
 
-    /**
-     * Determine if the transaction is valid. If so, process it via the Moneris
-     * API.
-     */
-    public function process(Transaction $transaction): Response
-    {
-        if ($transaction->invalid()) {
-            throw new InvalidTransactionException($transaction);
-        }
+	/**
+	 * Determine if the transaction is valid. If so, process it via the Moneris
+	 * API.
+	 */
+	public function process(Transaction $transaction): Response
+	{
+		if ($transaction->invalid()) {
+			throw new InvalidTransactionException($transaction);
+		}
 
-        $xml = $this->submit($transaction);
+		$xml = $this->submit($transaction);
 
-        return $transaction->validate($xml);
-    }
+		return $transaction->validate($xml);
+	}
 
-    /**
-     * Parse the global error response stub.
-     */
-    protected function error(): SimpleXMLElement
-    {
-        return simplexml_load_string($this->error);
-    }
+	/**
+	 * Parse the global error response stub.
+	 */
+	protected function error(): SimpleXMLElement
+	{
+		return simplexml_load_string($this->error);
+	}
 
-    /**
-     * Set up and send the request to the Moneris API.
-     *
-     * @param string $url
-     * @param string $xml
-     */
-    protected function send(array $config, $url = '', $xml = ''): string
-    {
-        $response = $this->client->post($url, [
-            'body' => $xml,
-            'headers' => [
-                'User-Agent' => $config['api_version'],
-            ],
-            'timeout' => $config['timeout'],
-        ]);
+	/**
+	 * Set up and send the request to the Moneris API.
+	 *
+	 * @param string $url
+	 * @param string $xml
+	 */
+	protected function send(array $config, $url = '', $xml = ''): string
+	{
+		$response = $this->client->post($url, [
+			'body' => $xml,
+			'headers' => [
+				'User-Agent' => $config['api_version'],
+			],
+			'timeout' => $config['timeout'],
+		]);
 
-        return $response->getBody()->getContents();
-    }
+		return $response->getBody()->getContents();
+	}
 
-    /**
-     * Submit the transaction to the Moneris API.
-     *
-     *
-     * @return \SimpleXMLElement
-     */
-    protected function submit(Transaction $transaction)
-    {
-        $config = $this->config($transaction->gateway->environment);
+	/**
+	 * Submit the transaction to the Moneris API.
+	 *
+	 *
+	 * @return \SimpleXMLElement
+	 */
+	protected function submit(Transaction $transaction)
+	{
+		$config = $this->config($transaction->gateway->environment);
 
-        $url = $config['protocol'] . '://' . $config['host'] . ':' . $config['port'] . $config['url'];
+		$url = $config['protocol'] . '://' . $config['host'] . ':' . $config['port'] . $config['url'];
 
-        $xml = str_replace(' </', '</', $transaction->toXml());
+		$xml = str_replace(' </', '</', $transaction->toXml());
 
-        $response = $this->send($config, $url, $xml);
+		$response = $this->send($config, $url, $xml);
 
-        if (!$response) {
-            return $this->error();
-        }
+		if (!$response) {
+			return $this->error();
+		}
 
-        $response = @simplexml_load_string($response);
+		$response = @simplexml_load_string($response);
 
-        if ($response === false) {
-            return $this->error();
-        }
+		if ($response === false) {
+			return $this->error();
+		}
 
-        return $response;
-    }
+		return $response;
+	}
 }

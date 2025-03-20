@@ -14,44 +14,39 @@ use CraigPaul\Moneris\Values\Crypt;
  */
 class CreditCard
 {
-    use GettableTrait, SettableTrait;
+	use GettableTrait;
+	use SettableTrait;
 
-    protected Crypt $crypt;
+	protected Crypt $crypt;
 
-    protected Customer|null $customer = null;
+	protected Customer|null $customer = null;
 
-    protected string $expiry;
+	public function __construct(
+		protected string $number,
+		protected string $expiry,
+		Crypt|null $crypt = null
+	) {
+		$this->crypt = $crypt ?? Crypt::sslEnableMerchant();
+	}
 
-    protected string $number;
+	/**
+	 * Static constructor.
+	 */
+	public static function create(
+		string $number,
+		string $expiry,
+		Crypt|null $crypt = null,
+	): self {
+		return new static($number, $expiry, $crypt);
+	}
 
-    public function __construct(
-        string $number,
-        string $expiry,
-        Crypt|null $crypt = null
-    ) {
-        $this->number = $number;
-        $this->expiry = $expiry;
-        $this->crypt = $crypt ?? Crypt::sslEnableMerchant();
-    }
+	/**
+	 * Set the customer.
+	 */
+	public function attach(Customer $customer): self
+	{
+		$this->customer = $customer;
 
-    /**
-     * Static constructor.
-     */
-    public static function create(
-        string $number,
-        string $expiry,
-        Crypt|null $crypt = null,
-    ): self {
-        return new static($number, $expiry, $crypt);
-    }
-
-    /**
-     * Set the customer.
-     */
-    public function attach(Customer $customer): self
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
+		return $this;
+	}
 }

@@ -12,48 +12,48 @@ use CraigPaul\Moneris\Values\Crypt;
  */
 class CreditCardTest extends FeatureTestCase
 {
-    protected CreditCard $card;
+	protected CreditCard $card;
 
-    public function setUp(): void
-    {
-        parent::setUp();
+	public function setUp(): void
+	{
+		parent::setUp();
 
-        $this->card = CreditCard::create($this->visa, '2012');
-    }
+		$this->card = CreditCard::create($this->visa, '2012');
+	}
 
-    /** @test */
-    public function instantiation(): void
-    {
-        $crypt = Crypt::sslEnableMerchant();
+	/** @test */
+	public function instantiation(): void
+	{
+		$crypt = Crypt::sslEnableMerchant();
 
-        $card = new CreditCard($this->visa, '2012', $crypt);
+		$card = new CreditCard($this->visa, '2012', $crypt);
 
-        $this->assertInstanceOf(CreditCard::class, $card);
-        $this->assertSame($this->visa, $card->number);
-        $this->assertSame('2012', $card->expiry);
-        $this->assertSame($crypt, $card->crypt);
-    }
+		$this->assertInstanceOf(CreditCard::class, $card);
+		$this->assertSame($this->visa, $card->number);
+		$this->assertSame('2012', $card->expiry);
+		$this->assertSame($crypt, $card->crypt);
+	}
 
-    /** @test */
-    public function instantiation_via_static_constructor(): void
-    {
-        $crypt = new Crypt(5);
+	/** @test */
+	public function instantiation_via_static_constructor(): void
+	{
+		$crypt = new Crypt(5);
 
-        $card = CreditCard::create($this->visa, '2012', $crypt);
+		$card = CreditCard::create($this->visa, '2012', $crypt);
 
-        $this->assertInstanceOf(CreditCard::class, $card);
-        $this->assertSame($this->visa, $card->number);
-        $this->assertSame('2012', $card->expiry);
-        $this->assertSame($crypt, $card->crypt);
-    }
+		$this->assertInstanceOf(CreditCard::class, $card);
+		$this->assertSame($this->visa, $card->number);
+		$this->assertSame('2012', $card->expiry);
+		$this->assertSame($crypt, $card->crypt);
+	}
 
-    /** @test */
-    public function setting_the_customer(): void
-    {
-        $customer = Customer::create();
+	/** @test */
+	public function setting_the_customer(): void
+	{
+		$customer = Customer::create();
 
-        $this->card->attach($customer);
+		$this->card->attach($customer);
 
-        $this->assertSame($customer, $this->card->customer);
-    }
+		$this->assertSame($customer, $this->card->customer);
+	}
 }

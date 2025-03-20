@@ -10,16 +10,16 @@ use CraigPaul\Moneris\Validation\Errors\NotSetError;
  */
 class NotSetErrorTest extends FeatureTestCase
 {
-    /** @test */
-    public function getting_code_and_message(): void
-    {
-        $error = new NotSetError('my-field');
+	/** @test */
+	public function getting_code_and_message(): void
+	{
+		$error = new NotSetError('my-field');
 
-        $this->assertSame(2, $error->code());
-        $this->assertSame(
-            'Required field "my-field" not set.',
-            $error->message()
-        );
-        $this->assertSame('my-field', $error->field());
-    }
+		$this->assertSame(2, $error->code());
+		$this->assertSame(
+			'Required field "my-field" not set.',
+			$error->message()
+		);
+		$this->assertSame('my-field', $error->field());
+	}
 }

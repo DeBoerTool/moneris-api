@@ -4,38 +4,36 @@ namespace CraigPaul\Moneris\Values;
 
 class Environment
 {
-    const LIVE = 'live';
+	public const LIVE = 'live';
 
-    const STAGING = 'staging';
+	public const STAGING = 'staging';
 
-    const TESTING = 'testing';
+	public const TESTING = 'testing';
 
-    protected function __construct(private string $environment)
-    {
-    }
+	protected function __construct(private readonly string $environment) {}
 
-    public static function live(): self
-    {
-        return new self(self::LIVE);
-    }
+	public static function live(): self
+	{
+		return new self(self::LIVE);
+	}
 
-    public static function staging(): self
-    {
-        return new self(self::STAGING);
-    }
+	public static function staging(): self
+	{
+		return new self(self::STAGING);
+	}
 
-    public static function testing(): self
-    {
-        return new self(self::TESTING);
-    }
+	public static function testing(): self
+	{
+		return new self(self::TESTING);
+	}
 
-    public function value(): string
-    {
-        return $this->environment;
-    }
+	public function value(): string
+	{
+		return $this->environment;
+	}
 
-    public function isLive(): bool
-    {
-        return $this->value() === self::LIVE;
-    }
+	public function isLive(): bool
+	{
+		return $this->value() === self::LIVE;
+	}
 }
