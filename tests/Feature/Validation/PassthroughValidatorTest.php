@@ -2,13 +2,15 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Validation\PassthroughValidator;
 
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\PassthroughValidator::class)]
+#[CoversClass(PassthroughValidator::class)]
 class PassthroughValidatorTest extends FeatureTestCase
 {
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function passing_and_getting_error(): void
 	{
 		$val = new PassthroughValidator();

@@ -2,6 +2,17 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use CraigPaul\Moneris\Validation\AddCardValidator;
+use CraigPaul\Moneris\Validation\CardVerificationValidator;
+use CraigPaul\Moneris\Validation\CompletionValidator;
+use CraigPaul\Moneris\Validation\DeleteCardValidator;
+use CraigPaul\Moneris\Validation\PreauthValidator;
+use CraigPaul\Moneris\Validation\PurchaseCorrectionValidator;
+use CraigPaul\Moneris\Validation\PurchaseValidator;
+use CraigPaul\Moneris\Validation\RefundValidator;
+use CraigPaul\Moneris\Validation\UpdateCardValidator;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
@@ -14,20 +25,20 @@ use CraigPaul\Moneris\Validation\ValidatorAbstract;
  * for matching types to validators works properly. Individual validation
  * logic is tested separately, per class.
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\Validator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\ValidatorAbstract::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\AddCardValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\CardVerificationValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\CompletionValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\DeleteCardValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\PreauthValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\PurchaseCorrectionValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\PurchaseValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\RefundValidator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\UpdateCardValidator::class)]
+#[CoversClass(Validator::class)]
+#[CoversClass(ValidatorAbstract::class)]
+#[CoversClass(AddCardValidator::class)]
+#[CoversClass(CardVerificationValidator::class)]
+#[CoversClass(CompletionValidator::class)]
+#[CoversClass(DeleteCardValidator::class)]
+#[CoversClass(PreauthValidator::class)]
+#[CoversClass(PurchaseCorrectionValidator::class)]
+#[CoversClass(PurchaseValidator::class)]
+#[CoversClass(RefundValidator::class)]
+#[CoversClass(UpdateCardValidator::class)]
 class ValidatorTest extends FeatureTestCase
 {
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function static_constructor(): void
 	{
 		$validator = Validator::of($this->gateway(), []);
@@ -35,7 +46,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertInstanceOf(ValidatorAbstract::class, $validator);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function failing_with_empty_params(): void
 	{
 		$validator = new Validator($this->gateway(), []);
@@ -48,7 +59,7 @@ class ValidatorTest extends FeatureTestCase
 		);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function failing_with_no_type_set(): void
 	{
 		$validator = new Validator($this->gateway(), ['foo' => 'bar']);
@@ -65,7 +76,7 @@ class ValidatorTest extends FeatureTestCase
 		);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function failing_with_unsupported_type(): void
 	{
 		$validator = new Validator($this->gateway(), ['type' => 'foo']);
@@ -78,7 +89,7 @@ class ValidatorTest extends FeatureTestCase
 		);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function get_expiring(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -88,7 +99,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function card_verification(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -107,7 +118,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function card_verification_with_avs(): void
 	{
 		$validator = new Validator($this->gateway(avs: true), [
@@ -132,7 +143,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function card_verification_with_cvd(): void
 	{
 		$validator = new Validator($this->gateway(cvd: true), [
@@ -155,7 +166,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function card_verification_with_cof(): void
 	{
 		$validator = new Validator($this->gateway(cof: true), [
@@ -179,7 +190,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function purchase(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -199,7 +210,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function preauth(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -219,7 +230,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function preauth_with_avs(): void
 	{
 		$validator = new Validator($this->gateway(avs: true), [
@@ -246,7 +257,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function preauth_with_cvd(): void
 	{
 		$validator = new Validator($this->gateway(cvd: true), [
@@ -271,7 +282,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function preauth_with_cof(): void
 	{
 		$validator = new Validator($this->gateway(cof: true), [
@@ -297,7 +308,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function tokenize(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -316,7 +327,7 @@ class ValidatorTest extends FeatureTestCase
 
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function purchase_correction(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -334,7 +345,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function completion(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -353,7 +364,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function refund(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -372,7 +383,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function add_card(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -390,7 +401,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function add_card_with_cof(): void
 	{
 		$validator = new Validator($this->gateway(cof: true), [
@@ -411,7 +422,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function update_card(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -430,7 +441,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function update_card_with_cof(): void
 	{
 		$validator = new Validator($this->gateway(cof: true), [
@@ -453,7 +464,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function delete_card(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -470,7 +481,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function lookup_full_card(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -487,7 +498,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function lookup_masked_card(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -504,7 +515,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function res_preauth(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -523,7 +534,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function res_preauth_with_avs(): void
 	{
 		$validator = new Validator($this->gateway(avs: true), [
@@ -548,7 +559,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function res_preauth_with_cvd(): void
 	{
 		$validator = new Validator($this->gateway(cvd: true), [
@@ -571,7 +582,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function res_preauth_with_cof(): void
 	{
 		$validator = new Validator($this->gateway(cof: true), [
@@ -595,7 +606,7 @@ class ValidatorTest extends FeatureTestCase
 		$this->assertTrue($validator->passes());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function passing_res_purchase(): void
 	{
 		$validator = new Validator($this->gateway(), [

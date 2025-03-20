@@ -2,12 +2,15 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use CraigPaul\Moneris\Receipt;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Receipt::class)]
+#[CoversClass(Receipt::class)]
 class ReceiptTest extends FeatureTestCase
 {
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function serializing_to_json(): void
 	{
 		$response = $this->gateway()->purchase([

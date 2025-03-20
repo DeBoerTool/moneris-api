@@ -86,12 +86,12 @@ class Processor
 	}
 
 	/**
-	 * Submit the transaction to the Moneris API.
-	 *
-	 *
-	 * @return \SimpleXMLElement
-	 */
-	protected function submit(Transaction $transaction)
+     * Submit the transaction to the Moneris API.
+     *
+     *
+     * @return SimpleXMLElement
+     */
+    protected function submit(Transaction $transaction)
 	{
 		$config = $this->config($transaction->gateway->environment);
 

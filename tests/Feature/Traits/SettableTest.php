@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Traits;
 
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Traits\SettableTrait;
 use InvalidArgumentException;
@@ -26,7 +27,7 @@ class SettableTest extends FeatureTestCase
 		};
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function setting_a_property(): void
 	{
 		$this->assertNull($this->stub->myProp());
@@ -36,7 +37,7 @@ class SettableTest extends FeatureTestCase
 		$this->assertSame('some test value', $this->stub->myProp());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function failing_to_set_a_property(): void
 	{
 		$this->expectException(InvalidArgumentException::class);

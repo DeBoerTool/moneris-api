@@ -11,9 +11,9 @@ use SimpleXMLElement;
 
 /**
  * @property-read array $errors
- * @property-read \CraigPaul\Moneris\Gateway $gateway
+ * @property-read Gateway $gateway
  * @property-read array $params
- * @property \SimpleXMLElement|null $response
+ * @property SimpleXMLElement|null $response
  */
 class Transaction
 {

@@ -2,6 +2,8 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Enums\ResponseErrorEnum;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Processor;
@@ -11,7 +13,7 @@ use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
 
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Response::class)]
+#[CoversClass(Response::class)]
 class ResponseTest extends FeatureTestCase
 {
 	protected GatewayInterface $gateway;
@@ -43,7 +45,7 @@ class ResponseTest extends FeatureTestCase
 		$this->processor = new Processor(new Client());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function instantiating(): void
 	{
 		$response = new Response($this->transaction);
@@ -52,7 +54,7 @@ class ResponseTest extends FeatureTestCase
 		$this->assertSame($this->transaction, $response->getTransaction());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function getting_a_successful_response(): void
 	{
 		$response = $this->processor->process($this->transaction);
@@ -62,7 +64,7 @@ class ResponseTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function getting_a_receipt_for_a_successful_response(): void
 	{
 		$response = $this->processor->process($this->transaction)->validate();
@@ -74,7 +76,7 @@ class ResponseTest extends FeatureTestCase
 		);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function receipt_is_null_when_unprocessed(): void
 	{
 		$response = new Response(new Transaction($this->gateway(), []));
@@ -82,7 +84,7 @@ class ResponseTest extends FeatureTestCase
 		$this->assertNull($response->getReceipt());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function processing_expdate_error_edge_cases_from_message(): void
 	{
 		$response = $this->processTransaction([
@@ -96,7 +98,7 @@ class ResponseTest extends FeatureTestCase
 		);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function processing_cc_error_edge_cases_from_message(): void
 	{
 		$response = $this->processTransaction([

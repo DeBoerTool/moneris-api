@@ -19,9 +19,9 @@ if (!function_exists('dd')) {
 
 if (!function_exists('mock_handler')) {
 	/**
-	 * @return \GuzzleHttp\Client
-	 */
-	function mock_handler($stub)
+     * @return Client
+     */
+    function mock_handler($stub)
 	{
 		$mock = new MockHandler([
 			new Response(200, [], $stub),

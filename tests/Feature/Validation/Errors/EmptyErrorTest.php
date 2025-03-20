@@ -2,13 +2,15 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation\Errors;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\Errors\EmptyError::class)]
+#[CoversClass(EmptyError::class)]
 class EmptyErrorTest extends FeatureTestCase
 {
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function getting_code_and_message(): void
 	{
 		$error = new EmptyError();

@@ -2,13 +2,14 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Values;
 
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Values\Crypt;
 use InvalidArgumentException;
 
 class CryptTest extends FeatureTestCase
 {
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function instantiating_with_valid_type(): void
 	{
 		$crypt = new Crypt(1);
@@ -16,7 +17,7 @@ class CryptTest extends FeatureTestCase
 		$this->assertSame(1, $crypt->value());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function failing_with_invalid_type(): void
 	{
 		$this->expectException(InvalidArgumentException::class);
@@ -24,7 +25,7 @@ class CryptTest extends FeatureTestCase
 		new Crypt(111);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function using_the_static_constructor(): void
 	{
 		$crypt = Crypt::sslEnableMerchant();
@@ -32,7 +33,7 @@ class CryptTest extends FeatureTestCase
 		$this->assertSame(Crypt::SSL_ENABLED_MERCHANT, $crypt->value());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function casting_to_string(): void
 	{
 		$crypt = Crypt::sslEnableMerchant();

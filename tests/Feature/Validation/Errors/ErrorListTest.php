@@ -2,6 +2,8 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Validation\Errors;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Tests\Support\Stubs\ErrorStub;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
@@ -9,10 +11,10 @@ use CraigPaul\Moneris\Validation\Errors\ErrorList;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
 use CraigPaul\Moneris\Validation\Errors\UnsupportedTransactionError;
 
-#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Validation\Errors\ErrorList::class)]
+#[CoversClass(ErrorList::class)]
 class ErrorListTest extends FeatureTestCase
 {
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function pushing_errors_onto_the_stack(): void
 	{
 		$list = new ErrorList();
@@ -25,7 +27,7 @@ class ErrorListTest extends FeatureTestCase
 		$this->assertSame(2, $list->count());
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function getting_an_error(): void
 	{
 		$errors = [
@@ -39,7 +41,7 @@ class ErrorListTest extends FeatureTestCase
 		$this->assertSame($errors[1], $list->get(1));
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function merging_lists(): void
 	{
 		$e1 = new ErrorStub();
@@ -56,7 +58,7 @@ class ErrorListTest extends FeatureTestCase
 		$this->assertSame($list3->get(1), $e2);
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function iterating(): void
 	{
 		$errors = [
@@ -72,7 +74,7 @@ class ErrorListTest extends FeatureTestCase
 		}
 	}
 
-	#[\PHPUnit\Framework\Attributes\Test]
+	#[Test]
 	public function getting_an_array_representation(): void
 	{
 		$errors = new ErrorList(
