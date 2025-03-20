@@ -46,9 +46,9 @@ class Validator extends ValidatorAbstract
 	}
 
 	/**
-	 * @throws \CraigPaul\Moneris\Exceptions\UnsupportedTransactionException
-	 */
-	protected function getValidator(): ValidatorInterface
+     * @throws UnsupportedTransactionException
+     */
+    protected function getValidator(): ValidatorInterface
 	{
 		$fqcn = match ($this->params['type']) {
 			'res_get_expiring' => new PassthroughValidator(),

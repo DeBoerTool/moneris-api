@@ -2,18 +2,18 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Gateway;
 use CraigPaul\Moneris\Moneris;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Vault;
 use InvalidArgumentException;
 
-/**
- * @covers \CraigPaul\Moneris\Moneris
- */
+#[CoversClass(Moneris::class)]
 class MonerisTest extends FeatureTestCase
 {
-	/** @test */
+	#[Test]
 	public function instantiation(): void
 	{
 		$moneris = $this->moneris();
@@ -22,7 +22,7 @@ class MonerisTest extends FeatureTestCase
 		$this->assertPropertiesAreGettable($moneris);
 	}
 
-	/** @test */
+	#[Test]
 	public function instantiation_with_optional_params(): void
 	{
 		$moneris = $this->moneris(avs: true);
@@ -44,7 +44,7 @@ class MonerisTest extends FeatureTestCase
 		$this->assertTrue($moneris->cof);
 	}
 
-	/** @test */
+	#[Test]
 	public function getting_the_gateway_via_static_method(): void
 	{
 		$gateway = Moneris::create($this->id, $this->token, $this->environment);
@@ -53,7 +53,7 @@ class MonerisTest extends FeatureTestCase
 		$this->assertPropertiesAreGettable($gateway);
 	}
 
-	/** @test */
+	#[Test]
 	public function getting_the_vault_via_static_method(): void
 	{
 		$vault = Moneris::vault($this->id, $this->token, $this->environment);
@@ -62,7 +62,7 @@ class MonerisTest extends FeatureTestCase
 		$this->assertPropertiesAreGettable($vault);
 	}
 
-	/** @test */
+	#[Test]
 	public function it_fails_to_retrieve_a_non_existent_property_of_the_class()
 	{
 		$moneris = $this->moneris();
@@ -74,7 +74,7 @@ class MonerisTest extends FeatureTestCase
 		$moneris->nonExistentProperty;
 	}
 
-	/** @test */
+	#[Test]
 	public function getting_the_gateway()
 	{
 		$moneris = $this->moneris();

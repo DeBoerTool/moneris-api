@@ -2,12 +2,13 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Values;
 
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Values\Environment;
 
 class EnvironmentTest extends FeatureTestCase
 {
-	/** @test */
+	#[Test]
 	public function testing_environment(): void
 	{
 		$env = Environment::testing();
@@ -16,7 +17,7 @@ class EnvironmentTest extends FeatureTestCase
 		$this->assertFalse($env->isLive());
 	}
 
-	/** @test */
+	#[Test]
 	public function staging_environment(): void
 	{
 		$env = Environment::staging();
@@ -25,7 +26,7 @@ class EnvironmentTest extends FeatureTestCase
 		$this->assertFalse($env->isLive());
 	}
 
-	/** @test */
+	#[Test]
 	public function live_environment(): void
 	{
 		$env = Environment::live();

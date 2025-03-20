@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Exceptions;
 
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
 use CraigPaul\Moneris\Tests\Support\Stubs\GatewayStub;
 use CraigPaul\Moneris\Tests\UnitTestCase;
@@ -9,7 +10,7 @@ use CraigPaul\Moneris\Transaction;
 
 class InvalidTransactionExceptionTest extends UnitTestCase
 {
-	/** @test */
+	#[Test]
 	public function getting_the_message(): void
 	{
 		$transaction = new Transaction(new GatewayStub(), [

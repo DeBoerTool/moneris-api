@@ -7,8 +7,8 @@ use CraigPaul\Moneris\Traits\SettableTrait;
 use CraigPaul\Moneris\Values\Crypt;
 
 /**
- * @property-read \CraigPaul\Moneris\Values\Crypt $crypt
- * @property \CraigPaul\Moneris\Customer|null $customer
+ * @property-read Crypt $crypt
+ * @property Customer|null $customer
  * @property string $expiry
  * @property string $number
  */

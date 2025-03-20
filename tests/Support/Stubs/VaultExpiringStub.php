@@ -2,14 +2,16 @@
 
 namespace CraigPaul\Moneris\Tests\Support\Stubs;
 
+use CraigPaul\Moneris\Response;
+
 class VaultExpiringStub
 {
 	public function render(array $cardResponses): string
 	{
 		$xmlResponseString = '<?xml version="1.0"?><response><receipt>';
 
-		/** @var \CraigPaul\Moneris\Response $cardResponse */
-		foreach ($cardResponses as $cardResponse) {
+		/** @var Response $cardResponse */
+        foreach ($cardResponses as $cardResponse) {
 			$receipt = $cardResponse->getReceipt();
 			$data = $receipt->read('data');
 			$expdate = $data['expiry_date']['year'] . $data['expiry_date']['month'];

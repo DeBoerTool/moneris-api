@@ -19,7 +19,7 @@ use GuzzleHttp\Client;
  * @property-read string $environment
  * @property-read string $id
  * @property-read string $token
- * @property \CraigPaul\Moneris\Transaction $transaction
+ * @property Transaction $transaction
  * @property bool $cof
  */
 class Gateway implements GatewayInterface

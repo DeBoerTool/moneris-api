@@ -2,14 +2,14 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Values\Crypt;
 
-/**
- * @covers \CraigPaul\Moneris\CreditCard
- */
+#[CoversClass(CreditCard::class)]
 class CreditCardTest extends FeatureTestCase
 {
 	protected CreditCard $card;
@@ -21,7 +21,7 @@ class CreditCardTest extends FeatureTestCase
 		$this->card = CreditCard::create($this->visa, '2012');
 	}
 
-	/** @test */
+	#[Test]
 	public function instantiation(): void
 	{
 		$crypt = Crypt::sslEnableMerchant();
@@ -34,7 +34,7 @@ class CreditCardTest extends FeatureTestCase
 		$this->assertSame($crypt, $card->crypt);
 	}
 
-	/** @test */
+	#[Test]
 	public function instantiation_via_static_constructor(): void
 	{
 		$crypt = new Crypt(5);
@@ -47,7 +47,7 @@ class CreditCardTest extends FeatureTestCase
 		$this->assertSame($crypt, $card->crypt);
 	}
 
-	/** @test */
+	#[Test]
 	public function setting_the_customer(): void
 	{
 		$customer = Customer::create();
