@@ -16,109 +16,109 @@ use GuzzleHttp\Client;
  */
 class ResponseTest extends FeatureTestCase
 {
-    protected GatewayInterface $gateway;
+	protected GatewayInterface $gateway;
 
-    protected array $params;
+	protected array $params;
 
-    protected Processor $processor;
+	protected Processor $processor;
 
-    protected Response $response;
+	protected Response $response;
 
-    protected Transaction $transaction;
+	protected Transaction $transaction;
 
-    public function setUp(): void
-    {
-        parent::setUp();
+	public function setUp(): void
+	{
+		parent::setUp();
 
-        $this->gateway = $this->gateway();
+		$this->gateway = $this->gateway();
 
-        $this->params = [
-            'type' => 'purchase',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-            'order_id' => uniqid('1234-56789', true),
-            'amount' => '1.00',
-            'credit_card' => $this->visa,
-            'expdate' => '2012',
-        ];
+		$this->params = [
+			'type' => 'purchase',
+			'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+			'order_id' => uniqid('1234-56789', true),
+			'amount' => '1.00',
+			'credit_card' => $this->visa,
+			'expdate' => '2012',
+		];
 
-        $this->transaction = new Transaction($this->gateway, $this->params);
-        $this->processor = new Processor(new Client());
-    }
+		$this->transaction = new Transaction($this->gateway, $this->params);
+		$this->processor = new Processor(new Client());
+	}
 
-    /** @test */
-    public function instantiating(): void
-    {
-        $response = new Response($this->transaction);
+	/** @test */
+	public function instantiating(): void
+	{
+		$response = new Response($this->transaction);
 
-        $this->assertTrue($response->isSuccessful());
-        $this->assertSame($this->transaction, $response->getTransaction());
-    }
+		$this->assertTrue($response->isSuccessful());
+		$this->assertSame($this->transaction, $response->getTransaction());
+	}
 
-    /** @test */
-    public function getting_a_successful_response(): void
-    {
-        $response = $this->processor->process($this->transaction);
+	/** @test */
+	public function getting_a_successful_response(): void
+	{
+		$response = $this->processor->process($this->transaction);
 
-        $response = $response->validate();
+		$response = $response->validate();
 
-        $this->assertTrue($response->isSuccessful());
-    }
+		$this->assertTrue($response->isSuccessful());
+	}
 
-    /** @test */
-    public function getting_a_receipt_for_a_successful_response(): void
-    {
-        $response = $this->processor->process($this->transaction)->validate();
+	/** @test */
+	public function getting_a_receipt_for_a_successful_response(): void
+	{
+		$response = $this->processor->process($this->transaction)->validate();
 
-        $this->assertNotNull($response->getReceipt());
-        $this->assertSame(
-            $this->params['order_id'],
-            $response->getReceipt()->read('id'),
-        );
-    }
+		$this->assertNotNull($response->getReceipt());
+		$this->assertSame(
+			$this->params['order_id'],
+			$response->getReceipt()->read('id'),
+		);
+	}
 
-    /** @test */
-    public function receipt_is_null_when_unprocessed(): void
-    {
-        $response = new Response(new Transaction($this->gateway(), []));
+	/** @test */
+	public function receipt_is_null_when_unprocessed(): void
+	{
+		$response = new Response(new Transaction($this->gateway(), []));
 
-        $this->assertNull($response->getReceipt());
-    }
+		$this->assertNull($response->getReceipt());
+	}
 
-    /** @test */
-    public function processing_expdate_error_edge_cases_from_message(): void
-    {
-        $response = $this->processTransaction([
-            'expdate' => 'foo',
-        ]);
+	/** @test */
+	public function processing_expdate_error_edge_cases_from_message(): void
+	{
+		$response = $this->processTransaction([
+			'expdate' => 'foo',
+		]);
 
-        $this->assertFalse($response->isSuccessful());
-        $this->assertEquals(
-            ResponseErrorEnum::InvalidExpiryDate,
-            $response->getError(),
-        );
-    }
+		$this->assertFalse($response->isSuccessful());
+		$this->assertEquals(
+			ResponseErrorEnum::InvalidExpiryDate,
+			$response->getError(),
+		);
+	}
 
-    /** @test */
-    public function processing_cc_error_edge_cases_from_message(): void
-    {
-        $response = $this->processTransaction([
-            'credit_card' => '1234',
-        ]);
+	/** @test */
+	public function processing_cc_error_edge_cases_from_message(): void
+	{
+		$response = $this->processTransaction([
+			'credit_card' => '1234',
+		]);
 
-        $this->assertFalse($response->isSuccessful());
-        $this->assertEquals(
-            ResponseErrorEnum::InvalidCard,
-            $response->getError(),
-        );
-    }
+		$this->assertFalse($response->isSuccessful());
+		$this->assertEquals(
+			ResponseErrorEnum::InvalidCard,
+			$response->getError(),
+		);
+	}
 
-    protected function processTransaction($params = []): Response
-    {
-        $this->params = array_merge($this->params, $params);
-        $this->transaction = new Transaction($this->gateway, $this->params);
+	protected function processTransaction($params = []): Response
+	{
+		$this->params = array_merge($this->params, $params);
+		$this->transaction = new Transaction($this->gateway, $this->params);
 
-        $response = $this->processor->process($this->transaction);
+		$response = $this->processor->process($this->transaction);
 
-        return $response->validate();
-    }
+		return $response->validate();
+	}
 }

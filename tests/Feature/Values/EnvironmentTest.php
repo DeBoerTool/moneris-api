@@ -7,30 +7,30 @@ use CraigPaul\Moneris\Values\Environment;
 
 class EnvironmentTest extends FeatureTestCase
 {
-    /** @test */
-    public function testing_environment(): void
-    {
-        $env = Environment::testing();
+	/** @test */
+	public function testing_environment(): void
+	{
+		$env = Environment::testing();
 
-        $this->assertSame(Environment::TESTING, $env->value());
-        $this->assertFalse($env->isLive());
-    }
+		$this->assertSame(Environment::TESTING, $env->value());
+		$this->assertFalse($env->isLive());
+	}
 
-    /** @test */
-    public function staging_environment(): void
-    {
-        $env = Environment::staging();
+	/** @test */
+	public function staging_environment(): void
+	{
+		$env = Environment::staging();
 
-        $this->assertSame(Environment::STAGING, $env->value());
-        $this->assertFalse($env->isLive());
-    }
+		$this->assertSame(Environment::STAGING, $env->value());
+		$this->assertFalse($env->isLive());
+	}
 
-    /** @test */
-    public function live_environment(): void
-    {
-        $env = Environment::live();
+	/** @test */
+	public function live_environment(): void
+	{
+		$env = Environment::live();
 
-        $this->assertSame(Environment::LIVE, $env->value());
-        $this->assertTrue($env->isLive());
-    }
+		$this->assertSame(Environment::LIVE, $env->value());
+		$this->assertTrue($env->isLive());
+	}
 }

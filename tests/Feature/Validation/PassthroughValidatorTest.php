@@ -10,12 +10,12 @@ use CraigPaul\Moneris\Validation\PassthroughValidator;
  */
 class PassthroughValidatorTest extends FeatureTestCase
 {
-    /** @test */
-    public function passing_and_getting_error(): void
-    {
-        $val = new PassthroughValidator();
+	/** @test */
+	public function passing_and_getting_error(): void
+	{
+		$val = new PassthroughValidator();
 
-        $this->assertTrue($val->passes());
-        $this->assertCount(0, $val->errors());
-    }
+		$this->assertTrue($val->passes());
+		$this->assertCount(0, $val->errors());
+	}
 }

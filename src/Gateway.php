@@ -24,226 +24,226 @@ use GuzzleHttp\Client;
  */
 class Gateway implements GatewayInterface
 {
-    use GettableTrait, SettableTrait;
+	use GettableTrait;
+	use SettableTrait;
 
-    protected array $avsCodes = ['A', 'B', 'D', 'M', 'P', 'W', 'X', 'Y', 'Z'];
+	protected array $avsCodes = ['A', 'B', 'D', 'M', 'P', 'W', 'X', 'Y', 'Z'];
 
-    protected array $cvdCodes = ['M', 'Y', 'P', 'S', 'U'];
+	protected array $cvdCodes = ['M', 'Y', 'P', 'S', 'U'];
 
-    public function __construct(
-        protected string $id,
-        protected string $token,
-        protected Environment $environment,
-        protected bool $avs = false,
-        protected bool $cvd = false,
-        protected bool $cof = false,
-        protected Transaction|null $transaction = null,
-    ) {
-    }
+	public function __construct(
+		protected string $id,
+		protected string $token,
+		protected Environment $environment,
+		protected bool $avs = false,
+		protected bool $cvd = false,
+		protected bool $cof = false,
+		protected Transaction|null $transaction = null,
+	) {}
 
-    public function getValidAvsCodes(): array
-    {
-        return $this->avsCodes;
-    }
+	public function getValidAvsCodes(): array
+	{
+		return $this->avsCodes;
+	}
 
-    public function getValidCvdCodes(): array
-    {
-        return $this->cvdCodes;
-    }
+	public function getValidCvdCodes(): array
+	{
+		return $this->cvdCodes;
+	}
 
-    public function hasAvsEnabled(): bool
-    {
-        return $this->avs;
-    }
+	public function hasAvsEnabled(): bool
+	{
+		return $this->avs;
+	}
 
-    public function hasCvdEnabled(): bool
-    {
-        return $this->cvd;
-    }
+	public function hasCvdEnabled(): bool
+	{
+		return $this->cvd;
+	}
 
-    public function isValidAvsCode(string $code): bool
-    {
-        return in_array($code, $this->getValidAvsCodes());
-    }
+	public function isValidAvsCode(string $code): bool
+	{
+		return in_array($code, $this->getValidAvsCodes());
+	}
 
-    public function isValidCvdCode(string $code): bool
-    {
-        return in_array($code, $this->getValidCvdCodes());
-    }
+	public function isValidCvdCode(string $code): bool
+	{
+		return in_array($code, $this->getValidCvdCodes());
+	}
 
-    /**
-     * Capture a pre-authorized transaction.
-     *
-     * @param string|null $order
-     */
-    public function capture(
-        string|Transaction $transaction,
-        string|null $order = null,
-        mixed $amount = null
-    ): Response {
-        $transactionNumber = $transaction;
+	/**
+	 * Capture a pre-authorized transaction.
+	 *
+	 * @param string|null $order
+	 */
+	public function capture(
+		string|Transaction $transaction,
+		string|null $order = null,
+		mixed $amount = null
+	): Response {
+		$transactionNumber = $transaction;
 
-        if ($transaction instanceof Transaction) {
-            $order = $transaction->order();
+		if ($transaction instanceof Transaction) {
+			$order = $transaction->order();
 
-            $amount = is_null($amount)
-                ? $transaction->amount()
-                : $amount;
+			$amount = is_null($amount)
+				? $transaction->amount()
+				: $amount;
 
-            $transactionNumber = $transaction->number();
-        }
+			$transactionNumber = $transaction->number();
+		}
 
-        $params = [
-            'type' => 'completion',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-            'comp_amount' => $amount,
-            'txn_number' => $transactionNumber,
-            'order_id' => $order,
-        ];
+		$params = [
+			'type' => 'completion',
+			'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+			'comp_amount' => $amount,
+			'txn_number' => $transactionNumber,
+			'order_id' => $order,
+		];
 
-        $transaction = $this->transaction($params);
+		$transaction = $this->transaction($params);
 
-        return $this->process($transaction);
-    }
+		return $this->process($transaction);
+	}
 
-    /**
-     * Alias for self::vault().
-     */
-    public function cards(): Vault
-    {
-        return $this->vault();
-    }
+	/**
+	 * Alias for self::vault().
+	 */
+	public function cards(): Vault
+	{
+		return $this->vault();
+	}
 
-    /**
-     * Create a new Vault instance.
-     */
-    public function vault(): Vault
-    {
-        return new Vault(
-            $this->id,
-            $this->token,
-            $this->environment,
-            $this->avs,
-            $this->cvd,
-            $this->cof,
-        );
-    }
+	/**
+	 * Create a new Vault instance.
+	 */
+	public function vault(): Vault
+	{
+		return new Vault(
+			$this->id,
+			$this->token,
+			$this->environment,
+			$this->avs,
+			$this->cvd,
+			$this->cof,
+		);
+	}
 
-    /**
-     * Pre-authorize a purchase.
-     */
-    public function preauth(array $params = []): Response
-    {
-        $params = array_merge($params, [
-            'type' => 'preauth',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-        ]);
+	/**
+	 * Pre-authorize a purchase.
+	 */
+	public function preauth(array $params = []): Response
+	{
+		$params = array_merge($params, [
+			'type' => 'preauth',
+			'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+		]);
 
-        $transaction = $this->transaction($params);
+		$transaction = $this->transaction($params);
 
-        return $this->process($transaction);
-    }
+		return $this->process($transaction);
+	}
 
-    /**
-     * Make a purchase.
-     */
-    public function purchase(array $params = []): Response
-    {
-        $params = array_merge($params, [
-            'type' => 'purchase',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-        ]);
+	/**
+	 * Make a purchase.
+	 */
+	public function purchase(array $params = []): Response
+	{
+		$params = array_merge($params, [
+			'type' => 'purchase',
+			'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+		]);
 
-        $transaction = $this->transaction($params);
+		$transaction = $this->transaction($params);
 
-        return $this->process($transaction);
-    }
+		return $this->process($transaction);
+	}
 
-    /**
-     * Refund a transaction.
-     */
-    public function refund(
-        string|Transaction $transaction,
-        string|null $order = null,
-        mixed $amount = null
-    ): Response {
-        if ($transaction instanceof Transaction) {
-            $order = $transaction->order();
-            $amount = is_null($amount)
-                ? $transaction->amount()
-                : $amount;
-            $transaction = $transaction->number();
-        }
+	/**
+	 * Refund a transaction.
+	 */
+	public function refund(
+		string|Transaction $transaction,
+		string|null $order = null,
+		mixed $amount = null
+	): Response {
+		if ($transaction instanceof Transaction) {
+			$order = $transaction->order();
+			$amount = is_null($amount)
+				? $transaction->amount()
+				: $amount;
+			$transaction = $transaction->number();
+		}
 
-        $params = [
-            'type' => 'refund',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-            'amount' => $amount,
-            'txn_number' => $transaction,
-            'order_id' => $order,
-        ];
+		$params = [
+			'type' => 'refund',
+			'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+			'amount' => $amount,
+			'txn_number' => $transaction,
+			'order_id' => $order,
+		];
 
-        $transaction = $this->transaction($params);
+		$transaction = $this->transaction($params);
 
-        return $this->process($transaction);
-    }
+		return $this->process($transaction);
+	}
 
-    /**
-     * Validate CVD and/or AVS prior to attempting a purchase.
-     */
-    public function verify(array $params = []): Response
-    {
-        $params = array_merge($params, [
-            'type' => 'card_verification',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-        ]);
+	/**
+	 * Validate CVD and/or AVS prior to attempting a purchase.
+	 */
+	public function verify(array $params = []): Response
+	{
+		$params = array_merge($params, [
+			'type' => 'card_verification',
+			'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+		]);
 
-        $transaction = $this->transaction($params);
+		$transaction = $this->transaction($params);
 
-        return $this->process($transaction);
-    }
+		return $this->process($transaction);
+	}
 
-    /**
-     * Void a transaction.
-     */
-    public function void(
-        string|Transaction $transaction,
-        string|null $order = null
-    ): Response {
-        if ($transaction instanceof Transaction) {
-            $order = $transaction->order();
-            $transaction = $transaction->number();
-        }
+	/**
+	 * Void a transaction.
+	 */
+	public function void(
+		string|Transaction $transaction,
+		string|null $order = null
+	): Response {
+		if ($transaction instanceof Transaction) {
+			$order = $transaction->order();
+			$transaction = $transaction->number();
+		}
 
-        $params = [
-            'type' => 'purchasecorrection',
-            'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
-            'txn_number' => $transaction,
-            'order_id' => $order,
-        ];
+		$params = [
+			'type' => 'purchasecorrection',
+			'crypt_type' => Crypt::SSL_ENABLED_MERCHANT,
+			'txn_number' => $transaction,
+			'order_id' => $order,
+		];
 
-        $transaction = $this->transaction($params);
+		$transaction = $this->transaction($params);
 
-        return $this->process($transaction);
-    }
+		return $this->process($transaction);
+	}
 
-    /**
-     * Process a transaction through the Moneris API.
-     */
-    protected function process(Transaction $transaction): Response
-    {
-        $processor = new Processor(new Client());
+	/**
+	 * Process a transaction through the Moneris API.
+	 */
+	protected function process(Transaction $transaction): Response
+	{
+		$processor = new Processor(new Client());
 
-        return $processor->process($transaction);
-    }
+		return $processor->process($transaction);
+	}
 
-    /**
-     * Get or create a new Transaction instance.
-     */
-    protected function transaction(array|null $params = null): Transaction
-    {
-        return !$this->transaction || is_array($params)
-            ? $this->transaction = new Transaction($this, $params)
-            : $this->transaction;
-    }
+	/**
+	 * Get or create a new Transaction instance.
+	 */
+	protected function transaction(array|null $params = null): Transaction
+	{
+		return !$this->transaction || is_array($params)
+			? $this->transaction = new Transaction($this, $params)
+			: $this->transaction;
+	}
 }

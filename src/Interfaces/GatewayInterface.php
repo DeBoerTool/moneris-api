@@ -8,67 +8,67 @@ use CraigPaul\Moneris\Vault;
 
 interface GatewayInterface
 {
-    /**
-     * Capture a pre-authorized transaction.
-     */
-    public function capture(
-        string|Transaction $transaction,
-        string|null $order = null,
-        mixed $amount = null
-    ): Response;
+	/**
+	 * Capture a pre-authorized transaction.
+	 */
+	public function capture(
+		string|Transaction $transaction,
+		string|null $order = null,
+		mixed $amount = null
+	): Response;
 
-    /**
-     * Create a new Vault instance.
-     */
-    public function cards(): Vault;
+	/**
+	 * Create a new Vault instance.
+	 */
+	public function cards(): Vault;
 
-    /**
-     * Pre-authorize a purchase.
-     */
-    public function preauth(array $params = []): Response;
+	/**
+	 * Pre-authorize a purchase.
+	 */
+	public function preauth(array $params = []): Response;
 
-    /**
-     * Make a purchase.
-     */
-    public function purchase(array $params = []): Response;
+	/**
+	 * Make a purchase.
+	 */
+	public function purchase(array $params = []): Response;
 
-    /**
-     * Refund a transaction.
-     */
-    public function refund(
-        string|Transaction $transaction,
-        string|null $order = null,
-        mixed $amount = null
-    ): Response;
+	/**
+	 * Refund a transaction.
+	 */
+	public function refund(
+		string|Transaction $transaction,
+		string|null $order = null,
+		mixed $amount = null
+	): Response;
 
-    /**
-     * Validate CVD and/or AVS prior to attempting a purchase.
-     */
-    public function verify(array $params = []): Response;
+	/**
+	 * Validate CVD and/or AVS prior to attempting a purchase.
+	 */
+	public function verify(array $params = []): Response;
 
-    /**
-     * Void a transaction.
-     */
-    public function void(
-        string|Transaction $transaction,
-        string|null $order = null
-    ): Response;
+	/**
+	 * Void a transaction.
+	 */
+	public function void(
+		string|Transaction $transaction,
+		string|null $order = null
+	): Response;
 
-    /**
-     * @return list<string>
-     */
-    public function getValidAvsCodes(): array;
+	/**
+	 * @return list<string>
+	 */
+	public function getValidAvsCodes(): array;
 
-    public function hasAvsEnabled(): bool;
+	public function hasAvsEnabled(): bool;
 
-    public function isValidAvsCode(string $code): bool;
+	public function isValidAvsCode(string $code): bool;
 
-    /**
-     * @return list<string>
-     */
-    public function getValidCvdCodes(): array;
+	/**
+	 * @return list<string>
+	 */
+	public function getValidCvdCodes(): array;
 
-    public function hasCvdEnabled(): bool;
+	public function hasCvdEnabled(): bool;
 
-    public function isValidCvdCode(string $code): bool;
+	public function isValidCvdCode(string $code): bool;
 }

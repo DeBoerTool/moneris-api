@@ -10,15 +10,15 @@ use CraigPaul\Moneris\Validation\Errors\EmptyError;
  */
 class EmptyErrorTest extends FeatureTestCase
 {
-    /** @test */
-    public function getting_code_and_message(): void
-    {
-        $error = new EmptyError();
+	/** @test */
+	public function getting_code_and_message(): void
+	{
+		$error = new EmptyError();
 
-        $this->assertSame(1, $error->code());
-        $this->assertSame(
-            'No parameters were provided.',
-            $error->message()
-        );
-    }
+		$this->assertSame(1, $error->code());
+		$this->assertSame(
+			'No parameters were provided.',
+			$error->message()
+		);
+	}
 }

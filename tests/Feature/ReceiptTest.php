@@ -9,21 +9,21 @@ use CraigPaul\Moneris\Tests\FeatureTestCase;
  */
 class ReceiptTest extends FeatureTestCase
 {
-    /** @test */
-    public function serializing_to_json(): void
-    {
-        $response = $this->gateway()->purchase([
-            'order_id' => uniqid('1234-56789', true),
-            'amount' => '1.00',
-            'credit_card' => $this->visa,
-            'expdate' => '2012',
-        ]);
+	/** @test */
+	public function serializing_to_json(): void
+	{
+		$response = $this->gateway()->purchase([
+			'order_id' => uniqid('1234-56789', true),
+			'amount' => '1.00',
+			'credit_card' => $this->visa,
+			'expdate' => '2012',
+		]);
 
-        $receiptData = json_decode(
-            json_encode($response->getReceipt()),
-            associative: true
-        );
+		$receiptData = json_decode(
+			json_encode($response->getReceipt()),
+			associative: true
+		);
 
-        $this->assertSame($response->getReceipt()->getData(), $receiptData);
-    }
+		$this->assertSame($response->getReceipt()->getData(), $receiptData);
+	}
 }

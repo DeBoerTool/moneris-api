@@ -9,20 +9,20 @@ use Throwable;
 
 class InvalidTransactionException extends RuntimeException
 {
-    public readonly ErrorList $validationErrors;
+	public readonly ErrorList $validationErrors;
 
-    public function __construct(
-        Transaction $transaction,
-        Throwable|null $previous = null,
-    ) {
-        $this->validationErrors = $transaction->getErrorList();
+	public function __construct(
+		Transaction $transaction,
+		Throwable|null $previous = null,
+	) {
+		$this->validationErrors = $transaction->getErrorList();
 
-        parent::__construct(
-            message: sprintf(
-                'The transaction failed validation: %s',
-                $this->validationErrors,
-            ),
-            previous: $previous,
-        );
-    }
+		parent::__construct(
+			message: sprintf(
+				'The transaction failed validation: %s',
+				$this->validationErrors,
+			),
+			previous: $previous,
+		);
+	}
 }
