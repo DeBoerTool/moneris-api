@@ -26,9 +26,7 @@ class Processor
 	 */
 	protected string $error = '<?xml version="1.0"?><response><receipt><ReceiptId>Global Error Receipt</ReceiptId><ReferenceNum>null</ReferenceNum><ResponseCode>null</ResponseCode><ISO>null</ISO> <AuthCode>null</AuthCode><TransTime>null</TransTime><TransDate>null</TransDate><TransType>null</TransType><Complete>false</Complete><Message>null</Message><TransAmount>null</TransAmount><CardType>null</CardType><TransID>null</TransID><TimedOut>null</TimedOut></receipt></response>';
 
-	public function __construct(protected Client $client)
-    {
-    }
+	public function __construct(protected Client $client) {}
 
 	/**
 	 * Retrieve the API configuration.
