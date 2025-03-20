@@ -13,9 +13,7 @@ use Faker\Factory as Faker;
 
 use function mock_handler;
 
-/**
- * @covers \CraigPaul\Moneris\Vault
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Vault::class)]
 class VaultTest extends FeatureTestCase
 {
 	protected array $billing;
@@ -80,7 +78,7 @@ class VaultTest extends FeatureTestCase
 		];
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function instantiating(): void
 	{
 		$vault = new Vault($this->id, $this->token, $this->environment);
@@ -91,7 +89,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertObjectHasProperty('environment', $vault);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function static_constructor(): void
 	{
 		$vault = Vault::create($this->id, $this->token, $this->environment);
@@ -102,7 +100,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertObjectHasProperty('environment', $vault);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function adding_a_credit_card_and_getting_a_data_key(): void
 	{
 		$response = $this->vault->add($this->card);
@@ -112,7 +110,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertNotNull($receipt->read('key'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_add_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage(
 	) {
 		$params = [
@@ -135,7 +133,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals($params['note'], $receipt->read('data')['note']);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function updating_a_card_and_getting_the_provided_data_key(): void
 	{
 		$response = $this->vault->add($this->card);
@@ -159,7 +157,7 @@ class VaultTest extends FeatureTestCase
 		);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_update_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage(
 	) {
 		$params = [
@@ -185,7 +183,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals('example2@email.com', $receipt->read('data')['email']);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_delete_a_credit_card_from_the_moneris_vault_and_returns_a_data_key_for_storage()
 	{
 		$response = $this->vault->add($this->card);
@@ -199,7 +197,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals($key, $receipt->read('key'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_tokenize_a_previous_transaction_to_add_the_transactions_credit_card_in_the_moneris_vault_and_returns_a_data_key_for_storage(
 	) {
 		$gateway = $this->gateway();
@@ -218,7 +216,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertNotNull($receipt->read('key'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_peek_into_the_vault_and_retrieve_a_masked_credit_card_from_the_moneris_vault_with_a_valid_data_key(
 	) {
 		$response = $this->vault->add($this->card);
@@ -237,7 +235,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals($end, substr((string) $receipt->read('data')['masked_pan'], -4, 4));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_retrieve_all_expiring_credit_cards_from_the_moneris_vault()
 	{
 		$expiry = date('ym', strtotime('today + 10 days'));
@@ -275,7 +273,7 @@ class VaultTest extends FeatureTestCase
 		}
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_make_a_purchase_with_a_credit_card_stored_in_the_moneris_vault()
 	{
 		$response = $this->vault->add($this->card);
@@ -293,7 +291,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_make_a_purchase_with_a_credit_card_stored_in_the_moneris_vault_and_attach_customer_info()
 	{
 		$response = $this->vault->add($this->card);
@@ -313,7 +311,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_submit_a_cvd_secured_purchase_with_a_credit_card_stored_in_the_moneris_vault()
 	{
 		$vault = $this->gateway(cvd: true)->cards();
@@ -334,7 +332,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_submit_an_avs_secured_purchase_with_a_credit_card_stored_in_the_moneris_vault()
 	{
 		$vault = $this->gateway(avs: true)->cards();
@@ -357,7 +355,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_pre_authorize_a_credit_card_stored_in_the_moneris_vault()
 	{
 		$response = $this->vault->add($this->card);
@@ -375,7 +373,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_pre_authorize_a_credit_card_stored_in_the_moneris_vault_and_attach_customer_info()
 	{
 		$response = $this->vault->add($this->card);
@@ -395,7 +393,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_submit_a_cvd_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
 	) {
 		$vault = $this->gateway(cvd: true)->cards();
@@ -416,7 +414,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_submit_an_avs_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
 	) {
 		$vault = $this->gateway(avs: true)->cards();
@@ -439,7 +437,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertEquals(true, $receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_capture_a_pre_authorized_credit_card_stored_in_the_moneris_vault()
 	{
 		$response = $this->vault->add($this->card);
@@ -457,7 +455,7 @@ class VaultTest extends FeatureTestCase
 		$this->assertTrue($receipt->read('complete'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_make_a_purchase_for_a_credit_card_stored_in_the_moneris_vault_using_credential_on_file()
 	{
 		$gateway = $this->gateway(cof: true);

@@ -7,9 +7,7 @@ use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Validation\Errors\ErrorList;
 
-/**
- * @covers \CraigPaul\Moneris\Transaction
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Transaction::class)]
 class TransactionTest extends FeatureTestCase
 {
 	protected GatewayInterface $gateway;
@@ -35,7 +33,7 @@ class TransactionTest extends FeatureTestCase
 		$this->transaction = new Transaction($this->gateway, $this->params);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_class_properties(): void
 	{
 		$params = $this->params;
@@ -46,7 +44,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertSame($params, $this->transaction->params);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_the_error_list(): void
 	{
 		$this->assertInstanceOf(
@@ -57,7 +55,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertCount(0, $this->transaction->getErrorList());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_the_amount(): void
 	{
 		$tr = new Transaction($this->gateway(), $this->params);
@@ -69,7 +67,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertNull($tr->amount());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_the_transaction_number(): void
 	{
 		$tr = new Transaction($this->gateway(), []);
@@ -77,7 +75,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertNull($tr->number());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_the_order_number(): void
 	{
 		$tr = new Transaction($this->gateway(), $this->params);
@@ -89,7 +87,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertNull($tr->order());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function formatting_expdate_from_month_and_year(): void
 	{
 		$params = array_merge($this->params, [
@@ -104,7 +102,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertSame('2012', $transaction->params['expdate']);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function whitespace_removal(): void
 	{
 		$transaction = new Transaction($this->gateway, [
@@ -126,7 +124,7 @@ class TransactionTest extends FeatureTestCase
 		);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function an_empty_key_is_removed(): void
 	{
 		$tr = new Transaction($this->gateway(), array_merge($this->params, [
@@ -136,7 +134,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertFalse(isset($tr->params['key']));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function description_key_is_renamed(): void
 	{
 		$tr = new Transaction($this->gateway(), array_merge($this->params, [
@@ -150,7 +148,7 @@ class TransactionTest extends FeatureTestCase
 		);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function parameter_validation(): void
 	{
 		$this->assertTrue($this->transaction->valid());
@@ -162,7 +160,7 @@ class TransactionTest extends FeatureTestCase
 		$this->assertTrue($transaction->invalid());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_xml(): void
 	{
 		$xml = $this->transaction->toXml();

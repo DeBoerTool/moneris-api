@@ -9,7 +9,7 @@ use CraigPaul\Moneris\Transaction;
 
 class InvalidTransactionExceptionTest extends UnitTestCase
 {
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_the_message(): void
 	{
 		$transaction = new Transaction(new GatewayStub(), [

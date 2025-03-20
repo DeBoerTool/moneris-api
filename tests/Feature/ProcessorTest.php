@@ -10,9 +10,7 @@ use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
 
-/**
- * @covers \CraigPaul\Moneris\Processor
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Processor::class)]
 class ProcessorTest extends FeatureTestCase
 {
 	protected GatewayInterface $gateway;
@@ -42,7 +40,7 @@ class ProcessorTest extends FeatureTestCase
 		$this->processor = new Processor(new Client());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function instantiation(): void
 	{
 		$processor = new Processor(new Client());
@@ -50,7 +48,7 @@ class ProcessorTest extends FeatureTestCase
 		$this->assertInstanceOf(Processor::class, $processor);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function invalid_transaction_data_throws(): void
 	{
 		$transaction = new Transaction($this->gateway);
@@ -60,7 +58,7 @@ class ProcessorTest extends FeatureTestCase
 		$this->processor->process($transaction);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function submitting_successfully(): void
 	{
 		$response = $this->processor->process($this->transaction);
@@ -68,7 +66,7 @@ class ProcessorTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_submit_a_avs_secured_request_to_the_moneris_api(): void
 	{
 		$gateway = $this->gateway(avs: true);
@@ -85,7 +83,7 @@ class ProcessorTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function it_can_submit_a_cvd_secured_request_to_the_moneris_api(): void
 	{
 		$gateway = $this->gateway(cvd: true);

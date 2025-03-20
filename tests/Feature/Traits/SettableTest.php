@@ -26,7 +26,7 @@ class SettableTest extends FeatureTestCase
 		};
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function setting_a_property(): void
 	{
 		$this->assertNull($this->stub->myProp());
@@ -36,7 +36,7 @@ class SettableTest extends FeatureTestCase
 		$this->assertSame('some test value', $this->stub->myProp());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function failing_to_set_a_property(): void
 	{
 		$this->expectException(InvalidArgumentException::class);

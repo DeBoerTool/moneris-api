@@ -11,9 +11,7 @@ use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Values\Crypt;
 use GuzzleHttp\Client;
 
-/**
- * @covers \CraigPaul\Moneris\Response
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Response::class)]
 class ResponseTest extends FeatureTestCase
 {
 	protected GatewayInterface $gateway;
@@ -45,7 +43,7 @@ class ResponseTest extends FeatureTestCase
 		$this->processor = new Processor(new Client());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function instantiating(): void
 	{
 		$response = new Response($this->transaction);
@@ -54,7 +52,7 @@ class ResponseTest extends FeatureTestCase
 		$this->assertSame($this->transaction, $response->getTransaction());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_a_successful_response(): void
 	{
 		$response = $this->processor->process($this->transaction);
@@ -64,7 +62,7 @@ class ResponseTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_a_receipt_for_a_successful_response(): void
 	{
 		$response = $this->processor->process($this->transaction)->validate();
@@ -76,7 +74,7 @@ class ResponseTest extends FeatureTestCase
 		);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function receipt_is_null_when_unprocessed(): void
 	{
 		$response = new Response(new Transaction($this->gateway(), []));
@@ -84,7 +82,7 @@ class ResponseTest extends FeatureTestCase
 		$this->assertNull($response->getReceipt());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function processing_expdate_error_edge_cases_from_message(): void
 	{
 		$response = $this->processTransaction([
@@ -98,7 +96,7 @@ class ResponseTest extends FeatureTestCase
 		);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function processing_cc_error_edge_cases_from_message(): void
 	{
 		$response = $this->processTransaction([

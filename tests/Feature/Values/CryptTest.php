@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class CryptTest extends FeatureTestCase
 {
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function instantiating_with_valid_type(): void
 	{
 		$crypt = new Crypt(1);
@@ -16,7 +16,7 @@ class CryptTest extends FeatureTestCase
 		$this->assertSame(1, $crypt->value());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function failing_with_invalid_type(): void
 	{
 		$this->expectException(InvalidArgumentException::class);
@@ -24,7 +24,7 @@ class CryptTest extends FeatureTestCase
 		new Crypt(111);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function using_the_static_constructor(): void
 	{
 		$crypt = Crypt::sslEnableMerchant();
@@ -32,7 +32,7 @@ class CryptTest extends FeatureTestCase
 		$this->assertSame(Crypt::SSL_ENABLED_MERCHANT, $crypt->value());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function casting_to_string(): void
 	{
 		$crypt = Crypt::sslEnableMerchant();

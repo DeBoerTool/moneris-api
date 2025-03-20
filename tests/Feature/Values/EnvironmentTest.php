@@ -7,7 +7,7 @@ use CraigPaul\Moneris\Values\Environment;
 
 class EnvironmentTest extends FeatureTestCase
 {
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function testing_environment(): void
 	{
 		$env = Environment::testing();
@@ -16,7 +16,7 @@ class EnvironmentTest extends FeatureTestCase
 		$this->assertFalse($env->isLive());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function staging_environment(): void
 	{
 		$env = Environment::staging();
@@ -25,7 +25,7 @@ class EnvironmentTest extends FeatureTestCase
 		$this->assertFalse($env->isLive());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function live_environment(): void
 	{
 		$env = Environment::live();

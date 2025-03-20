@@ -4,12 +4,10 @@ namespace CraigPaul\Moneris\Tests\Feature;
 
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 
-/**
- * @covers \CraigPaul\Moneris\Receipt
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Receipt::class)]
 class ReceiptTest extends FeatureTestCase
 {
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function serializing_to_json(): void
 	{
 		$response = $this->gateway()->purchase([

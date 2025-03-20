@@ -6,9 +6,7 @@ use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Vault;
 use Faker\Factory as Faker;
 
-/**
- * @covers \CraigPaul\Moneris\Gateway
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Gateway::class)]
 class GatewayTest extends FeatureTestCase
 {
 	/**
@@ -66,7 +64,7 @@ class GatewayTest extends FeatureTestCase
 		];
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function instantiation(): void
 	{
 		$gateway = $this->gateway();
@@ -76,7 +74,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertSame($this->environment, $gateway->environment);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function making_a_purchase_and_getting_a_response(): void
 	{
 		$response = $this->gateway()->purchase($this->params);
@@ -84,7 +82,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function making_a_purchase_with_customer_info(): void
 	{
 		$params = array_merge($this->params, [
@@ -100,7 +98,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertNotNull($receipt->read('transaction'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function making_a_purchase_with_cvd(): void
 	{
 		$response = $this->gateway(cvd: true)->purchase([
@@ -114,7 +112,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function making_a_purchase_with_avs(): void
 	{
 		$response = $this->gateway(avs: true)->purchase([
@@ -130,7 +128,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function preauthorizing_a_purchase(): void
 	{
 		$response = $this->gateway()->preauth($this->params);
@@ -138,7 +136,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function preauth_with_customer_information(): void
 	{
 		$params = array_merge($this->params, [
@@ -154,7 +152,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertNotNull($receipt->read('transaction'));
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function preauth_with_cvd(): void
 	{
 		$response = $this->gateway(cvd: true)->preauth([
@@ -168,7 +166,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function preauth_with_avs(): void
 	{
 		$response = $this->gateway(avs: true)->preauth([
@@ -184,7 +182,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function verifying_a_card(): void
 	{
 		$response = $this->gateway()->verify($this->params);
@@ -192,7 +190,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function verifying_a_cvd_secured_card(): void
 	{
 		$response = $this->gateway(cvd: true)->verify([
@@ -206,7 +204,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function verifying_an_avs_secured_card(): void
 	{
 		$response = $this->gateway(avs: true)->verify([
@@ -222,7 +220,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($response->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function voiding_a_purchase(): void
 	{
 		$purchaseResponse = $this->gateway()->purchase($this->params);
@@ -233,7 +231,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($voidResponse->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function refunding_a_purchase(): void
 	{
 		$purchaseResponse = $this->gateway()->purchase($this->params);
@@ -245,7 +243,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($refundResponse->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function refunding_with_a_different_amount(): void
 	{
 		$amount = '0.90';
@@ -264,7 +262,7 @@ class GatewayTest extends FeatureTestCase
 		);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function capturing_a_preauthorized_transaction(): void
 	{
 		$preauthResponse = $this->gateway()->preauth($this->params);
@@ -276,7 +274,7 @@ class GatewayTest extends FeatureTestCase
 		$this->assertTrue($captureResponse->isSuccessful());
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function capturing_with_a_different_amount(): void
 	{
 		$amount = '0.90';
@@ -295,7 +293,7 @@ class GatewayTest extends FeatureTestCase
 		);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_the_vault(): void
 	{
 		$vault = $this->gateway()->cards();

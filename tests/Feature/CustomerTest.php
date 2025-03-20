@@ -6,9 +6,7 @@ use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use InvalidArgumentException;
 
-/**
- * @covers \CraigPaul\Moneris\Customer
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\CraigPaul\Moneris\Customer::class)]
 class CustomerTest extends FeatureTestCase
 {
 	protected array $rawData = [
@@ -18,7 +16,7 @@ class CustomerTest extends FeatureTestCase
 		'note' => null,
 	];
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function instantiation(): void
 	{
 		$customer = new Customer();
@@ -27,7 +25,7 @@ class CustomerTest extends FeatureTestCase
 		$this->assertSame($this->rawData, $customer->data);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function static_constructor(): void
 	{
 		$customer = Customer::create();
@@ -36,7 +34,7 @@ class CustomerTest extends FeatureTestCase
 		$this->assertSame($this->rawData, $customer->data);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function getting_customer_data(): void
 	{
 		$params = [
@@ -56,7 +54,7 @@ class CustomerTest extends FeatureTestCase
 		$this->assertSame($params, $customer->data);
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function failing_to_get_customer_data(): void
 	{
 		$customer = Customer::create();
@@ -68,7 +66,7 @@ class CustomerTest extends FeatureTestCase
 		$customer->nonexistantProperty;
 	}
 
-	/** @test */
+	#[\PHPUnit\Framework\Attributes\Test]
 	public function setting_data(): void
 	{
 		$customer = Customer::create();
