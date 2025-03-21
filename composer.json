@@ -16,7 +16,7 @@
     "require": {
         "php": "^8.2.0",
         "ext-simplexml": "*",
-        "guzzlehttp/guzzle": "^6.5|^7.8"
+        "guzzlehttp/guzzle": "^6.5|^7.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.6",
