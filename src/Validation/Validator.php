@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris\Validation;
 
+use CraigPaul\Moneris\Enums\TransactionType;
 use CraigPaul\Moneris\Exceptions\UnsupportedTransactionException;
 use CraigPaul\Moneris\Validation\Errors\EmptyError;
 use CraigPaul\Moneris\Validation\Errors\NotSetError;
@@ -46,9 +47,9 @@ class Validator extends ValidatorAbstract
 	}
 
 	/**
-     * @throws UnsupportedTransactionException
-     */
-    protected function getValidator(): ValidatorInterface
+	 * @throws UnsupportedTransactionException
+	 */
+	protected function getValidator(): ValidatorInterface
 	{
 		$fqcn = match ($this->params['type']) {
 			'res_get_expiring' => new PassthroughValidator(),
@@ -67,6 +68,8 @@ class Validator extends ValidatorAbstract
 			'res_lookup_masked' => DeleteCardValidator::class,
 			'res_preauth_cc',
 			'res_purchase_cc' => PreauthValidator::class,
+			TransactionType::McpVaultPreauth->value,
+			TransactionType::McpVaultPurchase->value => McpVaultPurchaseValidator::class,
 
 			default => throw new UnsupportedTransactionException(
 				$this->params['type'],

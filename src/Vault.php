@@ -4,6 +4,9 @@ namespace CraigPaul\Moneris;
 
 use CraigPaul\Moneris\Traits\GettableTrait;
 use CraigPaul\Moneris\Values\Crypt;
+use CraigPaul\Moneris\Values\Environment;
+use CraigPaul\Moneris\Vault\Request\McpVaultPreauthRequest;
+use CraigPaul\Moneris\Vault\Request\McpVaultPurchaseRequest;
 
 class Vault extends Gateway
 {
@@ -17,9 +20,14 @@ class Vault extends Gateway
 	 * @param string $environment
 	 * @return $this
 	 */
-	public static function create($id = '', $token = '', $environment = '')
-	{
-		return new static($id, $token, $environment);
+	public static function create(
+		string $id,
+		string $token,
+		Environment|null $environment,
+	) {
+		return new static(
+			$id, $token, $environment ?? Environment::live(),
+		);
 	}
 
 	/**
@@ -49,12 +57,12 @@ class Vault extends Gateway
 	}
 
 	/**
-     * Delete a credit card from the Vault.
-     *
-     * @param string $key
-     * @return Response
-     */
-    public function delete($key = '')
+	 * Delete a credit card from the Vault.
+	 *
+	 * @param string $key
+	 * @return Response
+	 */
+	public function delete($key = '')
 	{
 		$params = [
 			'type' => 'res_delete',
@@ -67,11 +75,11 @@ class Vault extends Gateway
 	}
 
 	/**
-     * Get all expiring credit cards from the Moneris Vault.
-     *
-     * @return Response
-     */
-    public function expiring()
+	 * Get all expiring credit cards from the Moneris Vault.
+	 *
+	 * @return Response
+	 */
+	public function expiring()
 	{
 		$params = ['type' => 'res_get_expiring'];
 
@@ -81,13 +89,13 @@ class Vault extends Gateway
 	}
 
 	/**
-     * Peek into the Moneris Vault and retrieve a credit card
-     * profile associated with a given data key.
-     *
-     * @param string $key
-     * @return Response
-     */
-    public function peek($key = '')
+	 * Peek into the Moneris Vault and retrieve a credit card
+	 * profile associated with a given data key.
+	 *
+	 * @param string $key
+	 * @return Response
+	 */
+	public function peek($key = '')
 	{
 		$params = [
 			'type' => 'res_lookup_masked',
@@ -115,6 +123,16 @@ class Vault extends Gateway
 	}
 
 	/**
+	 * Preauthorize a purchase with multi-currency pricing.
+	 */
+	public function mcpPreauth(McpVaultPreauthRequest $data): Response
+	{
+		$transaction = $this->transaction($data->toArray());
+
+		return $this->process($transaction);
+	}
+
+	/**
 	 * Make a purchase.
 	 */
 	public function purchase(array $params = []): Response
@@ -130,13 +148,23 @@ class Vault extends Gateway
 	}
 
 	/**
-     * Tokenize a previous transaction to save the credit
-     * card used in the Moneris Vault.
-     *
-     * @param string|null $order
-     * @return Response
-     */
-    public function tokenize($transaction, $order = null)
+	 * Make a purchase with multi-currency pricing.
+	 */
+	public function mcpPurchase(McpVaultPurchaseRequest $request): Response
+	{
+		$transaction = $this->transaction($request->toArray());
+
+		return $this->process($transaction);
+	}
+
+	/**
+	 * Tokenize a previous transaction to save the credit
+	 * card used in the Moneris Vault.
+	 *
+	 * @param string|null $order
+	 * @return Response
+	 */
+	public function tokenize($transaction, $order = null)
 	{
 		if ($transaction instanceof Transaction) {
 			$order = $transaction->order();
@@ -160,7 +188,7 @@ class Vault extends Gateway
 	public function update(
 		CreditCard $card,
 		string $key = '',
-		array $extraParams = []
+		array $extraParams = [],
 	): Response {
 		$params = array_merge($extraParams, [
 			'type' => 'res_update_cc',

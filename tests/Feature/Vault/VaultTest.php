@@ -1,24 +1,23 @@
 <?php
 
-namespace CraigPaul\Moneris\Tests\Feature;
+namespace CraigPaul\Moneris\Tests\Feature\Vault;
 
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
-use CraigPaul\Moneris\Response;
-use CraigPaul\Moneris\Receipt;
 use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\Tests\FeatureTestCase;
+use CraigPaul\Moneris\Receipt;
+use CraigPaul\Moneris\Response;
 use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Vault;
 use Faker\Factory as Faker;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 
 use function mock_handler;
 
 #[CoversClass(Vault::class)]
-class VaultTest extends FeatureTestCase
+class VaultTest extends VaultTestCase
 {
 	protected array $billing;
 
@@ -42,7 +41,11 @@ class VaultTest extends FeatureTestCase
 			'order_id' => uniqid('1234-567890', true),
 			'amount' => '1.00',
 		];
-		$this->vault = Vault::create($this->id, $this->token, $this->environment);
+		$this->vault = Vault::create(
+			id: $this->id,
+			token: $this->token,
+			environment: $this->environment,
+		);
 		$this->billing = [
 			'first_name' => $faker->firstName,
 			'last_name' => $faker->lastName,
@@ -268,9 +271,9 @@ class VaultTest extends FeatureTestCase
 		$this->assertGreaterThan(0, count($receipt->read('data')));
 
 		/** @var Response $card */
-        foreach ($cardAddResponses as $index => $card) {
+		foreach ($cardAddResponses as $index => $card) {
 			/** @var Receipt $rec */
-            $rec = $card->getReceipt();
+			$rec = $card->getReceipt();
 
 			$this->assertEquals($rec->read('key'), $receipt->read('data')[$index]['data_key']);
 			$this->assertEquals($rec->read('data')['masked_pan'], $receipt->read('data')[$index]['masked_pan']);
@@ -360,7 +363,7 @@ class VaultTest extends FeatureTestCase
 	}
 
 	#[Test]
-	public function it_can_pre_authorize_a_credit_card_stored_in_the_moneris_vault()
+	public function it_can_preauth_against_a_vault_card()
 	{
 		$response = $this->vault->add($this->card);
 		$key = $response->getReceipt()->read('key');
@@ -374,7 +377,7 @@ class VaultTest extends FeatureTestCase
 
 		$this->assertTrue($response->isSuccessful());
 		$this->assertEquals($key, $receipt->read('key'));
-		$this->assertEquals(true, $receipt->read('complete'));
+		$this->assertTrue($receipt->read('complete'));
 	}
 
 	#[Test]
@@ -442,7 +445,7 @@ class VaultTest extends FeatureTestCase
 	}
 
 	#[Test]
-	public function it_can_capture_a_pre_authorized_credit_card_stored_in_the_moneris_vault()
+	public function it_captures_preauths_against_vault_cards()
 	{
 		$response = $this->vault->add($this->card);
 		$key = $response->getReceipt()->read('key');
@@ -460,7 +463,7 @@ class VaultTest extends FeatureTestCase
 	}
 
 	#[Test]
-	public function it_can_make_a_purchase_for_a_credit_card_stored_in_the_moneris_vault_using_credential_on_file()
+	public function it_makes_purchases_against_vault_cards()
 	{
 		$gateway = $this->gateway(cof: true);
 		$vault = $gateway->cards();

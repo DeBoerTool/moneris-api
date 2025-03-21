@@ -11,7 +11,7 @@ class VaultExpiringStub
 		$xmlResponseString = '<?xml version="1.0"?><response><receipt>';
 
 		/** @var Response $cardResponse */
-        foreach ($cardResponses as $cardResponse) {
+		foreach ($cardResponses as $cardResponse) {
 			$receipt = $cardResponse->getReceipt();
 			$data = $receipt->read('data');
 			$expdate = $data['expiry_date']['year'] . $data['expiry_date']['month'];

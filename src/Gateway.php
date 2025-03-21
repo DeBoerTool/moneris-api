@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris;
 
+use CraigPaul\Moneris\Abstract\TransactionRequestInterface;
 use CraigPaul\Moneris\Interfaces\GatewayInterface;
 use CraigPaul\Moneris\Traits\GettableTrait;
 use CraigPaul\Moneris\Traits\SettableTrait;
@@ -73,13 +74,11 @@ class Gateway implements GatewayInterface
 
 	/**
 	 * Capture a pre-authorized transaction.
-	 *
-	 * @param string|null $order
 	 */
 	public function capture(
 		string|Transaction $transaction,
 		string|null $order = null,
-		mixed $amount = null
+		mixed $amount = null,
 	): Response {
 		$transactionNumber = $transaction;
 
@@ -165,7 +164,7 @@ class Gateway implements GatewayInterface
 	public function refund(
 		string|Transaction $transaction,
 		string|null $order = null,
-		mixed $amount = null
+		mixed $amount = null,
 	): Response {
 		if ($transaction instanceof Transaction) {
 			$order = $transaction->order();
@@ -208,7 +207,7 @@ class Gateway implements GatewayInterface
 	 */
 	public function void(
 		string|Transaction $transaction,
-		string|null $order = null
+		string|null $order = null,
 	): Response {
 		if ($transaction instanceof Transaction) {
 			$order = $transaction->order();
@@ -240,10 +239,21 @@ class Gateway implements GatewayInterface
 	/**
 	 * Get or create a new Transaction instance.
 	 */
-	protected function transaction(array|null $params = null): Transaction
-	{
-		return !$this->transaction || is_array($params)
-			? $this->transaction = new Transaction($this, $params)
-			: $this->transaction;
+	protected function transaction(
+		TransactionRequestInterface|array|null $params = null,
+	): Transaction {
+		if (!$this->transaction || is_array($params)) {
+			$this->transaction = new Transaction($this, $params);
+
+			return $this->transaction;
+		}
+
+		if ($params instanceof TransactionRequestInterface) {
+			$this->transaction = new Transaction($this, $params->toArray());
+
+			return $this->transaction;
+		}
+
+		return $this->transaction;
 	}
 }

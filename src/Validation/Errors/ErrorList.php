@@ -13,7 +13,7 @@ use Traversable;
 class ErrorList implements Countable, IteratorAggregate, JsonSerializable, Stringable
 {
 	/** @var ErrorInterface[] */
-    private array $errors;
+	private array $errors;
 
 	public function __construct(ErrorInterface ...$errors)
 	{
@@ -72,9 +72,9 @@ class ErrorList implements Countable, IteratorAggregate, JsonSerializable, Strin
 	}
 
 	/**
-     * @throws JsonException
-     */
-    public function __toString(): string
+	 * @throws JsonException
+	 */
+	public function __toString(): string
 	{
 		return json_encode($this->jsonSerialize(), JSON_THROW_ON_ERROR);
 	}
