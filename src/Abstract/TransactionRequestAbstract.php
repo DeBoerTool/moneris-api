@@ -4,7 +4,7 @@ namespace CraigPaul\Moneris\Abstract;
 
 use CraigPaul\Moneris\Enums\CryptType;
 
-readonly abstract class TransactionRequestAbstract implements TransactionRequestInterface
+abstract readonly class TransactionRequestAbstract implements TransactionRequestInterface
 {
 	abstract public function getData(): array;
 

@@ -119,8 +119,7 @@ class VaultTest extends VaultTestCase
 
 	#[Test]
 	public function it_can_add_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage(
-	)
-	{
+	) {
 		$params = [
 			'id' => uniqid('customer-', true),
 			'email' => 'example@email.com',
@@ -167,8 +166,7 @@ class VaultTest extends VaultTestCase
 
 	#[Test]
 	public function it_can_update_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage(
-	)
-	{
+	) {
 		$params = [
 			'id' => uniqid('customer-', true),
 			'email' => 'example@email.com',
@@ -208,8 +206,7 @@ class VaultTest extends VaultTestCase
 
 	#[Test]
 	public function it_can_tokenize_a_previous_transaction_to_add_the_transactions_credit_card_in_the_moneris_vault_and_returns_a_data_key_for_storage(
-	)
-	{
+	) {
 		$gateway = $this->gateway();
 
 		$response = $gateway->purchase([
@@ -228,8 +225,7 @@ class VaultTest extends VaultTestCase
 
 	#[Test]
 	public function it_can_peek_into_the_vault_and_retrieve_a_masked_credit_card_from_the_moneris_vault_with_a_valid_data_key(
-	)
-	{
+	) {
 		$response = $this->vault->add($this->card);
 		$key = $response->getReceipt()->read('key');
 
@@ -242,8 +238,8 @@ class VaultTest extends VaultTestCase
 		$this->assertNotNull($receipt->read('key'));
 		$this->assertEquals('12', $receipt->read('data')['expiry_date']['month']);
 		$this->assertEquals('20', $receipt->read('data')['expiry_date']['year']);
-		$this->assertEquals($beginning, substr((string)$receipt->read('data')['masked_pan'], 0, 4));
-		$this->assertEquals($end, substr((string)$receipt->read('data')['masked_pan'], -4, 4));
+		$this->assertEquals($beginning, substr((string) $receipt->read('data')['masked_pan'], 0, 4));
+		$this->assertEquals($end, substr((string) $receipt->read('data')['masked_pan'], -4, 4));
 	}
 
 	#[Test]
@@ -406,8 +402,7 @@ class VaultTest extends VaultTestCase
 
 	#[Test]
 	public function it_can_submit_a_cvd_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
-	)
-	{
+	) {
 		$vault = $this->gateway(cvd: true)->cards();
 
 		$response = $this->vault->add($this->card);
@@ -428,8 +423,7 @@ class VaultTest extends VaultTestCase
 
 	#[Test]
 	public function it_can_submit_an_avs_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
-	)
-	{
+	) {
 		$vault = $this->gateway(avs: true)->cards();
 
 		$response = $this->vault->add($this->card);

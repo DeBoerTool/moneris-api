@@ -40,11 +40,11 @@ class Customer
 	}
 
 	/**
-     * Retrieve a property off of the class or from the data array.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function __get(string $property): mixed
+	 * Retrieve a property off of the class or from the data array.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function __get(string $property): mixed
 	{
 		if (property_exists($this, $property)) {
 			return $this->$property;

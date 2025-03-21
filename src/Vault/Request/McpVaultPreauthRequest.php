@@ -17,8 +17,7 @@ readonly class McpVaultPreauthRequest extends TransactionRequestAbstract
 		public Currency $currency,
 		public string $cardholderAmount = '100',
 		public McpVersion $mcpVersion = McpVersion::One,
-	) {
-	}
+	) {}
 
 	public function getTransactionType(): TransactionType
 	{
