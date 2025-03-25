@@ -7,6 +7,7 @@ use CraigPaul\Moneris\Enums\Currency;
 use CraigPaul\Moneris\Enums\McpVersion;
 use CraigPaul\Moneris\Enums\TransactionType;
 use CraigPaul\Moneris\Vault\Value\Avs;
+use CraigPaul\Moneris\Vault\Value\Cof;
 use CraigPaul\Moneris\Vault\Value\DataKey;
 
 readonly class McpVaultPurchaseRequest extends TransactionRequestAbstract
@@ -20,6 +21,7 @@ readonly class McpVaultPurchaseRequest extends TransactionRequestAbstract
 		public McpVersion $mcpVersion = McpVersion::One,
 		public string|null $cvd = null,
 		public Avs|null $avs = null,
+		public Cof|null $cof = null
 	) {}
 
 	public function getTransactionType(): TransactionType
@@ -38,6 +40,7 @@ readonly class McpVaultPurchaseRequest extends TransactionRequestAbstract
 			'mcp_version' => $this->mcpVersion->value,
 			...($this->cvd ? ['cvd' => $this->cvd] : []),
 			...($this->avs ? $this->avs->toArray() : []),
+			...($this->cof ? $this->cof->toArray() : [])
 		];
 	}
 }

@@ -6,6 +6,7 @@ use CraigPaul\Moneris\Enums\Currency;
 use CraigPaul\Moneris\Vault;
 use CraigPaul\Moneris\Vault\Request\McpVaultPreauthRequest;
 use CraigPaul\Moneris\Vault\Request\McpVaultPurchaseRequest;
+use CraigPaul\Moneris\Vault\Value\Cof;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -67,6 +68,27 @@ class VaultMulticurrencyTest extends VaultTestCase
 		);
 
 		$response = $this->getVault(avs: true)->mcpPreauth($data);
+		$receipt = $response->getReceipt();
+
+		$this->assertTrue($response->isSuccessful());
+		$this->assertEquals((string) $dataKey, $receipt->read('key'));
+		$this->assertTrue($receipt->read('complete'));
+	}
+
+	#[Test]
+	public function it_performs_cof_secured_vault_multicurrency_preauths(): void
+	{
+		$dataKey = $this->addCard();
+
+		$data = new McpVaultPreauthRequest(
+			dataKey: $dataKey,
+			orderId: $this->params['order_id'],
+			amount: $this->params['amount'],
+			currency: Currency::USD,
+			cof: new Cof(),
+		);
+
+		$response = $this->getVault(cof: true)->mcpPreauth($data);
 		$receipt = $response->getReceipt();
 
 		$this->assertTrue($response->isSuccessful());
@@ -159,6 +181,27 @@ class VaultMulticurrencyTest extends VaultTestCase
 		);
 
 		$response = $this->getVault(avs: true)->mcpPurchase($data);
+		$receipt = $response->getReceipt();
+
+		$this->assertTrue($response->isSuccessful());
+		$this->assertEquals((string) $dataKey, $receipt->read('key'));
+		$this->assertTrue($receipt->read('complete'));
+	}
+
+	#[Test]
+	public function it_performs_cof_secured_vault_multicurrency_purchases(): void
+	{
+		$dataKey = $this->addCard();
+
+		$data = new McpVaultPurchaseRequest(
+			dataKey: $dataKey,
+			orderId: $this->params['order_id'],
+			amount: $this->params['amount'],
+			currency: Currency::USD,
+			cof: new Cof(),
+		);
+
+		$response = $this->getVault(cof: true)->mcpPurchase($data);
 		$receipt = $response->getReceipt();
 
 		$this->assertTrue($response->isSuccessful());
