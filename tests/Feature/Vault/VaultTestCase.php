@@ -5,6 +5,7 @@ namespace CraigPaul\Moneris\Tests\Feature\Vault;
 use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Tests\FeatureTestCase;
 use CraigPaul\Moneris\Vault;
+use CraigPaul\Moneris\Vault\Value\Avs;
 use CraigPaul\Moneris\Vault\Value\DataKey;
 use Faker\Factory as Faker;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -22,7 +23,7 @@ abstract class VaultTestCase extends FeatureTestCase
 
 	protected array $params;
 
-	protected Vault $vault;
+	protected Vault|null $vault = null;
 
 	public function setUp(): void
 	{
@@ -34,11 +35,6 @@ abstract class VaultTestCase extends FeatureTestCase
 			'order_id' => uniqid('1234-567890', true),
 			'amount' => '1.00',
 		];
-		$this->vault = Vault::create(
-			id: $this->id,
-			token: $this->token,
-			environment: $this->environment,
-		);
 		$this->billing = [
 			'first_name' => $faker->firstName,
 			'last_name' => $faker->lastName,
@@ -80,8 +76,31 @@ abstract class VaultTestCase extends FeatureTestCase
 
 	protected function addCard(): DataKey
 	{
-		$response = $this->vault->add($this->card);
+		$response = $this->gateway()->cards()->add($this->card);
 
 		return new DataKey($response->getReceipt()->read('key'));
+	}
+
+	protected function getVault(
+		bool $avs = false,
+		bool $cvd = false,
+		bool $cof = false,
+	): Vault {
+		if ($this->vault === null) {
+			$this->vault = $this
+				->gateway(avs: $avs, cvd: $cvd, cof: $cof)
+				->vault();
+		}
+
+		return $this->vault;
+	}
+
+	protected function getAvs(): Avs
+	{
+		return new Avs(
+			streetNumber: '123',
+			streetName: 'Fake Street',
+			postalCode: 'X0X0X0',
+		);
 	}
 }

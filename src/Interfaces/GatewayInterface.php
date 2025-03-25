@@ -23,6 +23,11 @@ interface GatewayInterface
 	public function cards(): Vault;
 
 	/**
+	 * Create a new Vault instance.
+	 */
+	public function vault(): Vault;
+
+	/**
 	 * Pre-authorize a purchase.
 	 */
 	public function preauth(array $params = []): Response;
