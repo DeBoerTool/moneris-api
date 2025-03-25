@@ -19,6 +19,11 @@ class GatewayStub implements GatewayInterface
 		exit('Stub. Not Implemented.');
 	}
 
+	public function vault(): Vault
+	{
+		exit('Stub. Not Implemented.');
+	}
+
 	public function preauth(array $params = []): Response
 	{
 		exit('Stub. Not Implemented.');
