@@ -12,6 +12,7 @@ use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Vault;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\Attributes\Test;
 
 use function mock_handler;
