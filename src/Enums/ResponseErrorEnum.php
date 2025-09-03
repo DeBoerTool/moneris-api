@@ -26,6 +26,7 @@ enum ResponseErrorEnum: int
 	case AvsNoMatch = -12;
 
 	case AvsTimeout = -13;
+
 	case SystemUnavailable = -14;
 
 	case CardExpired = -15;
@@ -45,10 +46,15 @@ enum ResponseErrorEnum: int
 	case InvalidExpiryDate = -22;
 	case GenericError = -23;
 
+	case IssuerNotOnline = -501;
+	case UndefinedError = -502;
+
 	public static function fromReceiptCode(string|null $code): self
 	{
 		return match ($code) {
-			'050', '074', 'null' => self::SystemUnavailable,
+			'null' => self::UndefinedError,
+			'050' => self::SystemUnavailable,
+			'074' => self::IssuerNotOnline,
 			'051', '482', '484' => self::CardExpired,
 			'075' => self::InvalidCard,
 			'208', '475' => self::InvalidExpiryDate,
