@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Vault;
 
+use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Enums\Currency;
 use CraigPaul\Moneris\Vault;
 use CraigPaul\Moneris\Vault\Request\McpVaultPreauthRequest;
@@ -57,6 +58,7 @@ class VaultMulticurrencyTest extends VaultTestCase
 	#[Test]
 	public function it_performs_avs_secured_vault_multicurrency_preauths(): void
 	{
+
 		$dataKey = $this->addCard();
 
 		$data = new McpVaultPreauthRequest(
@@ -104,14 +106,14 @@ class VaultMulticurrencyTest extends VaultTestCase
 		$data = new McpVaultPreauthRequest(
 			dataKey: $dataKey,
 			orderId: $this->params['order_id'],
-			amount: $this->params['amount'],
+			amount: '10.40',
 			currency: Currency::USD,
 			cvd: '123',
 			avs: $this->getAvs(),
 		);
 
 		$preauthResponse = $this
-			->getVault(avs: true, cvd: true)
+			->getVault()
 			->mcpPreauth($data);
 
 		$this->assertTrue($preauthResponse->isSuccessful());

@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use CraigPaul\Moneris\Tests\Support\AvsPennyValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use CraigPaul\Moneris\Gateway;
 use PHPUnit\Framework\Attributes\Test;
@@ -123,9 +124,9 @@ class GatewayTest extends FeatureTestCase
 			'avs_street_name' => 'Fake Street',
 			'avs_zipcode' => 'X0X0X0',
 			'order_id' => uniqid('1234-56789', true),
-			'amount' => '1.00',
+			'amount' => AvsPennyValue::approvedFullMatch(),
 			'credit_card' => $this->visa,
-			'expdate' => '2012',
+			'expdate' => '2025',
 		]);
 
 		$this->assertTrue($response->isSuccessful());

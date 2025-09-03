@@ -7,6 +7,7 @@ use CraigPaul\Moneris\Customer;
 use CraigPaul\Moneris\Processor;
 use CraigPaul\Moneris\Receipt;
 use CraigPaul\Moneris\Response;
+use CraigPaul\Moneris\Tests\Support\AvsPennyValue;
 use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Vault;
@@ -367,6 +368,7 @@ class VaultTest extends VaultTestCase
 			'avs_street_number' => '123',
 			'avs_street_name' => 'Fake Street',
 			'avs_zipcode' => 'X0X0X0',
+			'amount' => AvsPennyValue::approvedFullMatch(),
 		]);
 
 		$response = $vault->preauth($params);
@@ -374,7 +376,7 @@ class VaultTest extends VaultTestCase
 
 		$this->assertTrue($response->isSuccessful());
 		$this->assertEquals($key, $receipt->read('key'));
-		$this->assertEquals(true, $receipt->read('complete'));
+		$this->assertTrue($receipt->read('complete'));
 	}
 
 	#[Test]
