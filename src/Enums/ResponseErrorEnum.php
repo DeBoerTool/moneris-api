@@ -5,10 +5,15 @@ namespace CraigPaul\Moneris\Enums;
 enum ResponseErrorEnum: int
 {
 	case InvalidTransactionData = 0;
+
 	case FailedAttempt = -1;
+
 	case CreateTransactionRecord = -2;
+
 	case GlobalErrorReceipt = -3;
+
 	case CvdGeneric = -4;
+
 	case CvdNoMatch = -5;
 
 	case CvdNotProcessed = -6;
@@ -44,9 +49,11 @@ enum ResponseErrorEnum: int
 	case NotAuthorized = -21;
 
 	case InvalidExpiryDate = -22;
+
 	case GenericError = -23;
 
 	case IssuerNotOnline = -501;
+
 	case UndefinedError = -502;
 
 	public static function fromReceiptCode(string|null $code): self
