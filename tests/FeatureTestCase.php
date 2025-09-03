@@ -22,6 +22,10 @@ class FeatureTestCase extends TestCase
 
 	protected string $visa;
 
+	// This card should be used only when doing AVS card verification. It will
+	// always succeed with an AVS "Y" code response.
+	protected string $visaAvsVerification = '4761739012347104';
+
 	public function setUp(): void
 	{
 		parent::setUp();
