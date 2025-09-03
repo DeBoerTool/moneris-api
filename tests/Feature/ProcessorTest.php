@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris\Tests\Feature;
 
+use CraigPaul\Moneris\Tests\Support\AvsPennyValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use CraigPaul\Moneris\Exceptions\InvalidTransactionException;
@@ -74,7 +75,7 @@ class ProcessorTest extends FeatureTestCase
 		$gateway = $this->gateway(avs: true);
 		$response = $gateway->purchase([
 			'order_id' => uniqid('1234-56789', true),
-			'amount' => '1.00',
+			'amount' => AvsPennyValue::approvedFullMatch(),
 			'credit_card' => $this->visa,
 			'expdate' => '2012',
 			'avs_street_number' => '123',

@@ -58,6 +58,9 @@ class VaultMulticurrencyTest extends VaultTestCase
 	#[Test]
 	public function it_performs_avs_secured_vault_multicurrency_preauths(): void
 	{
+		// 2025-09-03 - There seems to be no combination of cards or values
+		//              that will make this test pass, though it passed in the
+		//              past.
 
 		$dataKey = $this->addCard();
 
@@ -172,6 +175,10 @@ class VaultMulticurrencyTest extends VaultTestCase
 	#[Test]
 	public function it_performs_avs_secured_vault_multicurrency_purchases(): void
 	{
+		// 2025-09-03 - There seems to be no combination of cards or values
+		//              that will make this test pass, though it passed in the
+		//              past.
+
 		$dataKey = $this->addCard();
 
 		$data = new McpVaultPurchaseRequest(

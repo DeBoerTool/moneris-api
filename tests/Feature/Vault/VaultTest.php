@@ -286,6 +286,7 @@ class VaultTest extends VaultTestCase
 			'avs_street_number' => '123',
 			'avs_street_name' => 'Fake Street',
 			'avs_zipcode' => 'X0X0X0',
+			'amount' => AvsPennyValue::approvedFullMatch(),
 		]);
 
 		$response = $vault->purchase($params);

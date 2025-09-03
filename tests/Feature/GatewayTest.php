@@ -178,7 +178,7 @@ class GatewayTest extends FeatureTestCase
 			'avs_street_name' => 'Fake Street',
 			'avs_zipcode' => 'X0X0X0',
 			'order_id' => uniqid('1234-56789', true),
-			'amount' => '1.00',
+			'amount' => AvsPennyValue::approvedFullMatch(),
 			'credit_card' => $this->visa,
 			'expdate' => '2012',
 		]);
@@ -217,7 +217,7 @@ class GatewayTest extends FeatureTestCase
 			'avs_zipcode' => 'X0X0X0',
 			'order_id' => uniqid('1234-56789', true),
 			'amount' => '1.00',
-			'credit_card' => $this->visa,
+			'credit_card' => $this->visaAvsVerification,
 			'expdate' => '2012',
 		]);
 
