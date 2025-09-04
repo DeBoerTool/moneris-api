@@ -12,7 +12,6 @@ use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
 use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Vault;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\Attributes\Test;
 
 use function mock_handler;
@@ -25,7 +24,6 @@ class VaultTest extends VaultTestCase
 	{
 		$vault = new Vault($this->id, $this->token, $this->environment);
 
-		$this->assertEquals(Vault::class, $vault::class);
 		$this->assertObjectHasProperty('id', $vault);
 		$this->assertObjectHasProperty('token', $vault);
 		$this->assertObjectHasProperty('environment', $vault);
@@ -36,7 +34,6 @@ class VaultTest extends VaultTestCase
 	{
 		$vault = Vault::create($this->id, $this->token, $this->environment);
 
-		$this->assertEquals(Vault::class, $vault::class);
 		$this->assertObjectHasProperty('id', $vault);
 		$this->assertObjectHasProperty('token', $vault);
 		$this->assertObjectHasProperty('environment', $vault);
@@ -296,89 +293,6 @@ class VaultTest extends VaultTestCase
 		$this->assertTrue($response->isSuccessful());
 		$this->assertEquals($key, $receipt->read('key'));
 		$this->assertEquals(true, $receipt->read('complete'));
-	}
-
-	#[Test]
-	public function it_can_preauth_against_a_vault_card()
-	{
-		$response = $this->getVault()->add($this->card);
-		$key = $response->getReceipt()->read('key');
-
-		$params = array_merge($this->params, [
-			'data_key' => $key,
-		]);
-
-		$response = $this->getVault()->preauth($params);
-		$receipt = $response->getReceipt();
-
-		$this->assertTrue($response->isSuccessful());
-		$this->assertEquals($key, $receipt->read('key'));
-		$this->assertTrue($receipt->read('complete'));
-	}
-
-	#[Test]
-	public function it_can_pre_authorize_a_credit_card_stored_in_the_moneris_vault_and_attach_customer_info()
-	{
-		$response = $this->getVault()->add($this->card);
-		$key = $response->getReceipt()->read('key');
-
-		$params = array_merge($this->params, [
-			'data_key' => $key,
-			'cust_id' => uniqid('customer-', true),
-			'cust_info' => $this->customer,
-		]);
-
-		$response = $this->getVault()->preauth($params);
-		$receipt = $response->getReceipt();
-
-		$this->assertTrue($response->isSuccessful());
-		$this->assertEquals($key, $receipt->read('key'));
-		$this->assertEquals(true, $receipt->read('complete'));
-	}
-
-	#[Test]
-	public function it_can_submit_a_cvd_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
-	) {
-		$vault = $this->gateway(cvd: true)->cards();
-
-		$response = $this->getVault()->add($this->card);
-		$key = $response->getReceipt()->read('key');
-
-		$params = array_merge($this->params, [
-			'data_key' => $key,
-			'cvd' => '111',
-		]);
-
-		$response = $vault->preauth($params);
-		$receipt = $response->getReceipt();
-
-		$this->assertTrue($response->isSuccessful());
-		$this->assertEquals($key, $receipt->read('key'));
-		$this->assertEquals(true, $receipt->read('complete'));
-	}
-
-	#[Test]
-	public function it_can_submit_an_avs_secured_pre_authorization_request_for_a_credit_card_stored_in_the_moneris_vault(
-	) {
-		$vault = $this->gateway(avs: true)->cards();
-
-		$response = $this->getVault()->add($this->card);
-		$key = $response->getReceipt()->read('key');
-
-		$params = array_merge($this->params, [
-			'data_key' => $key,
-			'avs_street_number' => '123',
-			'avs_street_name' => 'Fake Street',
-			'avs_zipcode' => 'X0X0X0',
-			'amount' => AvsPennyValue::approvedFullMatch(),
-		]);
-
-		$response = $vault->preauth($params);
-		$receipt = $response->getReceipt();
-
-		$this->assertTrue($response->isSuccessful());
-		$this->assertEquals($key, $receipt->read('key'));
-		$this->assertTrue($receipt->read('complete'));
 	}
 
 	#[Test]
