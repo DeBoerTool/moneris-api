@@ -2,14 +2,7 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Vault;
 
-use CraigPaul\Moneris\CreditCard;
 use CraigPaul\Moneris\Customer;
-use CraigPaul\Moneris\Processor;
-use CraigPaul\Moneris\Receipt;
-use CraigPaul\Moneris\Response;
-use CraigPaul\Moneris\Tests\Support\AvsPennyValue;
-use CraigPaul\Moneris\Tests\Support\Stubs\VaultExpiringStub;
-use CraigPaul\Moneris\Transaction;
 use CraigPaul\Moneris\Vault;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
