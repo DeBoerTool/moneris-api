@@ -8,6 +8,7 @@ use CraigPaul\Moneris\Vault;
 use CraigPaul\Moneris\Vault\Value\Avs;
 use CraigPaul\Moneris\Vault\Value\DataKey;
 use Faker\Factory as Faker;
+use Faker\Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Vault::class)]
@@ -102,5 +103,10 @@ abstract class VaultTestCase extends FeatureTestCase
 			streetName: 'Fake Street',
 			postalCode: 'X0X0X0',
 		);
+	}
+
+	protected function getFaker(): Generator
+	{
+		return Faker::create();
 	}
 }

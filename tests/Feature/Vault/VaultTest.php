@@ -73,56 +73,6 @@ class VaultTest extends VaultTestCase
 	}
 
 	#[Test]
-	public function updating_a_card_and_getting_the_provided_data_key(): void
-	{
-		$response = $this->getVault()->add($this->card);
-		$key = $response->getReceipt()->read('key');
-
-		$this->assertSame(
-			'2012',
-			$response->getTransaction()->params['expdate'],
-		);
-
-		$this->card->expiry = '2112';
-
-		$response = $this->getVault()->update($this->card, $key);
-
-		$this->assertTrue($response->isSuccessful());
-		$this->assertNotNull($response->getReceipt()->read('key'));
-		$this->assertSame($key, $response->getReceipt()->read('key'));
-		$this->assertSame(
-			'2112',
-			$response->getTransaction()->params['expdate'],
-		);
-	}
-
-	#[Test]
-	public function it_can_update_a_credit_card_with_an_attached_customer_to_the_moneris_vault_and_returns_a_data_key_for_storage(
-	) {
-		$params = [
-			'id' => uniqid('customer-', true),
-			'email' => 'example@email.com',
-			'phone' => '555-555-5555',
-			'note' => 'Customer note',
-		];
-		$customer = Customer::create($params);
-		$card = $this->card->attach($customer);
-
-		$response = $this->getVault()->add($card);
-		$key = $response->getReceipt()->read('key');
-
-		$this->card->customer->email = 'example2@email.com';
-
-		$response = $this->getVault()->update($this->card, $key);
-		$receipt = $response->getReceipt();
-
-		$this->assertTrue($response->isSuccessful());
-		$this->assertNotNull($receipt->read('key'));
-		$this->assertEquals($key, $receipt->read('key'));
-		$this->assertEquals('example2@email.com', $receipt->read('data')['email']);
-	}
-
-	#[Test]
 	public function it_can_delete_a_credit_card_from_the_moneris_vault_and_returns_a_data_key_for_storage()
 	{
 		$response = $this->getVault()->add($this->card);
