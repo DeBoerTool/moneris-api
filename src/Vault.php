@@ -2,6 +2,7 @@
 
 namespace CraigPaul\Moneris;
 
+use CraigPaul\Moneris\Enums\TransactionType;
 use CraigPaul\Moneris\Traits\GettableTrait;
 use CraigPaul\Moneris\Values\Crypt;
 use CraigPaul\Moneris\Values\Environment;
@@ -208,6 +209,24 @@ class Vault extends Gateway
 		}
 
 		$transaction = $this->transaction($params);
+
+		return $this->process($transaction);
+	}
+
+	/**
+	 * Update a credit card in the vault with partial data. According to the
+	 * Moneris documentation, all fields except `data_key` should be optional.
+	 * Any omitted fields will not be updated.
+	 */
+	public function updatePartial(string $dataKey, array $params): Response
+	{
+		$requestParams =  [
+			...$params,
+			'type' => TransactionType::VaultCardUpdate->value,
+			'data_key' => $dataKey,
+		];
+
+		$transaction = $this->transaction($requestParams);
 
 		return $this->process($transaction);
 	}

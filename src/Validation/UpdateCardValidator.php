@@ -4,9 +4,10 @@ namespace CraigPaul\Moneris\Validation;
 
 class UpdateCardValidator extends ValidatorAbstract
 {
+	/**
+	 * 2025-12-31 - Updates only require the data_key.
+	 */
 	protected array $mustBeSet = [
-		'pan',
-		'expdate',
 		'data_key',
 	];
 
