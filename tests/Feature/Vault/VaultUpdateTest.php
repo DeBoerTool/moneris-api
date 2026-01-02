@@ -37,7 +37,8 @@ class VaultUpdateTest extends VaultTestCase
 	}
 
 	#[Test]
-	public function it_can_update_a_card_with_customer_data() {
+	public function it_can_update_a_card_with_customer_data()
+	{
 		$params = [
 			'id' => uniqid('customer-', true),
 			'email' => 'example@email.com',
