@@ -40,7 +40,7 @@ readonly class McpVaultPurchaseRequest extends TransactionRequestAbstract
 			'mcp_version' => $this->mcpVersion->value,
 			...($this->cvd ? ['cvd' => $this->cvd] : []),
 			...($this->avs ? $this->avs->toArray() : []),
-			...($this->cof ? $this->cof->toArray() : [])
+			...($this->cof ? $this->cof->toArray() : []),
 		];
 	}
 }

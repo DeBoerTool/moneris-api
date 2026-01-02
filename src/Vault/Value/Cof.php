@@ -9,7 +9,7 @@ readonly class Cof
 {
 	public function __construct(
 		public PaymentInformation $paymentInformation = PaymentInformation::SubsequentTransaction,
-		public PaymentIndicator $paymentIndicator = PaymentIndicator::U,
+		public PaymentIndicator $paymentIndicator = PaymentIndicator::SubsequentUnscheduledMerchant,
 		public string|null $issuerId = null,
 	) {}
 

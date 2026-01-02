@@ -62,6 +62,7 @@ class VaultTest extends VaultTestCase
 		$card = $this->card->attach($customer);
 
 		$response = $this->getVault()->add($card);
+
 		$receipt = $response->getReceipt();
 
 		$this->assertTrue($response->isSuccessful());

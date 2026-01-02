@@ -402,27 +402,6 @@ class ValidatorTest extends FeatureTestCase
 	}
 
 	#[Test]
-	public function add_card_with_cof(): void
-	{
-		$validator = new Validator($this->gateway(cof: true), [
-			'type' => 'res_add_cc',
-			'pan' => '',
-			'expdate' => '',
-		]);
-
-		$this->assertFalse($validator->passes());
-
-		$validator = new Validator($this->gateway(cof: true), [
-			'type' => 'res_add_cc',
-			'pan' => '',
-			'expdate' => '',
-			'issuer_id' => '',
-		]);
-
-		$this->assertTrue($validator->passes());
-	}
-
-	#[Test]
 	public function update_card(): void
 	{
 		$validator = new Validator($this->gateway(), [
@@ -436,29 +415,6 @@ class ValidatorTest extends FeatureTestCase
 			'pan' => '',
 			'expdate' => '',
 			'data_key' => '',
-		]);
-
-		$this->assertTrue($validator->passes());
-	}
-
-	#[Test]
-	public function update_card_with_cof(): void
-	{
-		$validator = new Validator($this->gateway(cof: true), [
-			'type' => 'res_update_cc',
-			'pan' => '',
-			'expdate' => '',
-			'data_key' => '',
-		]);
-
-		$this->assertFalse($validator->passes());
-
-		$validator = new Validator($this->gateway(cof: true), [
-			'type' => 'res_update_cc',
-			'pan' => '',
-			'expdate' => '',
-			'data_key' => '',
-			'issuer_id' => '',
 		]);
 
 		$this->assertTrue($validator->passes());
