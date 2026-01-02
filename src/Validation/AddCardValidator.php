@@ -9,8 +9,12 @@ class AddCardValidator extends ValidatorAbstract
 		'expdate',
 	];
 
+	/**
+	 * 2026-01-02 - Despite what the Moneris docs say, the COF Info does not
+	 *              appear to be required when adding a card.
+	 */
 	protected array $mustBeSetWithCof = [
-		'issuer_id',
+		// 'issuer_id',
 	];
 
 	protected function validate(): void

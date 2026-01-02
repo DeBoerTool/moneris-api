@@ -11,8 +11,13 @@ class UpdateCardValidator extends ValidatorAbstract
 		'data_key',
 	];
 
+	/**
+	 * 2026-01-02 - Updates do no require issuer_id as they may be performed
+	 *              before an initial payment/preauth transaction returns the
+	 *              card-network-created issuer_id.
+	 */
 	protected array $mustBeSetWithCof = [
-		'issuer_id',
+		// 'issuer_id',
 	];
 
 	protected function validate(): void
