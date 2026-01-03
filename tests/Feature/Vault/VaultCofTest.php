@@ -2,8 +2,8 @@
 
 namespace CraigPaul\Moneris\Tests\Feature\Vault;
 
-use CraigPaul\Moneris\Data\CofInfo;
 use CraigPaul\Moneris\Vault;
+use CraigPaul\Moneris\Vault\Value\Cof;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -66,7 +66,7 @@ class VaultCofTest extends VaultTestCase
 			'order_id' => uniqid('1234-567890', true),
 			'amount' => '1.00',
 			'cvd' => '123',
-			...CofInfo::initial(),
+			...Cof::initial()->toArray(),
 		];
 
 		$preauthResponse = $this->getVault()->preauth($preauthParams);
@@ -83,7 +83,7 @@ class VaultCofTest extends VaultTestCase
 		// Because we're dealing with simulation here, the issuer_id will be
 		// null. In production, this value should be filled out.
 		$this->assertNull(
-			$captureResponse->getTransaction()->params['issuer_id'],
+			$captureResponse->getReceipt()->read('issuer_id'),
 		);
 	}
 }
