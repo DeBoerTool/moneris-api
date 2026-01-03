@@ -13,14 +13,36 @@ readonly class Cof
 		public string|null $issuerId = null,
 	) {}
 
+	public static function initial(): self
+	{
+		return new self(
+			PaymentInformation::InitialTransaction,
+			PaymentIndicator::InitialUnscheduled,
+		);
+	}
+
+	public static function subsequent(
+		string $issuerId,
+		bool $isCustomer = true,
+	): self
+	{
+		$indicator = $isCustomer
+			? PaymentIndicator::SubsequentUnscheduledCustomer
+			: PaymentIndicator::SubsequentUnscheduledMerchant;
+
+		return new self(
+			PaymentInformation::SubsequentTransaction,
+			$indicator,
+			$issuerId,
+		);
+	}
+
 	public function toArray(): array
 	{
 		return [
 			'payment_information' => $this->paymentInformation->value,
 			'payment_indicator' => $this->paymentIndicator->value,
-			...($this->issuerId
-				? ['issuer_id' => $this->issuerId]
-				: []),
+			'issuer_id' => $this->issuerId,
 		];
 	}
 }
